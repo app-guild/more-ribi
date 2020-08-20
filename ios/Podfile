@@ -10,6 +10,8 @@ target 'SeaOfFish' do
 
   pod 'ReactNativePayments', :path => '../node_modules/react-native-payments'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
   target 'SeaOfFishTests' do
     inherit! :complete
     # Pods for testing

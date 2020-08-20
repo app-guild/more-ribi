@@ -1,8 +1,11 @@
 import {StyleSheet} from "react-native";
 
 const globals = {
-    mainBackgroundColor: "#F2F3F7",
-    mainTextColor: "#97A3B8",
+    primaryColor: "#779DB9",
+    accentColor: "#E5E5E5",
+    mainBackgroundColor: "#E5E5E5",
+    navigatorBackgroundColor: "white",
+    mainTextColor: "#000000",
 };
 
 const stylesheet = StyleSheet.create({
@@ -42,9 +45,20 @@ const stylesheet = StyleSheet.create({
         position: "relative",
         fontStyle: "normal",
         fontWeight: "normal",
-        fontSize: 18,
-        fontFamily: "Montserrat-Regular",
+        fontSize: 14,
         color: globals.mainTextColor,
+    },
+    accentText: {
+        position: "relative",
+        fontStyle: "normal",
+        fontWeight: "normal",
+        fontSize: 12,
+        color: globals.accentColor,
+    },
+    bottomNavigator: {
+        height: 66,
+        backgroundColor: globals.navigatorBackgroundColor,
+        paddingBottom: 10,
     },
 });
 
