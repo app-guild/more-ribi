@@ -2,7 +2,7 @@ import * as React from "react";
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import MainScreen from "./screens/MainScreen";
-import PayScreen from "./screens/PayScreen";
+import SecondScreen from "./screens/SecondScreen";
 
 const Stack = createStackNavigator();
 
@@ -17,7 +17,7 @@ export default function App() {
                 />
                 <Stack.Screen
                     name="Second"
-                    component={PayScreen}
+                    component={SecondScreen}
                     options={{animationEnabled: false}}
                 />
             </Stack.Navigator>
