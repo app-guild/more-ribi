@@ -58,7 +58,7 @@ export default class WarehouseApi {
             headers: {
                 "Content-Type": "application/json",
                 "Lognex-Pretty-Print-JSON": "true",
-                "If-Modified-Since": "00000101000000", // иногда выскакивает ошибка неправильного формата
+                "If-Modified-Since": "00000101000000", // иногда выскакивала ошибка неправильного формата
                 Authorization: "Basic YWRtaW5Ac3Rvcm1raXJpbGw5ODo2NjE3OGNmZTZj",
             },
         }).then((response) => response.json());
