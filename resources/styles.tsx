@@ -150,13 +150,9 @@ const stylesheet = StyleSheet.create({
     dishCardShoppingCartButtonContainer: {
         justifyContent: "center",
         alignItems: "center",
-        //backgroundColor: "rgba(0,0,0,1)",
-        //borderRadius: 50,
     },
     mainScreenContainer: {
         width: "100%",
-        //paddingTop: 22,
-        //paddingHorizontal: 27,
     },
 });
 

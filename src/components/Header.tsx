@@ -1,8 +1,11 @@
 import React, {Component} from "react";
-import {Text, View, FlatList} from "react-native";
+import {Text, View} from "react-native";
 import {globals, stylesheet} from "../../resources/styles";
+// @ts-ignore
 import MenuIcon from "./../../resources/assets/drawable/menu_icon.svg";
+// @ts-ignore
 import CartIcon from "./../../resources/assets/drawable/cart_icon.svg";
+// @ts-ignore
 import FishIcon from "./../../resources/assets/drawable/fish_icon2.svg";
 
 export interface IHeaderState {}
@@ -30,7 +33,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
 
         <View style={{flexDirection: "row", marginLeft: 40, marginTop: 10, }}>
           <Text style={stylesheet.headerSubTitle}>Поке</Text>
-          <FishIcon width={15} height={25}></FishIcon>
+          <FishIcon width={15} height={25}/>
         </View>
         <View style={{backgroundColor: "#FFC11E", width: 64, height: 2, marginLeft: 38, marginTop: 3}}/>
       </View>

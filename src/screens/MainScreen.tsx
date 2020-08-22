@@ -6,7 +6,6 @@ import DishCard from "../components/DishCard";
 
 export interface IMainScreenState {
     mainContainerWidth: number,
-    mainContainerHeight: number,
     cardsInfo: any[],
 }
 
@@ -15,7 +14,6 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         super(props);
         this.state = {
             mainContainerWidth: Dimensions.get("window").width,
-            mainContainerHeight: 1000,//Dimensions.get("window").height
             cardsInfo: [
                 {
                     id: 0,
@@ -79,16 +77,13 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         return (
           <>
               <Header/>
-                  <FlatList
-                    data={this.state.cardsInfo}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                    numColumns={2}
-                    style={{
-                        ...stylesheet.mainScreenContainer,
-                        //height: this.state.mainContainerHeight
-                    }}
-                  />
+              <FlatList
+                data={this.state.cardsInfo}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+                numColumns={2}
+                style={stylesheet.mainScreenContainer}
+              />
           </>
         );
     }
