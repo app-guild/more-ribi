@@ -1,11 +1,14 @@
 import * as React from "react";
 import {NavigationContainer} from "@react-navigation/native";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import MenuScreen from "./screens/MenuScreen";
+import MainScreen from "./screens/MainScreen";
 import AboutUsScreen from "./screens/AboutUsScreen";
 import CartScreen from "./screens/CartScreen";
+// @ts-ignore
 import SoupIcon from "./../resources/assets/drawable/soup_icon.svg";
+// @ts-ignore
 import FishIcon from "./../resources/assets/drawable/fish_icon.svg";
+// @ts-ignore
 import CartIcon from "./../resources/assets/drawable/cart_icon.svg";
 import {globals, stylesheet} from "../resources/styles";
 
@@ -26,7 +29,7 @@ export default function App() {
                 }}>
                 <Tab.Screen
                     name="Menu"
-                    component={MenuScreen}
+                    component={MainScreen}
                     options={{
                         tabBarLabel: "Меню",
                         tabBarIcon: ({focused, color, size}) => (
