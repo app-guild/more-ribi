@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Text, View, FlatList, StyleSheet, StatusBar, Dimensions, ScrollView} from "react-native";
+import {FlatList, Dimensions} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import DishCard from "../components/DishCard";
@@ -59,6 +59,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
     render() {
         //const Tab = createMaterialTopTabNavigator();
+        // @ts-ignore
         const renderItem = ({ item, index }) => (
           <DishCard
             width={(this.state.mainContainerWidth - 2*27 - 17)/2}
@@ -93,27 +94,4 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     }
 }
 
-function HomeScreen({ navigation }) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Home!</Text>
-      </View>
-    );
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: StatusBar.currentHeight || 0,
-    },
-    item: {
-        backgroundColor: '#f9c2ff',
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
-    },
-    title: {
-        fontSize: 32,
-    },
-});
 export default MainScreen;

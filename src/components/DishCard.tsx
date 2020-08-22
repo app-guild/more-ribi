@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Image, Text, View, TouchableOpacity} from "react-native";
 import {stylesheet} from "../../resources/styles";
-import Food from "../../resources/assets/drawable/food.jpg"
+// @ts-ignore
 import CardIcon from "../../resources/assets/drawable/cart_icon.svg"
 
 export interface IDishCardState {}
