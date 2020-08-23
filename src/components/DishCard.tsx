@@ -38,7 +38,7 @@ class DishCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCardSta
           style={{
             width: this.props.width-2*stylesheet.dishCardContainer.padding,
             height: 110,
-            backgroundColor: "blue",
+            backgroundColor: "#FFFFFF",
             borderRadius: 20,
           }}
         />

@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {FlatList, Dimensions} from "react-native";
+import {FlatList, Dimensions, View, ImageBackground} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import DishCard from "../components/DishCard";
@@ -75,19 +75,26 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     );
 
     return (
-      <>
-        <Header
-          navigation={this.props.navigation}
-        />
+        <ImageBackground
+          source={require("../../resources/assets/drawable/background.png")}
+          style={{flex: 1}}
+        >
+          <View style={{backgroundColor: "rgba(255,255,255,0.95)", flex: 1}}>
 
-        <FlatList
-          data={this.state.cardsInfo}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          numColumns={2}
-          style={stylesheet.mainScreenContainer}
-        />
-      </>
+            <Header
+              navigation={this.props.navigation}
+            />
+
+            <FlatList
+              data={this.state.cardsInfo}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+              numColumns={2}
+              style={stylesheet.mainScreenContainer}
+            />
+
+        </View>
+        </ImageBackground>
     );
   }
 }
