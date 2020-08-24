@@ -2,9 +2,12 @@ import React, {Component} from "react";
 import {Text, View} from "react-native";
 import {stylesheet} from "../../resources/styles";
 
-export interface IMenuScreenState {}
+export interface IMainScreenState {}
 
-class MenuScreen extends Component<Readonly<any>, Readonly<IMenuScreenState>> {
+class MainScreen extends Component<
+  Readonly<any>,
+  Readonly<IMainScreenState>
+  > {
     constructor(props: any) {
         super(props);
         this.state = {};
@@ -12,11 +15,11 @@ class MenuScreen extends Component<Readonly<any>, Readonly<IMenuScreenState>> {
 
     render() {
         return (
-            <View style={stylesheet.centerBody}>
-                <Text>Menu Screen</Text>
-            </View>
+          <View style={stylesheet.centerBody}>
+              <Text>Main Screen</Text>
+          </View>
         );
     }
 }
 
-export default MenuScreen;
+export default MainScreen;
