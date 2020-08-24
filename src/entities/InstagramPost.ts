@@ -1,5 +1,5 @@
-import {News} from "../../entities/News";
-import {ImageData} from "../../entities/ImageData";
+import {News} from "./News";
+import {ImageData} from "./ImageData";
 
 export class InstagramPost extends News {
     private _postUrl: string;

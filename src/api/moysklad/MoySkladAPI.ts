@@ -3,9 +3,9 @@ import {ProductType} from "../../entities/ProductType";
 
 /**
  * Api for "Мой Склад"
- * @class MoiScladAPI
+ * @class MoySkladAPI
  */
-export default class MoiScladAPI {
+export default class MoySkladAPI {
     /**
      * Load products of one type.
      * @param productType

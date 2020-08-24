@@ -1,4 +1,4 @@
-import {InstagramPost} from "./InstagramPost";
+import {InstagramPost} from "../../entities/InstagramPost";
 
 export class InstagramUser {
     private _username: string;
@@ -26,7 +26,6 @@ export class InstagramUser {
         if (!this._username) {
             return Promise.reject("Username can't be empty");
         }
-        // @ts-ignore
         return fetch(`${this._url}/?__a=1`)
             .then((response) => response.json())
             .then((jsonData) => {
