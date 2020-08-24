@@ -6,6 +6,12 @@ const globals = {
     mainBackgroundColor: "#E5E5E5",
     navigatorBackgroundColor: "white",
     mainTextColor: "#000000",
+    cardBackgroundColor: "#FFFFFF",
+    shadowColor: "#000000",
+    additionalTextColor: "#CFD2D7",
+    crossedOutPriceColor: "#A5A5A5",
+    shoppingCartColor: "#909090",
+    backgroundOverlay: "rgba(255,255,255,0.95)",
 };
 
 const stylesheet = StyleSheet.create({
@@ -67,7 +73,7 @@ const stylesheet = StyleSheet.create({
     headerTitle: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
-        fontWeight: "900",
+        fontWeight: "bold",
         fontSize: 24,
         lineHeight: 29,
         color: globals.primaryColor,
@@ -102,9 +108,9 @@ const stylesheet = StyleSheet.create({
     productCardContainer: {
         borderRadius: 20,
         padding: 10,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: globals.cardBackgroundColor,
 
-        shadowColor: "#000",
+        shadowColor: globals.shadowColor,
         shadowOffset: {
             width: 0,
             height: 1,
@@ -125,10 +131,9 @@ const stylesheet = StyleSheet.create({
     productCardComposition: {
         fontFamily: "Muli",
         fontStyle: "normal",
-        fontWeight: "300",
         fontSize: 10,
         lineHeight: 13,
-        color: "#CFD2D7",
+        color: globals.additionalTextColor,
     },
     productCardPrice: {
         fontFamily: "Muli",
@@ -145,12 +150,12 @@ const stylesheet = StyleSheet.create({
         fontWeight: "normal",
         fontSize: 10,
         lineHeight: 13,
-        color: "#A5A5A5",
+        color: globals.crossedOutPriceColor,
         textDecorationLine: 'line-through',
     },
     productCardShoppingCartButton:{
         borderRadius: 50,
-        backgroundColor: "#000000",
+        backgroundColor: globals.shadowColor,
         width: 30,
         height: 30,
         opacity: 0.2
