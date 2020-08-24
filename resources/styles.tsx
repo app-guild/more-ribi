@@ -99,7 +99,7 @@ const stylesheet = StyleSheet.create({
         color: globals.primaryColor,
         marginLeft: 6,
     },
-    dishCardContainer: {
+    productCardContainer: {
         borderRadius: 20,
         padding: 10,
         backgroundColor: "#FFFFFF",
@@ -113,7 +113,7 @@ const stylesheet = StyleSheet.create({
         shadowRadius: 1.41,
         elevation: 2,
     },
-    dishCardName: {
+    productCardName: {
         fontFamily: "Muli",
         fontStyle: "normal",
         fontWeight: "bold",
@@ -122,7 +122,7 @@ const stylesheet = StyleSheet.create({
         color: globals.mainTextColor,
         paddingTop: 5,
     },
-    dishCardComposition: {
+    productCardComposition: {
         fontFamily: "Muli",
         fontStyle: "normal",
         fontWeight: "300",
@@ -130,24 +130,32 @@ const stylesheet = StyleSheet.create({
         lineHeight: 13,
         color: "#CFD2D7",
     },
-    dishCardPrice: {
+    productCardPrice: {
         fontFamily: "Muli",
         fontStyle: "normal",
         fontWeight: "normal",
         fontSize: 10,
         lineHeight: 13,
         color: globals.primaryColor,
-        //textAlign: "right",
         paddingTop: 13,
     },
-    dishCardShoppingCartButton:{
+    productCardCrossedOutPrice: {
+        fontFamily: "Muli",
+        fontStyle: "normal",
+        fontWeight: "normal",
+        fontSize: 10,
+        lineHeight: 13,
+        color: "#A5A5A5",
+        textDecorationLine: 'line-through',
+    },
+    productCardShoppingCartButton:{
         borderRadius: 50,
         backgroundColor: "#000000",
         width: 30,
         height: 30,
         opacity: 0.2
     },
-    dishCardShoppingCartButtonContainer: {
+    productCardShoppingCartButtonContainer: {
         justifyContent: "center",
         alignItems: "center",
     },

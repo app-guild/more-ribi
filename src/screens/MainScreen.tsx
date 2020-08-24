@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {FlatList, Dimensions, View, ImageBackground} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
-import DishCard from "../components/DishCard";
+import ProductCard from "../components/ProductCard";
 
 
 export interface IMainScreenState {
@@ -26,7 +26,8 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           id: 1,
           name: "Поке с лососем 2",
           composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
-          price: 290,
+          price: 999.999,
+          crossOutPrice: 1000,
         },
         {
           id: 2,
@@ -45,6 +46,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           name: "Поке с лососем 5",
           composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
           price: 290,
+          crossOutPrice: 10000,
         },
         {
           id: 5,
@@ -57,13 +59,13 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
   }
 
   render() {
-    // @ts-ignore
     const renderItem = ({ item, index }) => (
-      <DishCard
+      <ProductCard
         width={(this.state.mainContainerWidth - 2*27 - 17)/2}
         name={item.name}
         composition={item.composition}
         price={item.price}
+        crossOutPrice={item.crossOutPrice}
         style={{
           marginLeft: !(index%2) ? 27 : 17,
           marginRight: !(index%2) ? 0 : 27,
