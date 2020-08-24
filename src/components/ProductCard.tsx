@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Image, Text, View, TouchableOpacity} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {globals, stylesheet} from "../../resources/styles";
 import CardIcon from "../../resources/assets/drawable/cart_icon.svg"
 
 export interface IDishCardState {}
@@ -41,7 +41,6 @@ class ProductCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCard
           style={{
             width: width-2*stylesheet.productCardContainer.padding,
             height: 110,
-            backgroundColor: "#FFFFFF",
             borderRadius: 20,
           }}
         />
@@ -53,7 +52,7 @@ class ProductCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCard
             <Text style={stylesheet.productCardCrossedOutPrice}>{crossOutPrice}</Text>
           </View>
           <View style={stylesheet.productCardShoppingCartButtonContainer}>
-            <CardIcon width={16} height={16} fill={"#909090"} style={{position: "absolute"}}/>
+            <CardIcon width={16} height={16} fill={globals.shoppingCartColor} style={{position: "absolute"}}/>
             <TouchableOpacity
               style={stylesheet.productCardShoppingCartButton}
               activeOpacity={0.5}

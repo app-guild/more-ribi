@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {FlatList, Dimensions, View, ImageBackground} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {globals, stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 
@@ -81,7 +81,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           source={require("../../resources/assets/drawable/background.png")}
           style={{flex: 1}}
         >
-          <View style={{backgroundColor: "rgba(255,255,255,0.95)", flex: 1}}>
+          <View style={{backgroundColor: globals.backgroundOverlay, flex: 1}}>
 
             <Header
               navigation={this.props.navigation}
