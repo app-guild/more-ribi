@@ -4,10 +4,7 @@ import {stylesheet} from "../../resources/styles";
 
 export interface IMainScreenState {}
 
-class MainScreen extends Component<
-  Readonly<any>,
-  Readonly<IMainScreenState>
-  > {
+class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     constructor(props: any) {
         super(props);
         this.state = {};
@@ -15,9 +12,9 @@ class MainScreen extends Component<
 
     render() {
         return (
-          <View style={stylesheet.centerBody}>
-              <Text>Main Screen</Text>
-          </View>
+            <View style={stylesheet.centerBody}>
+                <Text>Main Screen</Text>
+            </View>
         );
     }
 }
