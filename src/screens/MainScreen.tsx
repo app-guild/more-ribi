@@ -6,7 +6,6 @@ import ProductCard from "../components/ProductCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 
 
-
 export interface IMainScreenState {
   mainContainerWidth: number,
   productCardWidth: number,
@@ -109,22 +108,6 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
   }
 
   render() {
-    // const renderItem = ({ item, index }) => (
-    //   <ProductCard
-    //     width={(this.state.mainContainerWidth - 2*27 - 17)/2}
-    //     name={item.name}
-    //     composition={item.composition}
-    //     price={item.price}
-    //     crossOutPrice={item.crossOutPrice}
-    //     style={{
-    //       marginLeft: !(index%2) ? 27 : 17,
-    //       marginRight: !(index%2) ? 0 : 27,
-    //       marginTop: index > 1 ? 0 : 6,
-    //       marginBottom: index > this.state.cardsInfo.length-3 ? 14 : 20,
-    //     }}
-    //
-    //   />
-    // );
     return (
         <ImageBackground
           source={require("../../resources/assets/drawable/background.png")}

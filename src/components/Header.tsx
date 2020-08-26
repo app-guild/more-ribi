@@ -27,7 +27,10 @@ class Header extends Component<any, Readonly<IHeaderState>> {
           </View>
         </View>
 
-        <View style={{flexDirection: "row", marginLeft: 40, marginTop: 10, }}>
+        <View
+          style={{flexDirection: "row", marginLeft: 40, marginTop: 10, }}
+          onTouchEnd={()=>this.props.navigation.navigate(("Категории"))}
+        >
           <Text style={stylesheet.headerSubTitle}>Поке</Text>
           <FishIcon width={15} height={25}/>
         </View>
