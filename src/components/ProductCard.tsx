@@ -30,6 +30,7 @@ class ProductCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCard
       image,
       style,
     } = this.props
+
     return (
       <View style={{
         width: width,
@@ -40,7 +41,7 @@ class ProductCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCard
           source={require("../../resources/assets/drawable/food.jpg")}
           style={{
             width: width-2*stylesheet.productCardContainer.padding,
-            height: 110,
+            height: (width-2*stylesheet.productCardContainer.padding)/1.2,
             borderRadius: 20,
           }}
         />
