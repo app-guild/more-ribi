@@ -164,6 +164,10 @@ const stylesheet = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    mainScreenProductCardContainer:{
+        paddingVertical: 20,
+        paddingHorizontal: 27,
+    },
     mainScreenContainer: {
         width: "100%",
     },
