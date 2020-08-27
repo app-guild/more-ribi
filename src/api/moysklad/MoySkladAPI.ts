@@ -1,11 +1,11 @@
-import Product from "../entities/Product";
-import {ProductType} from "../entities/ProductType";
+import Product from "../../entities/Product";
+import {ProductType} from "../../entities/ProductType";
 
 /**
  * Api for "Мой Склад"
- * @class WarehouseApi
+ * @class MoySkladAPI
  */
-export default class WarehouseApi {
+export default class MoySkladAPI {
     /**
      * Load products of one type.
      * @param productType
