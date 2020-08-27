@@ -67,9 +67,28 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         ]),
     };
 
-
     this._rowRenderer = this._rowRenderer.bind(this);
   }
+
+  private layoutProvider = new LayoutProvider(
+    index => {return index%2},
+    (type, dim) => {
+      switch (type) {
+        case 0:
+          dim.width = this.state.mainContainerWidth / 2 - 0.0001;
+          dim.height = 111
+            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/1.2
+            + stylesheet.mainScreenProductCardContainer.paddingVertical
+          break;
+        case 1:
+          dim.width = this.state.mainContainerWidth / 2;
+          dim.height = 111
+            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/1.2
+            + stylesheet.mainScreenProductCardContainer.paddingVertical
+          break;
+      }
+    }
+  )
 
   _rowRenderer(type: any, data: any) {
     switch (type) {
@@ -122,25 +141,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
             />
 
             <RecyclerListView
-              layoutProvider={new LayoutProvider(
-                index => {return index%2},
-                (type, dim) => {
-                  switch (type) {
-                    case 0:
-                      dim.width = this.state.mainContainerWidth / 2 - 0.0001;
-                      dim.height = 111
-                        + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/1.2
-                        + stylesheet.mainScreenProductCardContainer.paddingVertical
-                      break;
-                    case 1:
-                      dim.width = this.state.mainContainerWidth / 2;
-                      dim.height = 111
-                        + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/1.2
-                        + stylesheet.mainScreenProductCardContainer.paddingVertical
-                      break;
-                  }
-                }
-              )}
+              layoutProvider={this.layoutProvider}
               dataProvider={this.state.dataProvider}
               rowRenderer={this._rowRenderer}
             />
