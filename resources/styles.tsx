@@ -179,7 +179,20 @@ const stylesheet = StyleSheet.create({
         backgroundColor: globals.backgroundOverlay,
         flex: 1,
         opacity: 0.95,
-    }
-});
+    },
+    headerCategoryButton: {
+        flexDirection: "row",
+        marginLeft: 40,
+        marginTop: 10,
+    },
+    headerCategoryUnderline: {
+        backgroundColor: "#FFC11E",
+        width: "auto",
+        height: 2,
+        marginLeft: 38,
+        marginTop: 3
+    },
+  }
+);
 
 export {stylesheet, globals};
