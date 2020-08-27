@@ -18,7 +18,10 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     super(props);
     this.state = {
       mainContainerWidth: Dimensions.get("window").width,
-      productCardWidth: (Dimensions.get("window").width - 2*27 - 17)/2,
+      productCardWidth: (
+        Dimensions.get("window").width
+        -2*stylesheet.mainScreenPaddings.paddingHorizontal
+        -stylesheet.mainScreenPaddings.paddingVertical)/2,
       dataProvider: new DataProvider((r1, r2) => {
         return r1.id !== r2.id;
       }).cloneWithRows(
@@ -78,7 +81,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           }}>
             <ProductCard
               width={this.state.productCardWidth}
-              name={data.name}
+              text={data.name}
               composition={data.composition}
               price={data.price}
               crossOutPrice={data.crossOutPrice}
@@ -94,7 +97,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           }}>
             <ProductCard
               width={this.state.productCardWidth}
-              name={data.name}
+              text={data.name}
               composition={data.composition}
               price={data.price}
               crossOutPrice={data.crossOutPrice}

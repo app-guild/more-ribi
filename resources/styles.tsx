@@ -171,6 +171,10 @@ const stylesheet = StyleSheet.create({
     mainScreenContainer: {
         width: "100%",
     },
+    mainScreenPaddings:{
+        paddingHorizontal: 27,
+        paddingVertical: 17,
+    },
     backgroundOverlay: {
         backgroundColor: globals.backgroundOverlay,
         flex: 1,
