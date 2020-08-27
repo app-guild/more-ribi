@@ -3,10 +3,10 @@ import {Image, Text, View, TouchableOpacity} from "react-native";
 import {globals, stylesheet} from "../../resources/styles";
 import CardIcon from "../../resources/assets/drawable/cart_icon.svg"
 
-export interface IDishCardState {}
-export interface IDishCardProps {
+export interface IProductCardState {}
+export interface IProductCardProps {
   width: number,
-  name: string,
+  text: string,
   composition: string,
   price: number,
   crossOutPrice?: number,
@@ -14,7 +14,7 @@ export interface IDishCardProps {
   style?: any,
 }
 
-class ProductCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCardState>> {
+class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProductCardState>> {
   constructor(props: any) {
     super(props);
     this.state = {};
@@ -23,7 +23,7 @@ class ProductCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCard
   render() {
     const {
       width,
-      name,
+      text,
       composition,
       price,
       crossOutPrice,
@@ -45,7 +45,7 @@ class ProductCard extends Component<Readonly<IDishCardProps>, Readonly<IDishCard
             borderRadius: 20,
           }}
         />
-        <Text style={stylesheet.productCardName}>{name}</Text>
+        <Text style={stylesheet.productCardName}>{text}</Text>
         <Text style={stylesheet.productCardComposition}>{composition}</Text>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
           <View>
