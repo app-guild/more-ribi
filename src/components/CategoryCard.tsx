@@ -6,7 +6,8 @@ import {stylesheet} from "../../resources/styles";
 export interface ICategoryCardState {}
 export interface ICategoryCardProps {
   size: number,
-  name: string,
+  text: string,
+  onTouchEnd: any,
   image?: any,
   style?: any,
 }
@@ -20,9 +21,10 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
   render() {
     const {
       size,
-      name,
+      text,
+      onTouchEnd,
       image,
-      style,
+      style
     } = this.props
     return (
       <View
@@ -31,6 +33,7 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
           ...stylesheet.categoriesScreenCard,
           ...style,
         }}
+        onTouchEnd={onTouchEnd}
       >
         <Image
           source={require("../../resources/assets/drawable/food.jpg")}
@@ -41,7 +44,7 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
           }}
         />
         <View style={stylesheet.categoriesScreenCardTitleContainer}>
-          <Text style={stylesheet.categoriesScreenCardTitle}>{name}</Text>
+          <Text style={stylesheet.categoriesScreenCardTitle}>{text}</Text>
         </View>
       </View>
     );

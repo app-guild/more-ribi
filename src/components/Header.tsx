@@ -14,6 +14,7 @@ class Header extends Component<any, Readonly<IHeaderState>> {
   }
 
   render() {
+    console.log(this.props.route);
     return (
       <View style={stylesheet.headerContainer}>
         <View style={stylesheet.headerSubContainer}>

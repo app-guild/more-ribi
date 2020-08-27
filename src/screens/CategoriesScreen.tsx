@@ -21,35 +21,35 @@ class CategoriesScreen extends Component<
       cardsInfo: [
         {
           id: 0,
-          name: "Поке от шефа",
+          text: "Поке от шефа",
         },
         {
           id: 1,
-          name: "Супы",
+          text: "Супы",
         },
         {
           id: 2,
-          name: "Роллы",
+          text: "Роллы",
         },
         {
           id: 4,
-          name: "Вок",
+          text: "Вок",
         },
         {
           id: 5,
-          name: "Роллы",
+          text: "Роллы",
         },
         {
           id: 6,
-          name: "Вок",
+          text: "Вок",
         },
         {
           id: 7,
-          name: "Роллы",
+          text: "Роллы",
         },
         {
           id: 8,
-          name: "Вок",
+          text: "Вок",
         },
       ]
     };
@@ -61,7 +61,11 @@ class CategoriesScreen extends Component<
         size={(this.state.mainContainerWidth
           -2*stylesheet.categoriesScreenContainer.paddingHorizontal
           -stylesheet.categoriesScreenMargin.margin)/2}
-        name={item.name}
+        text={item.text}
+        onTouchEnd={()=>this.props.navigation.navigate("Main",{
+          itemId: 86,
+          otherParam: 'anything you want here',
+        })}
         style={{
           marginLeft: index%2?stylesheet.categoriesScreenMargin.margin:0,
           marginBottom: stylesheet.categoriesScreenMargin.margin,
