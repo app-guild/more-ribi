@@ -11,7 +11,7 @@ const globals = {
     additionalTextColor: "#CFD2D7",
     crossedOutPriceColor: "#A5A5A5",
     shoppingCartColor: "#909090",
-    backgroundOverlay: "rgba(255,255,255,0.95)",
+    backgroundOverlay: "#FFFFFF",
 };
 
 const stylesheet = StyleSheet.create({
@@ -171,6 +171,11 @@ const stylesheet = StyleSheet.create({
     mainScreenContainer: {
         width: "100%",
     },
+    backgroundOverlay: {
+        backgroundColor: globals.backgroundOverlay,
+        flex: 1,
+        opacity: 0.95,
+    }
 });
 
 export {stylesheet, globals};

@@ -113,8 +113,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           source={require("../../resources/assets/drawable/background.png")}
           style={{flex: 1}}
         >
-          <View style={{backgroundColor: globals.backgroundOverlay, flex: 1}}>
-
+          <View style={stylesheet.backgroundOverlay}>
             <Header
               navigation={this.props.navigation}
             />
