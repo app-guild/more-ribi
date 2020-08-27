@@ -193,6 +193,52 @@ const stylesheet = StyleSheet.create({
         marginLeft: 38,
         marginTop: 3
     },
+    categoriesScreenContainer: {
+        paddingHorizontal: 26,
+        backgroundColor: "rgba(255,255,255,0.95)",
+        flex: 1,
+    },
+    categoriesScreenMargin: {
+        margin: 10
+    },
+    categoriesScreenHeaderContainer: {
+        paddingVertical: 24,
+    },
+    categoriesScreenHeader: {
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    categoriesScreenHeaderText: {
+        fontFamily: "Muli",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 16,
+        lineHeight: 20,
+        color: globals.primaryColor,
+    },
+    headerFishBackButton: {
+        position: "absolute",
+        left: 0,
+    },
+    categoriesScreenCard:{
+        borderRadius: 10,
+    },
+    categoriesScreenCardTitleContainer: {
+        position: "absolute",
+        width: "100%",
+        backgroundColor: "rgba(0,0,0,0.35)",
+        alignItems: "center",
+        paddingVertical: 6,
+        top: "60%",
+    },
+    categoriesScreenCardTitle: {
+        fontFamily: "Montserrat",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 14,
+        lineHeight: 17,
+        color: "#FFFFFF"
+    }
   }
 );
 

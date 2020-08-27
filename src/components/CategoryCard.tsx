@@ -37,7 +37,7 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
           style={{
             width: size,
             height: size,
-            borderRadius: 10,
+            borderRadius: stylesheet.categoriesScreenCard.borderRadius,
           }}
         />
         <View style={stylesheet.categoriesScreenCardTitleContainer}>

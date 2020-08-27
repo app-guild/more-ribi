@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Dimensions, FlatList, Image, ImageBackground, Text, View} from "react-native";
+import {Dimensions, FlatList, ImageBackground, Text, View} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg"
 import CategoryCard from "../components/CategoryCard";
@@ -35,6 +35,22 @@ class CategoriesScreen extends Component<
           id: 4,
           name: "Вок",
         },
+        {
+          id: 5,
+          name: "Роллы",
+        },
+        {
+          id: 6,
+          name: "Вок",
+        },
+        {
+          id: 7,
+          name: "Роллы",
+        },
+        {
+          id: 8,
+          name: "Вок",
+        },
       ]
     };
   }
@@ -42,8 +58,14 @@ class CategoriesScreen extends Component<
   render() {
     const renderItem = ({ item, index }) => (
       <CategoryCard
-        size={(this.state.mainContainerWidth -2*stylesheet.categoriesScreenContainer.paddingHorizontal - 10)/2}
+        size={(this.state.mainContainerWidth
+          -2*stylesheet.categoriesScreenContainer.paddingHorizontal
+          -stylesheet.categoriesScreenMargin.margin)/2}
         name={item.name}
+        style={{
+          marginLeft: index%2?stylesheet.categoriesScreenMargin.margin:0,
+          marginBottom: stylesheet.categoriesScreenMargin.margin,
+        }}
       />
     );
     return (
@@ -54,7 +76,7 @@ class CategoriesScreen extends Component<
         <View style={stylesheet.categoriesScreenContainer}>
           <View style={stylesheet.categoriesScreenHeaderContainer}>
             <View style={stylesheet.categoriesScreenHeader}>
-              <FishIcon width={47} height={17} style={stylesheet.headerFishBackButton}/>
+              <FishIcon width={47} height={17} style={stylesheet.headerFishBackButton} onTouchEnd={()=>this.props.navigation.goBack()}/>
               <Text style={stylesheet.categoriesScreenHeaderText}>Разделы</Text>
             </View>
           </View>
