@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Dimensions, View, ImageBackground} from "react-native";
-import {globals, stylesheet} from "../../resources/styles";
+import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
@@ -136,10 +136,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           style={{flex: 1}}
         >
           <View style={stylesheet.backgroundOverlay}>
-            <Header
-              navigation={this.props.navigation}
-            />
-
+            <Header navigation={this.props.navigation}/>
             <RecyclerListView
               layoutProvider={this.layoutProvider}
               dataProvider={this.state.dataProvider}

@@ -12,6 +12,7 @@ const globals = {
     crossedOutPriceColor: "#A5A5A5",
     shoppingCartColor: "#909090",
     backgroundOverlay: "#FFFFFF",
+    headerUnderlineColor: "#FFC11E"
 };
 
 const stylesheet = StyleSheet.create({
@@ -186,7 +187,7 @@ const stylesheet = StyleSheet.create({
         marginTop: 10,
     },
     headerCategoryUnderline: {
-        backgroundColor: "#FFC11E",
+        backgroundColor: globals.headerUnderlineColor,
         width: "auto",
         height: 2,
         marginLeft: 38,

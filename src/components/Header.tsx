@@ -30,7 +30,7 @@ class Header extends Component<any, Readonly<IHeaderState>> {
         <View style={{alignSelf: "flex-start"}}>
           <View
             style={stylesheet.headerCategoryButton}
-            onTouchEnd={()=>this.props.navigation.navigate(("Категории"))}
+            onTouchEnd={()=>this.props.navigation.navigate(("Categories"))}
           >
             <Text style={stylesheet.headerSubTitle}>{this.props.route?JSON.stringify(this.props.route.params.category):"Поке"}</Text>
             <FishIcon width={15} height={25}/>
