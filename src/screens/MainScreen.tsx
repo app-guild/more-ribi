@@ -100,7 +100,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           }}>
             <ProductCard
               width={this.state.productCardWidth}
-              text={data.name}
+              name={data.name}
               composition={data.composition}
               price={data.price}
               crossOutPrice={data.crossOutPrice}
@@ -116,7 +116,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           }}>
             <ProductCard
               width={this.state.productCardWidth}
-              text={data.name}
+              name={data.name}
               composition={data.composition}
               price={data.price}
               crossOutPrice={data.crossOutPrice}
