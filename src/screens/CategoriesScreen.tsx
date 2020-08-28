@@ -1,10 +1,9 @@
 import React, {Component} from "react";
-import {Dimensions, FlatList, ImageBackground, Text, View} from "react-native";
+import {Dimensions, ImageBackground, Text, View} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg"
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
-import ProductCard from "../components/ProductCard";
 
 
 export interface ICategoriesScreenState {
