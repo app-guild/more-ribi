@@ -12,6 +12,9 @@ export interface IMainScreenState {
   dataProvider: any,
 }
 
+const imageSidesRatio = 1.2;
+const productCardHeight = 111;
+
 class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
   constructor(props: any) {
@@ -76,14 +79,14 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
       switch (type) {
         case 0:
           dim.width = this.state.mainContainerWidth / 2 - 0.0001;
-          dim.height = 111
-            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/1.2
+          dim.height = productCardHeight
+            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
             + stylesheet.mainScreenProductCardContainer.paddingVertical
           break;
         case 1:
           dim.width = this.state.mainContainerWidth / 2;
-          dim.height = 111
-            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/1.2
+          dim.height = productCardHeight
+            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
             + stylesheet.mainScreenProductCardContainer.paddingVertical
           break;
       }
@@ -100,7 +103,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           }}>
             <ProductCard
               width={this.state.productCardWidth}
-              text={data.name}
+              name={data.name}
               composition={data.composition}
               price={data.price}
               crossOutPrice={data.crossOutPrice}
@@ -116,7 +119,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           }}>
             <ProductCard
               width={this.state.productCardWidth}
-              text={data.name}
+              name={data.name}
               composition={data.composition}
               price={data.price}
               crossOutPrice={data.crossOutPrice}

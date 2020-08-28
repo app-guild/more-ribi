@@ -6,7 +6,7 @@ import CardIcon from "../../resources/assets/drawable/cart_icon.svg"
 export interface IProductCardState {}
 export interface IProductCardProps {
   width: number,
-  text: string,
+  name: string,
   composition: string,
   price: number,
   crossOutPrice?: number,
@@ -23,7 +23,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
   render() {
     const {
       width,
-      text,
+      name,
       composition,
       price,
       crossOutPrice,
@@ -45,7 +45,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
             borderRadius: 20,
           }}
         />
-        <Text style={stylesheet.productCardName}>{text}</Text>
+        <Text style={stylesheet.productCardName}>{name}</Text>
         <Text style={stylesheet.productCardComposition}>{composition}</Text>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
           <View>
