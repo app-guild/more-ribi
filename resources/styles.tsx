@@ -194,15 +194,18 @@ const stylesheet = StyleSheet.create({
         marginTop: 3
     },
     categoriesScreenContainer: {
-        paddingHorizontal: 26,
         backgroundColor: "rgba(255,255,255,0.95)",
         flex: 1,
     },
-    categoriesScreenMargin: {
+    categoriesScreenColumnMargin: {
         margin: 10
+    },
+    categoriesScreenContainerPadding: {
+        padding: 26,
     },
     categoriesScreenHeaderContainer: {
         paddingVertical: 24,
+        paddingHorizontal: 26,
     },
     categoriesScreenHeader: {
         flexDirection: "row",
@@ -238,7 +241,7 @@ const stylesheet = StyleSheet.create({
         fontSize: 14,
         lineHeight: 17,
         color: "#FFFFFF"
-    }
+    },
   }
 );
 
