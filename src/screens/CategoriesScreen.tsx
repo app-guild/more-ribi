@@ -63,8 +63,7 @@ class CategoriesScreen extends Component<
           -stylesheet.categoriesScreenMargin.margin)/2}
         text={item.text}
         onTouchEnd={()=>this.props.navigation.navigate("Main",{
-          itemId: 86,
-          otherParam: 'anything you want here',
+          category: item.text,
         })}
         style={{
           marginLeft: index%2?stylesheet.categoriesScreenMargin.margin:0,

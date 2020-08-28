@@ -136,7 +136,10 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           style={{flex: 1}}
         >
           <View style={stylesheet.backgroundOverlay}>
-            <Header navigation={this.props.navigation}/>
+            <Header
+              navigation={this.props.navigation}
+              category={this.props.route.params==undefined?"Поке":this.props.route.params.category}
+            />
             <RecyclerListView
               layoutProvider={this.layoutProvider}
               dataProvider={this.state.dataProvider}

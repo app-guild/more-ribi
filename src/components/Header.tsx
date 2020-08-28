@@ -14,7 +14,6 @@ class Header extends Component<any, Readonly<IHeaderState>> {
   }
 
   render() {
-    console.log(this.props.route);
     return (
       <View style={stylesheet.headerContainer}>
         <View style={stylesheet.headerSubContainer}>
@@ -33,12 +32,11 @@ class Header extends Component<any, Readonly<IHeaderState>> {
             style={stylesheet.headerCategoryButton}
             onTouchEnd={()=>this.props.navigation.navigate(("Categories"))}
           >
-            <Text style={stylesheet.headerSubTitle}>{this.props.route?JSON.stringify(this.props.route.params.category):"Поке"}</Text>
+            <Text style={stylesheet.headerSubTitle}>{this.props.category}</Text>
             <FishIcon width={15} height={25}/>
           </View>
           <View style={stylesheet.headerCategoryUnderline}/>
         </View>
-
       </View>
 
     );
