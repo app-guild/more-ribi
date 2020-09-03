@@ -166,7 +166,7 @@ const stylesheet = StyleSheet.create({
         alignItems: "center",
     },
     mainScreenProductCardContainer:{
-        paddingVertical: 20,
+        paddingVertical: 15,
         paddingHorizontal: 27,
     },
     mainScreenContainer: {
@@ -242,6 +242,22 @@ const stylesheet = StyleSheet.create({
         lineHeight: 17,
         color: "#FFFFFF"
     },
+    mainScreenCategory: {
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 10,
+        backgroundColor: globals.cardBackgroundColor,
+    },
+    mainScreenCategoryText: {
+        fontFamily: "Montserrat",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 14,
+        lineHeight: 17,
+    },
+    mainScreenCategoryHeight: {
+        height: 30,
+    }
   }
 );
 

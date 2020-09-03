@@ -4,7 +4,8 @@ import {stylesheet} from "../../resources/styles";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg"
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
-
+import {translateCategoryName} from "./MainScreen";
+import {ProductType} from "../entities/ProductType";
 
 export interface ICategoriesScreenState {
   mainContainerWidth: number,
@@ -24,36 +25,28 @@ class CategoriesScreen extends Component<
       }).cloneWithRows(
         [
           {
-            id: 0,
-            text: "Поке от шефа",
+            text: translateCategoryName(ProductType.Rolls),
+            value: ProductType.Rolls
           },
           {
-            id: 1,
-            text: "Супы",
+            text: translateCategoryName(ProductType.Poke),
+            value: ProductType.Poke
           },
           {
-            id: 2,
-            text: "Роллы",
+            text: translateCategoryName(ProductType.Wok),
+            value: ProductType.Wok
           },
           {
-            id: 4,
-            text: "Вок",
+            text: translateCategoryName(ProductType.Beverages),
+            value: ProductType.Beverages
           },
           {
-            id: 5,
-            text: "Роллы",
+            text: translateCategoryName(ProductType.Deserts),
+            value: ProductType.Deserts
           },
           {
-            id: 6,
-            text: "Вок",
-          },
-          {
-            id: 7,
-            text: "Роллы",
-          },
-          {
-            id: 8,
-            text: "Вок",
+            text: translateCategoryName(ProductType.Soups),
+            value: ProductType.Soups
           },
         ]),
     };
@@ -95,7 +88,7 @@ class CategoriesScreen extends Component<
                 -stylesheet.categoriesScreenColumnMargin.margin)/2}
               text={data.text}
               onTouchEnd={()=>this.props.navigation.navigate("Main",{
-                category: data.text,
+                category: data.value,
               })}
             />
           </View>
@@ -113,7 +106,7 @@ class CategoriesScreen extends Component<
                 -stylesheet.categoriesScreenColumnMargin.margin)/2}
               text={data.text}
               onTouchEnd={()=>this.props.navigation.navigate("Main",{
-                category: data.text,
+                category: data.value,
               })}
             />
           </View>
