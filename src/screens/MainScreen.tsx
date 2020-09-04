@@ -138,7 +138,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
     this._rowRenderer = this._rowRenderer.bind(this);
     this.cardsPosition = this.getCardsPosition(this.state.dataProvider._data);
-    //this.state.currentCategory = translateCategoryName(this.state.dataProvider._data[0].category);
+    this.state.currentCategory = translateCategoryName(this.state.dataProvider._data[0].category);
   }
 
 
