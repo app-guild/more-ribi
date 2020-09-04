@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import {Dimensions, View, ImageBackground, Text} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
@@ -11,13 +11,14 @@ export interface IMainScreenState {
   mainContainerWidth: number,
   productCardWidth: number,
   dataProvider: any,
-  scrollOffset: any,
 }
 
 const imageSidesRatio = 1.2;
 const productCardHeight = 111;
 
 class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
+
+  list = createRef<RecyclerListView<any, any>>();
 
   constructor(props: any) {
     super(props);
@@ -76,17 +77,32 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
             category: ProductType.Rolls
           },
           {
-            name: "Вок 5",
+            name: "Дрисня",
+            composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
+            price: 999999,
+            category: ProductType.Soups
+          },
+          {
+            name: "Русиано",
             composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
             price: 290,
-            category: ProductType.Wok
+            category: ProductType.Beverages
+          },
+          {
+            name: "еда",
+            composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
+            price: 290,
+            category: ProductType.Deserts
+          },
+          {
+            name: "хрень",
+            composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
+            price: 290,
+            category: ProductType.Deserts
           },
         ].sort((a, b) => {
           return a.category<b.category?-1:a.category>b.category?1:0
         }))),
-      scrollOffset: this.state?.dataProvider!=undefined?this.getPositionOfCategory(this.props.route.params==undefined?
-        ProductType.Poke
-        : this.props.route.params.category, this.state.dataProvider._data):0,
     };
 
     this._rowRenderer = this._rowRenderer.bind(this);
@@ -95,12 +111,17 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
   private cardsPosition: any[];
 
-  componentDidMount() {
-    this.setState({scrollOffset:
-        this.getPositionOfCategory(this.props.route.params==undefined?
-          ProductType.Rolls
-          : this.props.route.params.category, this.state.dataProvider._data)
-    })
+  componentDidUpdate(prevProps: Readonly<Readonly<any>>, prevState: Readonly<Readonly<IMainScreenState>>, snapshot?: any) {
+    this.list.current?.scrollToIndex(
+      this.state.dataProvider._data.findIndex((element: any) => {
+        if (element.name == undefined && element.category == this?.props?.route?.params?.category)
+          return true;
+        return false
+      }),
+      true
+    );
+    // if(this?.props?.route?.params?.category)
+    //   this.list.current?.scrollToOffset(0,this.list.current?.getCurrentScrollOffset()+1,true)
   }
 
   private layoutProvider = new LayoutProvider(
@@ -203,32 +224,6 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     return array;
   }
 
-  getPositionOfCategory(category, data){
-    let index = data.findIndex((element) => {
-      if (element.name == undefined && element.category == category)
-        return true;
-      return false
-    })
-
-    let position = 0;
-
-    for (let i=0; i<index; i++){
-      if (data[i].name == undefined){
-        position += stylesheet.mainScreenCategory.marginTop
-          + stylesheet.mainScreenCategoryHeight.height;
-      }
-      else {
-        position += productCardHeight
-          + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
-          + stylesheet.mainScreenProductCardContainer.paddingVertical;
-        if (data[i+1].name != undefined)
-          i++;
-      }
-    }
-
-    return position-1;
-  }
-
   render() {
     return (
         <ImageBackground
@@ -239,23 +234,22 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
             <Header
               navigation={this.props.navigation}
               category={this.props.route.params==undefined?
-                translateCategoryName(ProductType.Rolls)
+                translateCategoryName(this.state.dataProvider._data[0].category)
                 : translateCategoryName(this.props.route.params.category)}
             />
             <RecyclerListView
               layoutProvider={this.layoutProvider}
               dataProvider={this.state.dataProvider}
               rowRenderer={this._rowRenderer}
-              initialOffset={this.state.scrollOffset}
+              ref={this.list}
             />
-
         </View>
         </ImageBackground>
     );
   }
 }
 
-export function translateCategoryName(category){
+export function translateCategoryName(category: any){
   switch (category) {
     case ProductType.Wok:
       return "Вок"
