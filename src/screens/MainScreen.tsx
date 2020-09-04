@@ -1,5 +1,5 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, View, ImageBackground, Text} from "react-native";
+import {Dimensions, View, ImageBackground, Text, ScrollView} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
@@ -11,14 +11,57 @@ export interface IMainScreenState {
   mainContainerWidth: number,
   productCardWidth: number,
   dataProvider: any,
+  currentCategory: string,
 }
 
 const imageSidesRatio = 1.2;
 const productCardHeight = 111;
+const ScrollViewWithHeader = React.forwardRef(({ children, ...props }, ref) => {
+  return (
+    <>
+      {/*<View style={{width:100,height:100,backgroundColor: "red", position: "absolute"}} />*/}
+      <ScrollView
+        {...props}
+        ref={ref}
+      >
+        {children}
+
+      </ScrollView>
+    </>
+  );
+});
 
 class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
-  list = createRef<RecyclerListView<any, any>>();
+  private cardsPosition: any[];
+  private list = createRef<RecyclerListView<any, any>>();
+  private layoutProvider = new LayoutProvider(
+    index => {
+      return this.cardsPosition[index];
+    },
+    (type, dim) => {
+      switch (type) {
+        case -1:
+          dim.width = this.state.mainContainerWidth;
+          dim.height = stylesheet.mainScreenCategoryHeight.height;
+          break;
+        case 0:
+          dim.width = this.state.mainContainerWidth / 2 - 0.0001;
+          dim.height = productCardHeight
+            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
+            + stylesheet.mainScreenProductCardContainer.paddingVertical
+          break;
+        case 1:
+          dim.width = this.state.mainContainerWidth / 2;
+          dim.height = productCardHeight
+            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
+            + stylesheet.mainScreenProductCardContainer.paddingVertical
+          break;
+      }
+    }
+  );
+  private categoriesBorders: any[] = [];
+  private prevCategoryIndex: number = 0;
 
   constructor(props: any) {
     super(props);
@@ -103,52 +146,36 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         ].sort((a, b) => {
           return a.category<b.category?-1:a.category>b.category?1:0
         }))),
+      currentCategory: ""
     };
 
     this._rowRenderer = this._rowRenderer.bind(this);
     this.cardsPosition = this.getCardsPosition(this.state.dataProvider._data);
+    this.state.currentCategory = translateCategoryName(this.state.dataProvider._data[0].category);
   }
 
-  private cardsPosition: any[];
 
   componentDidUpdate(prevProps: Readonly<Readonly<any>>, prevState: Readonly<Readonly<IMainScreenState>>, snapshot?: any) {
-    this.list.current?.scrollToIndex(
-      this.state.dataProvider._data.findIndex((element: any) => {
-        if (element.name == undefined && element.category == this?.props?.route?.params?.category)
-          return true;
-        return false
-      }),
-      true
-    );
+    //console.log(prevProps.route.params?.category)
+    //console.log(this.props.route.params?.category)
+    if (this.props.route.params?.category != prevProps.route.params?.category){
+      this.setState({currentCategory: translateCategoryName(this.props.route.params.category)});
+      this.list.current?.scrollToIndex(
+        this.state.dataProvider._data.findIndex((element: any) => {
+          return element.name == undefined && element.category == this?.props?.route?.params?.category;
+        }),
+        true
+      );
+    }
+    //if(prevProps.route.params != this.props.route.params)
+    //console.log(prevState)
+
+
+    //this.categoriesBorders.push(this.list.current?.getRenderedSize());
+
     // if(this?.props?.route?.params?.category)
     //   this.list.current?.scrollToOffset(0,this.list.current?.getCurrentScrollOffset()+1,true)
   }
-
-  private layoutProvider = new LayoutProvider(
-    index => {
-      return this.cardsPosition[index];
-    },
-    (type, dim) => {
-      switch (type) {
-        case -1:
-          dim.width = this.state.mainContainerWidth;
-          dim.height = stylesheet.mainScreenCategoryHeight.height;
-          break;
-        case 0:
-          dim.width = this.state.mainContainerWidth / 2 - 0.0001;
-          dim.height = productCardHeight
-            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
-            + stylesheet.mainScreenProductCardContainer.paddingVertical
-          break;
-        case 1:
-          dim.width = this.state.mainContainerWidth / 2;
-          dim.height = productCardHeight
-            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
-            + stylesheet.mainScreenProductCardContainer.paddingVertical
-          break;
-      }
-    }
-  )
 
   _rowRenderer(type: any, data: any) {
     switch (type) {
@@ -224,6 +251,27 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     return array;
   }
 
+  onRecyclerListViewScroll(e){
+    //console.log(e.nativeEvent.contentOffset.y)
+    if (this.categoriesBorders.length){
+      if (e.nativeEvent.contentOffset.y>this.categoriesBorders[this.prevCategoryIndex+1].offset)
+        this.setState({currentCategory: translateCategoryName(this.categoriesBorders[(this.prevCategoryIndex++)+1].category)});
+      if (e.nativeEvent.contentOffset.y>0 && e.nativeEvent.contentOffset.y<this.categoriesBorders[this.prevCategoryIndex].offset)
+        this.setState({currentCategory: translateCategoryName(this.categoriesBorders[(this.prevCategoryIndex--)-1].category)});
+    }
+    else {
+      for (let i = 0; i < this.state.dataProvider._data.length; i++){
+        if(this.state.dataProvider._data[i].name==undefined)
+          this.categoriesBorders.push({
+            category: this.state.dataProvider._data[i].category,
+            offset: this.list.current?.getLayout(i)?.y - 1
+          })
+      }
+      //console.log(this.categoriesBorders)
+    }
+    //console.log(this.categoriesBorders[this.prevCategoryIndex+1])
+  }
+
   render() {
     return (
         <ImageBackground
@@ -233,15 +281,14 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           <View style={stylesheet.backgroundOverlay}>
             <Header
               navigation={this.props.navigation}
-              category={this.props.route.params==undefined?
-                translateCategoryName(this.state.dataProvider._data[0].category)
-                : translateCategoryName(this.props.route.params.category)}
+              category={this.state.currentCategory}
             />
             <RecyclerListView
               layoutProvider={this.layoutProvider}
               dataProvider={this.state.dataProvider}
               rowRenderer={this._rowRenderer}
               ref={this.list}
+              onScroll={e=>this.onRecyclerListViewScroll(e)}
             />
         </View>
         </ImageBackground>
