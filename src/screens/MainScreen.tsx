@@ -1,5 +1,5 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, View, ImageBackground, Text, ScrollView} from "react-native";
+import {Dimensions, View, ImageBackground, Text} from "react-native";
 import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
@@ -16,20 +16,7 @@ export interface IMainScreenState {
 
 const imageSidesRatio = 1.2;
 const productCardHeight = 111;
-const ScrollViewWithHeader = React.forwardRef(({ children, ...props }, ref) => {
-  return (
-    <>
-      {/*<View style={{width:100,height:100,backgroundColor: "red", position: "absolute"}} />*/}
-      <ScrollView
-        {...props}
-        ref={ref}
-      >
-        {children}
 
-      </ScrollView>
-    </>
-  );
-});
 
 class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
@@ -151,13 +138,12 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
     this._rowRenderer = this._rowRenderer.bind(this);
     this.cardsPosition = this.getCardsPosition(this.state.dataProvider._data);
-    this.state.currentCategory = translateCategoryName(this.state.dataProvider._data[0].category);
+    //this.state.currentCategory = translateCategoryName(this.state.dataProvider._data[0].category);
   }
 
 
   componentDidUpdate(prevProps: Readonly<Readonly<any>>, prevState: Readonly<Readonly<IMainScreenState>>, snapshot?: any) {
-    //console.log(prevProps.route.params?.category)
-    //console.log(this.props.route.params?.category)
+
     if (this.props.route.params?.category != prevProps.route.params?.category){
       this.setState({currentCategory: translateCategoryName(this.props.route.params.category)});
       this.list.current?.scrollToIndex(
@@ -167,14 +153,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         true
       );
     }
-    //if(prevProps.route.params != this.props.route.params)
-    //console.log(prevState)
 
-
-    //this.categoriesBorders.push(this.list.current?.getRenderedSize());
-
-    // if(this?.props?.route?.params?.category)
-    //   this.list.current?.scrollToOffset(0,this.list.current?.getCurrentScrollOffset()+1,true)
   }
 
   _rowRenderer(type: any, data: any) {
@@ -251,8 +230,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     return array;
   }
 
-  onRecyclerListViewScroll(e){
-    //console.log(e.nativeEvent.contentOffset.y)
+  onRecyclerListViewScroll(e: any){
     if (this.categoriesBorders.length){
       if (e.nativeEvent.contentOffset.y>this.categoriesBorders[this.prevCategoryIndex+1].offset)
         this.setState({currentCategory: translateCategoryName(this.categoriesBorders[(this.prevCategoryIndex++)+1].category)});
@@ -264,12 +242,10 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         if(this.state.dataProvider._data[i].name==undefined)
           this.categoriesBorders.push({
             category: this.state.dataProvider._data[i].category,
-            offset: this.list.current?.getLayout(i)?.y - 1
+            offset: this.list.current?.getLayout(i)?.y==undefined? -1: this.list.current?.getLayout(i)?.y -1
           })
       }
-      //console.log(this.categoriesBorders)
     }
-    //console.log(this.categoriesBorders[this.prevCategoryIndex+1])
   }
 
   render() {
@@ -288,7 +264,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
               dataProvider={this.state.dataProvider}
               rowRenderer={this._rowRenderer}
               ref={this.list}
-              onScroll={e=>this.onRecyclerListViewScroll(e)}
+              onScroll={(e: any)=>this.onRecyclerListViewScroll(e)}
             />
         </View>
         </ImageBackground>
