@@ -5,12 +5,13 @@ import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
+import ModifiedRecyclerListView from "../components/ModifiedRecyclerListView";
 
 
 export interface IMainScreenState {
   mainContainerWidth: number,
   productCardWidth: number,
-  dataProvider: any,
+  dataProvider: DataProvider,
   currentCategory: string,
 }
 
@@ -33,13 +34,8 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           dim.height = stylesheet.mainScreenCategoryHeight.height;
           break;
         case 0:
-          dim.width = this.state.mainContainerWidth / 2 - 0.0001;
-          dim.height = productCardHeight
-            + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
-            + stylesheet.mainScreenProductCardContainer.paddingVertical
-          break;
         case 1:
-          dim.width = this.state.mainContainerWidth / 2;
+          dim.width = this.state.mainContainerWidth / 2 - 0.0001;
           dim.height = productCardHeight
             + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
             + stylesheet.mainScreenProductCardContainer.paddingVertical
@@ -137,8 +133,8 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     };
 
     this._rowRenderer = this._rowRenderer.bind(this);
-    this.cardsPosition = this.getCardsTypes(this.state.dataProvider._data);
-    this.state.currentCategory = translateCategoryName(this.state.dataProvider._data[0].category);
+    this.cardsPosition = this.getCardsTypes(this.state.dataProvider.getAllData());
+    this.state.currentCategory = translateCategoryName(this.state.dataProvider.getDataForIndex(0).category);
   }
 
 
@@ -147,7 +143,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     if (this.props.route.params?.category != prevProps.route.params?.category){
       this.setState({currentCategory: translateCategoryName(this.props.route.params.category)});
       this.list.current?.scrollToIndex(
-        this.state.dataProvider._data.findIndex((element: any) => {
+        this.state.dataProvider.getAllData().findIndex((element: any) => {
           return element.name == undefined && element.category == this?.props?.route?.params?.category;
         }),
         true
@@ -238,10 +234,10 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         this.setState({currentCategory: translateCategoryName(this.categoriesBorders[(this.prevCategoryIndex--)-1].category)});
     }
     else {
-      for (let i = 0; i < this.state.dataProvider._data.length; i++){
-        if(this.state.dataProvider._data[i].name==undefined)
+      for (let i = 0; i < this.state.dataProvider.getAllData().length; i++){
+        if(this.state.dataProvider.getDataForIndex(i).name==undefined)
           this.categoriesBorders.push({
-            category: this.state.dataProvider._data[i].category,
+            category: this.state.dataProvider.getDataForIndex(i).category,
             offset: this.list.current?.getLayout(i)?.y==undefined? -1: this.list.current?.getLayout(i)?.y -1
           })
       }
@@ -259,11 +255,11 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
               navigation={this.props.navigation}
               category={this.state.currentCategory}
             />
-            <RecyclerListView
+            <ModifiedRecyclerListView
               layoutProvider={this.layoutProvider}
               dataProvider={this.state.dataProvider}
               rowRenderer={this._rowRenderer}
-              ref={this.list}
+              ref_={this.list}
               onScroll={(e: any)=>this.onRecyclerListViewScroll(e)}
             />
         </View>

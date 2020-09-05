@@ -6,6 +6,7 @@ import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {translateCategoryName} from "./MainScreen";
 import {ProductType} from "../entities/ProductType";
+import ModifiedRecyclerListView from "../components/ModifiedRecyclerListView";
 
 export interface ICategoriesScreenState {
   mainContainerWidth: number,
@@ -124,7 +125,7 @@ class CategoriesScreen extends Component<
             </View>
           </View>
 
-          <RecyclerListView
+          <ModifiedRecyclerListView
             layoutProvider={this.layoutProvider}
             dataProvider={this.state.dataProvider}
             rowRenderer={this._rowRenderer}
