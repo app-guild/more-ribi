@@ -1,30 +1,47 @@
 import React, {Component} from "react";
-import {RecyclerListView, RecyclerListViewProps} from "recyclerlistview";
+import {DataProvider, LayoutProvider, RecyclerListView, RecyclerListViewProps} from "recyclerlistview";
+import {ProductType} from "../entities/ProductType";
 
 
 class ModifiedRecyclerListView extends Component<Readonly<RecyclerListViewProps>, Readonly<any>> {
+
+  private layoutProvider: LayoutProvider;
+
   constructor(props: any) {
     super(props);
     this.state = {
-      dataProvider: props.dataProvider,
+      dataProvider: new DataProvider((r1, r2) => {
+        return r1.id !== r2.id;
+      }).cloneWithRows(props.data),
     };
+    this.layoutProvider = new LayoutProvider(
+      this.props.getLayoutTypeForIndex,
+      (type, dim) => {
+        const element = this.props.layoutForTypeDimensions.find((el)=>{
+          return el.type == type
+        })
+        dim.height = element.height;
+        dim.width = element.width;
+      }
+    );
   }
 
   render() {
     const {
-      layoutProvider,
       rowRenderer,
       ref_,
-      //onScroll,
+      layoutForTypeDimensions,
+      getLayoutTypeForIndex,
+      data,
       ...otherProps
-    } = this.props
+    } = this.props;
+
     return (
       <RecyclerListView
-        layoutProvider={layoutProvider}
+        layoutProvider={this.layoutProvider}
         dataProvider={this.state.dataProvider}
         rowRenderer={rowRenderer}
         ref={ref_}
-        //onScroll={onScroll}
         {...otherProps}
       />
     );

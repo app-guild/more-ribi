@@ -10,7 +10,7 @@ import ModifiedRecyclerListView from "../components/ModifiedRecyclerListView";
 
 export interface ICategoriesScreenState {
   mainContainerWidth: number,
-  dataProvider: DataProvider,
+  productTypesData: any[],
 }
 
 class CategoriesScreen extends Component<
@@ -21,35 +21,32 @@ class CategoriesScreen extends Component<
     super(props);
     this.state = {
       mainContainerWidth: Dimensions.get("window").width,
-      dataProvider: new DataProvider((r1, r2) => {
-        return r1.id !== r2.id;
-      }).cloneWithRows(
-        [
-          {
-            text: translateCategoryName(ProductType.Rolls),
-            value: ProductType.Rolls
-          },
-          {
-            text: translateCategoryName(ProductType.Poke),
-            value: ProductType.Poke
-          },
-          {
-            text: translateCategoryName(ProductType.Wok),
-            value: ProductType.Wok
-          },
-          {
-            text: translateCategoryName(ProductType.Beverages),
-            value: ProductType.Beverages
-          },
-          {
-            text: translateCategoryName(ProductType.Deserts),
-            value: ProductType.Deserts
-          },
-          {
-            text: translateCategoryName(ProductType.Soups),
-            value: ProductType.Soups
-          },
-        ]),
+      productTypesData: [
+        {
+          text: translateCategoryName(ProductType.Rolls),
+          value: ProductType.Rolls
+        },
+        {
+          text: translateCategoryName(ProductType.Poke),
+          value: ProductType.Poke
+        },
+        {
+          text: translateCategoryName(ProductType.Wok),
+          value: ProductType.Wok
+        },
+        {
+          text: translateCategoryName(ProductType.Beverages),
+          value: ProductType.Beverages
+        },
+        {
+          text: translateCategoryName(ProductType.Deserts),
+          value: ProductType.Deserts
+        },
+        {
+          text: translateCategoryName(ProductType.Soups),
+          value: ProductType.Soups
+        },
+      ],
     };
     this._rowRenderer = this._rowRenderer.bind(this);
   }
@@ -127,7 +124,7 @@ class CategoriesScreen extends Component<
 
           <ModifiedRecyclerListView
             layoutProvider={this.layoutProvider}
-            dataProvider={this.state.dataProvider}
+            data = {this.state.productTypesData}
             rowRenderer={this._rowRenderer}
           />
         </View>
