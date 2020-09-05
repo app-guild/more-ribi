@@ -6,11 +6,11 @@ import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {translateCategoryName} from "./MainScreen";
 import {ProductType} from "../entities/ProductType";
-import ModifiedRecyclerListView from "../components/ModifiedRecyclerListView";
+
 
 export interface ICategoriesScreenState {
   mainContainerWidth: number,
-  productTypesData: any[],
+  dataProvider: DataProvider,
 }
 
 class CategoriesScreen extends Component<
@@ -21,7 +21,9 @@ class CategoriesScreen extends Component<
     super(props);
     this.state = {
       mainContainerWidth: Dimensions.get("window").width,
-      productTypesData: [
+      dataProvider: new DataProvider((r1, r2) => {
+        return r1.value !== r2.value;
+      }).cloneWithRows([
         {
           text: translateCategoryName(ProductType.Rolls),
           value: ProductType.Rolls
@@ -46,7 +48,7 @@ class CategoriesScreen extends Component<
           text: translateCategoryName(ProductType.Soups),
           value: ProductType.Soups
         },
-      ],
+      ]),
     };
     this._rowRenderer = this._rowRenderer.bind(this);
   }
@@ -122,9 +124,9 @@ class CategoriesScreen extends Component<
             </View>
           </View>
 
-          <ModifiedRecyclerListView
+          <RecyclerListView
             layoutProvider={this.layoutProvider}
-            data = {this.state.productTypesData}
+            dataProvider={this.state.dataProvider}
             rowRenderer={this._rowRenderer}
           />
         </View>
