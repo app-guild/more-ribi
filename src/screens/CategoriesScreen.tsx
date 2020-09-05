@@ -9,7 +9,7 @@ import {ProductType} from "../entities/ProductType";
 
 export interface ICategoriesScreenState {
   mainContainerWidth: number,
-  dataProvider: any,
+  dataProvider: DataProvider,
 }
 
 class CategoriesScreen extends Component<
@@ -58,14 +58,8 @@ class CategoriesScreen extends Component<
     (type, dim) => {
       switch (type) {
         case 0:
-          dim.width = this.state.mainContainerWidth / 2 - 0.0001;
-          dim.height = (this.state.mainContainerWidth
-            -2*stylesheet.categoriesScreenContainerPadding.padding
-            -stylesheet.categoriesScreenColumnMargin.margin)/2
-            +stylesheet.categoriesScreenColumnMargin.margin;
-          break;
         case 1:
-          dim.width = this.state.mainContainerWidth / 2;
+          dim.width = this.state.mainContainerWidth / 2 - 0.0001;
           dim.height = (this.state.mainContainerWidth
             -2*stylesheet.categoriesScreenContainerPadding.padding
             -stylesheet.categoriesScreenColumnMargin.margin)/2

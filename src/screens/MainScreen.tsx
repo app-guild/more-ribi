@@ -137,7 +137,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     };
 
     this._rowRenderer = this._rowRenderer.bind(this);
-    this.cardsPosition = this.getCardsPosition(this.state.dataProvider._data);
+    this.cardsPosition = this.getCardsTypes(this.state.dataProvider._data);
     this.state.currentCategory = translateCategoryName(this.state.dataProvider._data[0].category);
   }
 
@@ -204,7 +204,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     }
   }
 
-  getCardsPosition(data: any){
+  getCardsTypes(data: any){
     let array = []
     for (let i=0, count=0; i<data.length; i++){
       if(data[i].name == undefined) {

@@ -12,7 +12,8 @@ const globals = {
     crossedOutPriceColor: "#A5A5A5",
     shoppingCartColor: "#909090",
     backgroundOverlay: "#FFFFFF",
-    headerUnderlineColor: "#FFC11E"
+    headerUnderlineColor: "#FFC11E",
+    categoriesScreenCardTitleContainerBGColor: "rgba(0,0,0,0.35)",
 };
 
 const stylesheet = StyleSheet.create({
@@ -229,7 +230,7 @@ const stylesheet = StyleSheet.create({
     categoriesScreenCardTitleContainer: {
         position: "absolute",
         width: "100%",
-        backgroundColor: "rgba(0,0,0,0.35)",
+        backgroundColor: globals.categoriesScreenCardTitleContainerBGColor,
         alignItems: "center",
         paddingVertical: 6,
         top: "60%",
@@ -240,7 +241,7 @@ const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: "#FFFFFF"
+        color: globals.cardBackgroundColor,
     },
     mainScreenCategory: {
         justifyContent: "center",
