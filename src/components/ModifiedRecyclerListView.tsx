@@ -4,7 +4,8 @@ import {DataProvider, LayoutProvider, RecyclerListView, RecyclerListViewProps} f
 
 interface IModifiedRecyclerListViewProps extends RecyclerListViewProps {
   ref_: any
-  rowRenderer: any;
+  //sets size of elements,
+  //array size determines number of columns
   layoutSize: {width: number, height: number}[]
   data: any[];
 }
@@ -19,14 +20,7 @@ class ModifiedRecyclerListView extends Component<
   > {
 
   private layoutProvider: LayoutProvider;
-  private data: {
-    type: string,
-    //category?: ProductType,
-    name: string,
-    composition?: string,
-    price?: number,
-    crossOutPrice?: number
-  }[];
+  private data: any[];
   private categoriesBorders: {category: string, offset: number}[];
   private prevCategoryIndex: number = 0;
 
@@ -40,19 +34,17 @@ class ModifiedRecyclerListView extends Component<
       }).cloneWithRows(this.data),
     };
 
-    this.layoutProvider = new LayoutProvider(
+    this.layoutProvider = props.layoutProvider? undefined
+      :new LayoutProvider(
       (index) => { return this.data[index].type },
       (type, dim) => {
-        switch (type) {
-          case "category":
-            dim.width = props.layoutSize[0].width;
-            dim.height = props.layoutSize[0].height;
-            break;
-          case "left":
-          case "right":
-            dim.width = props.layoutSize[1].width;
-            dim.height = props.layoutSize[1].height;
-            break;
+        if (type == "category"){
+          dim.width = props.layoutSize[0].width;
+          dim.height = props.layoutSize[0].height;
+        }
+        else{
+          dim.width = props.layoutSize[type + 1].width;
+          dim.height = props.layoutSize[type + 1].height;
         }
       }
     );
@@ -65,7 +57,7 @@ class ModifiedRecyclerListView extends Component<
     data.forEach((value)=>{
       transformedData.push({type: "category", name: value.category});
       value.products.forEach((value, index)=>{
-        transformedData.push({type: index%2 ? "right" : "left", ...value});
+        transformedData.push({type: index%(this.props.layoutSize.length-1), ...value});
       })
     })
     return transformedData;
@@ -97,12 +89,13 @@ class ModifiedRecyclerListView extends Component<
     const {
       rowRenderer,
       ref_,
+      layoutProvider,
       ...otherProps
     } = this.props;
 
     return (
       <RecyclerListView
-        layoutProvider={this.layoutProvider}
+        layoutProvider={!!layoutProvider?layoutProvider:this.layoutProvider}
         dataProvider={this.state.dataProvider}
         rowRenderer={rowRenderer}
         ref={ref_}

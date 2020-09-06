@@ -153,6 +153,12 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
           + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
           + stylesheet.mainScreenProductCardContainer.paddingVertical
       },
+      {
+        width: this.state.mainContainerWidth / 2 - 0.0001,
+        height: productCardHeight
+          + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
+          + stylesheet.mainScreenProductCardContainer.paddingVertical
+      },
     ]
     this.state.currentCategory = translateCategoryName(this.state.productsData[0].category);
   }
@@ -191,7 +197,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
             <Text style={stylesheet.mainScreenCategoryText}>{translateCategoryName(data.name)}</Text>
           </View>
         )
-      case "left":
+      case 0:
         return (
           <View style={{
             marginTop: stylesheet.mainScreenProductCardContainer.paddingVertical,
@@ -206,7 +212,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
             />
           </View>
         );
-      case "right":
+      case 1:
         return (
           <View style={{
             marginTop: stylesheet.mainScreenProductCardContainer.paddingVertical,
