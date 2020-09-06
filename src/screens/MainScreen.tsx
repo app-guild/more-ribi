@@ -4,7 +4,7 @@ import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import {RecyclerListView} from "recyclerlistview";
-import {ProductType} from "../entities/ProductType";
+import {ProductType, translateCategoryName} from "../entities/ProductType";
 import ModifiedRecyclerListView from "../components/ModifiedRecyclerListView";
 
 
@@ -253,25 +253,6 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         </View>
         </ImageBackground>
     );
-  }
-}
-
-export function translateCategoryName(category: any){
-  switch (category) {
-    case ProductType.Wok:
-      return "Вок"
-    case ProductType.Deserts:
-      return "Десерты"
-    case ProductType.Beverages:
-      return "Напитки"
-    case ProductType.Poke:
-      return "Поке"
-    case ProductType.Rolls:
-      return "Роллы"
-    case ProductType.Soups:
-      return "Супы"
-    default:
-      return "Поке"
   }
 }
 
