@@ -19,7 +19,7 @@ class ModifiedRecyclerListView extends Component<
   Readonly<IModifiedRecyclerListViewState>
   > {
 
-  private layoutProvider: LayoutProvider;
+  private layoutProvider: LayoutProvider | undefined;
   private data: any[];
   private categoriesBorders: {category: string, offset: number}[];
   private prevCategoryIndex: number = 0;
@@ -42,7 +42,7 @@ class ModifiedRecyclerListView extends Component<
           dim.width = props.layoutSize[0].width;
           dim.height = props.layoutSize[0].height;
         }
-        else{
+        else {
           dim.width = props.layoutSize[type + 1].width;
           dim.height = props.layoutSize[type + 1].height;
         }
