@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import {Image, Text, View} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {Image, StyleSheet, Text, View} from "react-native";
+import {globals} from "../../resources/styles";
 
 
 export interface ICategoryCardState {}
@@ -30,7 +30,7 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
       <View
         style={{
           width: size,
-          ...stylesheet.categoriesScreenCard,
+          ...stylesheet.card,
           ...style,
         }}
         onTouchEnd={onTouchEnd}
@@ -40,15 +40,37 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
           style={{
             width: size,
             height: size,
-            borderRadius: stylesheet.categoriesScreenCard.borderRadius,
+            borderRadius: stylesheet.card.borderRadius,
           }}
         />
-        <View style={stylesheet.categoriesScreenCardTitleContainer}>
-          <Text style={stylesheet.categoriesScreenCardTitle}>{text}</Text>
+        <View style={stylesheet.cardTitleContainer}>
+          <Text style={stylesheet.cardTitle}>{text}</Text>
         </View>
       </View>
     );
   }
 }
+
+export const stylesheet = StyleSheet.create({
+  card: {
+    borderRadius: 10,
+  },
+  cardTitleContainer: {
+    position: "absolute",
+    width: "100%",
+    backgroundColor: globals.categoriesScreenCardTitleContainerBGColor,
+    alignItems: "center",
+    paddingVertical: 6,
+    top: "60%",
+  },
+  cardTitle: {
+    fontFamily: "Montserrat",
+    fontStyle: "normal",
+    fontWeight: "bold",
+    fontSize: 14,
+    lineHeight: 17,
+    color: globals.cardBackgroundColor,
+  },
+})
 
 export default CategoryCard;

@@ -1,11 +1,12 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, View, ImageBackground, Text} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {Dimensions, View, ImageBackground, Text, StyleSheet} from "react-native";
+// import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
-import ProductCard from "../components/ProductCard";
+import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
 import {RecyclerListView} from "recyclerlistview";
 import {ProductType, translateCategoryName} from "../entities/ProductType";
 import ModifiedRecyclerListView from "../components/ModifiedRecyclerListView";
+import {globals} from "../../resources/styles";
 
 
 export interface IMainScreenState {
@@ -40,8 +41,8 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
       mainContainerWidth: Dimensions.get("window").width,
       productCardWidth: (
         Dimensions.get("window").width
-        -2*stylesheet.mainScreenPaddings.paddingHorizontal
-        -stylesheet.mainScreenPaddings.paddingVertical)/2,
+        -2*stylesheet.paddings.paddingHorizontal
+        -stylesheet.paddings.paddingVertical)/2,
       productsData: [
         {
           category: ProductType.Wok,
@@ -145,19 +146,19 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     this.layoutSize = [
       {
         width: this.state.mainContainerWidth,
-        height: stylesheet.mainScreenCategoryHeight.height
+        height: stylesheet.categoryHeight.height
       },
       {
         width: this.state.mainContainerWidth / 2 - 0.0001,
         height: productCardHeight
-          + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
-          + stylesheet.mainScreenProductCardContainer.paddingVertical
+          + (this.state.productCardWidth-2*productCardStylesheet.container.padding)/imageSidesRatio
+          + stylesheet.productCardContainer.paddingVertical
       },
       {
         width: this.state.mainContainerWidth / 2 - 0.0001,
         height: productCardHeight
-          + (this.state.productCardWidth-2*stylesheet.productCardContainer.padding)/imageSidesRatio
-          + stylesheet.mainScreenProductCardContainer.paddingVertical
+          + (this.state.productCardWidth-2*productCardStylesheet.container.padding)/imageSidesRatio
+          + stylesheet.productCardContainer.paddingVertical
       },
     ]
     this.state.currentCategory = translateCategoryName(this.state.productsData[0].category);
@@ -190,18 +191,18 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
       case "category":
         return (
           <View style={{
-            ...stylesheet.productCardContainer,
-            ...stylesheet.mainScreenCategory,
-            marginHorizontal: stylesheet.mainScreenProductCardContainer.paddingHorizontal,
+            ...productCardStylesheet.container,
+            ...stylesheet.category,
+            marginHorizontal: stylesheet.productCardContainer.paddingHorizontal,
           }}>
-            <Text style={stylesheet.mainScreenCategoryText}>{translateCategoryName(data.name)}</Text>
+            <Text style={stylesheet.categoryText}>{translateCategoryName(data.name)}</Text>
           </View>
         )
       case 0:
         return (
           <View style={{
-            marginTop: stylesheet.mainScreenProductCardContainer.paddingVertical,
-            marginLeft: stylesheet.mainScreenProductCardContainer.paddingHorizontal
+            marginTop: stylesheet.productCardContainer.paddingVertical,
+            marginLeft: stylesheet.productCardContainer.paddingHorizontal
           }}>
             <ProductCard
               width={this.state.productCardWidth}
@@ -215,8 +216,8 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
       case 1:
         return (
           <View style={{
-            marginTop: stylesheet.mainScreenProductCardContainer.paddingVertical,
-            marginRight: stylesheet.mainScreenProductCardContainer.paddingHorizontal,
+            marginTop: stylesheet.productCardContainer.paddingVertical,
+            marginRight: stylesheet.productCardContainer.paddingHorizontal,
             alignItems: "flex-end",
           }}>
             <ProductCard
@@ -255,5 +256,40 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     );
   }
 }
+
+export const stylesheet = StyleSheet.create({
+  productCardContainer:{
+    paddingVertical: 15,
+    paddingHorizontal: 27,
+  },
+  container: {
+    width: "100%",
+  },
+  paddings:{
+    paddingHorizontal: 27,
+    paddingVertical: 17,
+  },
+  category: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    backgroundColor: globals.cardBackgroundColor,
+  },
+  categoryText: {
+    fontFamily: "Montserrat",
+    fontStyle: "normal",
+    fontWeight: "bold",
+    fontSize: 14,
+    lineHeight: 17,
+  },
+  categoryHeight: {
+    height: 30,
+  },
+  backgroundOverlay: {
+    backgroundColor: globals.backgroundOverlay,
+    flex: 1,
+    opacity: 0.95,
+  },
+})
 
 export default MainScreen;

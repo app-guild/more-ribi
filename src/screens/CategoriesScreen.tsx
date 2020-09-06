@@ -1,11 +1,10 @@
 import React, {Component} from "react";
-import {Dimensions, ImageBackground, Text, View} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {Dimensions, ImageBackground, StyleSheet, Text, View} from "react-native";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg"
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
-import {translateCategoryName} from "./MainScreen";
-import {ProductType} from "../entities/ProductType";
+import {ProductType, translateCategoryName} from "../entities/ProductType";
+import {globals} from "../../resources/styles";
 
 
 export interface ICategoriesScreenState {
@@ -61,9 +60,9 @@ class CategoriesScreen extends Component<
         case 1:
           dim.width = this.state.mainContainerWidth / 2 - 0.0001;
           dim.height = (this.state.mainContainerWidth
-            -2*stylesheet.categoriesScreenContainerPadding.padding
-            -stylesheet.categoriesScreenColumnMargin.margin)/2
-            +stylesheet.categoriesScreenColumnMargin.margin;
+            -2*stylesheet.containerPadding.padding
+            -stylesheet.columnMargin.margin)/2
+            +stylesheet.columnMargin.margin;
           break;
       }
     }
@@ -74,12 +73,12 @@ class CategoriesScreen extends Component<
       case 0:
         return (
           <View style={{
-            marginLeft: stylesheet.categoriesScreenContainerPadding.padding,
+            marginLeft: stylesheet.containerPadding.padding,
           }}>
             <CategoryCard
               size={(this.state.mainContainerWidth
-                -2*stylesheet.categoriesScreenContainerPadding.padding
-                -stylesheet.categoriesScreenColumnMargin.margin)/2}
+                -2*stylesheet.containerPadding.padding
+                -stylesheet.columnMargin.margin)/2}
               text={data.text}
               onTouchEnd={()=>this.props.navigation.navigate("Main",{
                 category: data.value,
@@ -92,12 +91,12 @@ class CategoriesScreen extends Component<
         return(
           <View style={{
             alignItems: "flex-end",
-            marginRight: stylesheet.categoriesScreenContainerPadding.padding
+            marginRight: stylesheet.containerPadding.padding
           }}>
             <CategoryCard
               size={(this.state.mainContainerWidth
-                -2*stylesheet.categoriesScreenContainerPadding.padding
-                -stylesheet.categoriesScreenColumnMargin.margin)/2}
+                -2*stylesheet.containerPadding.padding
+                -stylesheet.columnMargin.margin)/2}
               text={data.text}
               onTouchEnd={()=>this.props.navigation.navigate("Main",{
                 category: data.value,
@@ -116,11 +115,11 @@ class CategoriesScreen extends Component<
         source={require("../../resources/assets/drawable/background.png")}
         style={{flex: 1}}
       >
-        <View style={stylesheet.categoriesScreenContainer}>
-          <View style={stylesheet.categoriesScreenHeaderContainer}>
-            <View style={stylesheet.categoriesScreenHeader}>
+        <View style={stylesheet.container}>
+          <View style={stylesheet.headerContainer}>
+            <View style={stylesheet.header}>
               <FishIcon width={47} height={17} style={stylesheet.headerFishBackButton} onTouchEnd={()=>this.props.navigation.goBack()}/>
-              <Text style={stylesheet.categoriesScreenHeaderText}>Разделы</Text>
+              <Text style={stylesheet.headerText}>Разделы</Text>
             </View>
           </View>
 
@@ -134,5 +133,38 @@ class CategoriesScreen extends Component<
     );
   }
 }
+
+export const stylesheet = StyleSheet.create({
+  container: {
+    backgroundColor: "rgba(255,255,255,0.95)",
+    flex: 1,
+  },
+  columnMargin: {
+    margin: 10
+  },
+  containerPadding: {
+    padding: 26,
+  },
+  headerContainer: {
+    paddingVertical: 24,
+    paddingHorizontal: 26,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  headerText: {
+    fontFamily: "Muli",
+    fontStyle: "normal",
+    fontWeight: "bold",
+    fontSize: 16,
+    lineHeight: 20,
+    color: globals.primaryColor,
+  },
+  headerFishBackButton: {
+    position: "absolute",
+    left: 0,
+  },
+})
 
 export default CategoriesScreen;
