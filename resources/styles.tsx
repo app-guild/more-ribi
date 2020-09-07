@@ -18,6 +18,14 @@ const globals = {
 };
 
 const globalStylesheet = StyleSheet.create({
+    centerBody: {
+        backgroundColor: globals.mainBackgroundColor,
+        position: "relative",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+    },
     primaryText: {
         fontFamily: "Muli",
         fontStyle: "normal",
@@ -50,8 +58,8 @@ const globalStylesheet = StyleSheet.create({
         fontSize: 10,
         lineHeight: 13,
         color: globals.crossedOutPriceColor,
-        textDecorationLine: 'line-through',
+        textDecorationLine: "line-through",
     },
-})
+});
 
-export {globals, globalStylesheet}
+export {globals, globalStylesheet};

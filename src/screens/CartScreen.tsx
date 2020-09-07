@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Text, View} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {globalStylesheet} from "../../resources/styles";
 
 export interface ICartScreenState {}
 
@@ -12,7 +12,7 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
 
     render() {
         return (
-            <View style={stylesheet.centerBody}>
+            <View style={globalStylesheet.centerBody}>
                 <Text>Cart Screen</Text>
             </View>
         );
