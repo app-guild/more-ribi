@@ -144,7 +144,7 @@ class MainScreen extends Component<any, IMainScreenState> {
             productCardWidth:
                 (Dimensions.get("window").width -
                     2 * stylesheet.paddings.paddingHorizontal -
-                    -stylesheet.paddings.paddingVertical) /
+                    stylesheet.paddings.paddingVertical) /
                 2,
             productsData: productsData,
             currentCategory: translateCategoryName(productsData[0].category),
