@@ -1,4 +1,9 @@
-import {DataProvider, Dimension, LayoutProvider, RecyclerListView} from "recyclerlistview";
+import {
+  DataProvider,
+  Dimension,
+  LayoutProvider,
+  RecyclerListView
+} from "recyclerlistview";
 import React, {Component, createRef} from "react";
 import {RecyclerListViewProps} from "recyclerlistview/dist/reactnative/core/RecyclerListView";
 import {ScrollEvent} from "recyclerlistview/src/core/scrollcomponent/BaseScrollView";
