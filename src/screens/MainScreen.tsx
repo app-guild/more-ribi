@@ -5,23 +5,24 @@ import Header from "../components/Header";
 import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
 import {RecyclerListView} from "recyclerlistview";
 import {ProductType, translateCategoryName} from "../entities/ProductType";
-import ModifiedRecyclerListView from "../components/ModifiedRecyclerListView";
+import {CategorizedRecyclerListView, ICategorizedData} from "../components/CategorizedRecyclerListView";
 import {globals} from "../../resources/styles";
 
 
 export interface IMainScreenState {
   mainContainerWidth: number,
   productCardWidth: number,
-  productsData: {
-    category: ProductType,
-    onCross: any,
-    products: {
-      name: string,
-      composition: string,
-      price: number,
-      crossOutPrice?: number
-    }[]
-  }[],
+  productsData: ICategorizedData[],
+    //{
+  //   category: ProductType,
+  //   onCross: any,
+  //   products: {
+  //     name: string,
+  //     composition: string,
+  //     price: number,
+  //     crossOutPrice?: number
+  //   }[]
+  // }[],
   currentCategory: string,
 }
 
@@ -31,7 +32,7 @@ const productCardHeight = 111;
 
 class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
-  private list = createRef<RecyclerListView<any, any>>();
+  private list = createRef<CategorizedRecyclerListView>();
   private layoutSize: {width: number, height: number}[];
 
   constructor(props: any) {
@@ -46,8 +47,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
       productsData: [
         {
           category: ProductType.Wok,
-          onCross: this.onCategoryCross,
-          products: [
+          items: [
             {
               name: "Вок 1",
               composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
@@ -73,8 +73,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         },
         {
           category: ProductType.Poke,
-          onCross: this.onCategoryCross,
-          products: [
+          items: [
             {
               name: "Поке 1",
               composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
@@ -90,8 +89,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         },
         {
           category: ProductType.Rolls,
-          onCross: this.onCategoryCross,
-          products: [
+          items: [
             {
               name: "Ролл 1",
               composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
@@ -101,8 +99,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         },
         {
           category: ProductType.Soups,
-          onCross: this.onCategoryCross,
-          products: [
+          items: [
             {
               name: "Суп 1",
               composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
@@ -112,8 +109,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         },
         {
           category: ProductType.Beverages,
-          onCross: this.onCategoryCross,
-          products: [
+          items: [
             {
               name: "Русиано",
               composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
@@ -123,8 +119,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
         },
         {
           category: ProductType.Deserts,
-          onCross: this.onCategoryCross,
-          products: [
+          items: [
             {
               name: "еда",
               composition: "Рис, лосось, авокадо, красный лук, салат, морковь",
@@ -168,10 +163,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
   componentDidUpdate(prevProps: Readonly<Readonly<any>>, prevState: Readonly<Readonly<IMainScreenState>>, snapshot?: any) {
 
     if (this.props.route.params?.category != prevProps.route.params?.category){
-      this.list.current?.scrollToIndex(
-        this.findCategoryIndex(this.props.route.params?.category),
-        true
-      );
+      this.list.current?.scrollToCategory(this.props.route.params.category)
     }
   }
 
@@ -245,11 +237,13 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
               navigation={this.props.navigation}
               category={this.state.currentCategory}
             />
-            <ModifiedRecyclerListView
+            <CategorizedRecyclerListView
               data={this.state.productsData}
               rowRenderer={this._rowRenderer}
-              ref_={this.list}
+              onCrossCategory={this.onCategoryCross}
               layoutSize={this.layoutSize}
+              ref={this.list}
+              //layoutProvider={CategorizedRecyclerListView.buildLayoutProvider(this.layoutSize)}
             />
         </View>
         </ImageBackground>
