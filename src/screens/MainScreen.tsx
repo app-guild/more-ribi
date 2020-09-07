@@ -165,7 +165,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
   }
 
 
-  componentDidUpdate(prevProps: Readonly<Readonly<any>>, prevState: Readonly<Readonly<IMainScreenState>>, snapshot?: any) {
+  componentDidUpdate(prevProps: Readonly<Readonly<IMainScreenState>>, prevState: Readonly<Readonly<IMainScreenState>>, snapshot?: any) {
 
     if (this.props.route.params?.category != prevProps.route.params?.category){
       this.list.current?.scrollToCategory(this.props.route.params.category)
