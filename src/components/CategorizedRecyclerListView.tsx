@@ -2,7 +2,6 @@ import {
   DataProvider,
   LayoutProvider,
   Dimension,
-  BaseLayoutProvider,
   RecyclerListView,
 } from "recyclerlistview";
 import React, {Component, createRef} from "react";
@@ -22,8 +21,6 @@ interface ICategory {
 
 export interface ICategorizedRecyclerListViewProps
   extends RecyclerListViewProps {
-  //layoutSize: Dimension[];
-  //data: ICategorizedData[];
   onCrossCategory: (category: string) => void;
 }
 
@@ -49,7 +46,6 @@ export class CategorizedRecyclerListView extends Component<
   }
 
   private collectCategories() {
-    //console.log(this.state.dataProvider)
     for (let i = 0; i < this.props.dataProvider.getSize(); i++) {
       if (this.props.dataProvider.getDataForIndex(i).type === "category") {
         const offsetY = this.list.current?.getLayout(i)?.y;
@@ -156,8 +152,6 @@ export class CategorizedRecyclerListView extends Component<
     const {
       rowRenderer,
       layoutProvider,
-      //dataProvider,
-      ...otherProps
     } = this.props;
 
     return (
@@ -167,7 +161,7 @@ export class CategorizedRecyclerListView extends Component<
         ref={this.list}
         rowRenderer={rowRenderer}
         onScroll={this.onScroll}
-        {...otherProps}
+
       />
     );
   }
