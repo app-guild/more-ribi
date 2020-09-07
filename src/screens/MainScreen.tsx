@@ -3,7 +3,7 @@ import {Dimensions, View, ImageBackground, Text, StyleSheet} from "react-native"
 // import {stylesheet} from "../../resources/styles";
 import Header from "../components/Header";
 import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
-import {RecyclerListView} from "recyclerlistview";
+import {DataProvider, LayoutProvider} from "recyclerlistview";
 import {ProductType, translateCategoryName} from "../entities/ProductType";
 import {CategorizedRecyclerListView, ICategorizedData} from "../components/CategorizedRecyclerListView";
 import {globals} from "../../resources/styles";
@@ -34,6 +34,8 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
 
   private list = createRef<CategorizedRecyclerListView>();
   private layoutSize: {width: number, height: number}[];
+  private layoutProvider: LayoutProvider;
+  private dataProvider: DataProvider;
 
   constructor(props: any) {
     super(props);
@@ -157,6 +159,9 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
       },
     ]
     this.state.currentCategory = translateCategoryName(this.state.productsData[0].category);
+    const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, this.state.productsData)
+    this.dataProvider = providers[0];
+    this.layoutProvider = providers[1];
   }
 
 
@@ -171,12 +176,12 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
     this.setState({currentCategory: translateCategoryName(category)});
   }
 
-  findCategoryIndex(category){
-    let index = 0;
-    for (let i = 0; this.state.productsData[i].category != category; i++,index++)
-      index += this.state.productsData[i].products.length
-    return index;
-  }
+  // findCategoryIndex(category){
+  //   let index = 0;
+  //   for (let i = 0; this.state.productsData[i].category != category; i++,index++)
+  //     index += this.state.productsData[i].products.length
+  //   return index;
+  // }
 
   _rowRenderer(type: any, data: any) {
     switch (type) {
@@ -227,6 +232,7 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
   }
 
   render() {
+
     return (
         <ImageBackground
           source={require("../../resources/assets/drawable/background.png")}
@@ -238,12 +244,13 @@ class MainScreen extends Component<Readonly<any>, Readonly<IMainScreenState>> {
               category={this.state.currentCategory}
             />
             <CategorizedRecyclerListView
-              data={this.state.productsData}
+              //data={this.state.productsData}
               rowRenderer={this._rowRenderer}
               onCrossCategory={this.onCategoryCross}
-              layoutSize={this.layoutSize}
+              //layoutSize={this.layoutSize}
               ref={this.list}
-              //layoutProvider={CategorizedRecyclerListView.buildLayoutProvider(this.layoutSize)}
+              layoutProvider={this.layoutProvider}
+              dataProvider={this.dataProvider}
             />
         </View>
         </ImageBackground>
