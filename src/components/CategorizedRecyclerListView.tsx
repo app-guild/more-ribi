@@ -1,9 +1,4 @@
-import {
-  DataProvider,
-  LayoutProvider,
-  Dimension,
-  RecyclerListView,
-} from "recyclerlistview";
+import {DataProvider, Dimension, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import React, {Component, createRef} from "react";
 import {RecyclerListViewProps} from "recyclerlistview/dist/reactnative/core/RecyclerListView";
 import {ScrollEvent} from "recyclerlistview/src/core/scrollcomponent/BaseScrollView";
@@ -56,7 +51,6 @@ export class CategorizedRecyclerListView extends Component<
         });
       }
     }
-    console.log(this.categories)
   }
 
   private onScroll(rawEvent: ScrollEvent) {
@@ -113,45 +107,53 @@ export class CategorizedRecyclerListView extends Component<
 
   static buildProviders(layouts: LayoutProvider | Dimension[], data: DataProvider | ICategorizedData[]){
 
-    let providers: any = [];
+    let dataProvider: DataProvider;
+    let layoutProvider: LayoutProvider;
 
-    if (typeof data === typeof DataProvider)
-      providers[0] = data;
+    if (data instanceof DataProvider) {
+      dataProvider = data;
+    }
     else {
-      providers[0] = new DataProvider((r1, r2) => {
+      dataProvider = new DataProvider((r1, r2) => {
         return r1.id !== r2.id
       }).cloneWithRows(this.transformData(
         data,
-        typeof layouts === typeof LayoutProvider?
+        layouts instanceof LayoutProvider?
           1:
           layouts.length-1
       ));
     }
 
-    if(typeof layouts === typeof LayoutProvider)
-      providers[1] = layouts;
+    if (layouts instanceof LayoutProvider)
+      layoutProvider = layouts;
     else
-      providers[1] = new LayoutProvider(
+      layoutProvider = new LayoutProvider(
         (index) => {
-          return  providers[0].getDataForIndex(index).type;
+          return  dataProvider.getDataForIndex(index).type;
         },
         (type, dim) => {
           if (type === "category") {
             dim.width = layouts[0].width;
             dim.height = layouts[0].height;
           } else {
-            dim.width = layouts[type + 1].width;
-            dim.height = layouts[type + 1].height;
+            dim.width = layouts[typeof type == "number"?type + 1 : 0].width;
+            dim.height = layouts[typeof type == "number"?type + 1 : 0].height;
           }
         },
       );
-    return providers;
+
+    return {
+      dataProvider: dataProvider,
+      layoutProvider: layoutProvider
+    };
   }
 
   render() {
     const {
       rowRenderer,
       layoutProvider,
+      dataProvider,
+      ...otherProps
     } = this.props;
 
     return (
@@ -161,7 +163,7 @@ export class CategorizedRecyclerListView extends Component<
         ref={this.list}
         rowRenderer={rowRenderer}
         onScroll={this.onScroll}
-
+        {...otherProps}
       />
     );
   }

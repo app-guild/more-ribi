@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Image, Text, View, TouchableOpacity, StyleSheet} from "react-native";
-import {globals} from "../../resources/styles";
+import {globals, globalStylesheet} from "../../resources/styles";
 import CardIcon from "../../resources/assets/drawable/cart_icon.svg"
 
 export interface IProductCardState {}
@@ -45,12 +45,12 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
             borderRadius: 20,
           }}
         />
-        <Text style={stylesheet.name}>{name}</Text>
-        <Text style={stylesheet.composition}>{composition}</Text>
+        <Text style={globalStylesheet.primaryText}>{name}</Text>
+        <Text style={globalStylesheet.secondaryText}>{composition}</Text>
         <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
           <View>
-            <Text style={stylesheet.price}>{price}</Text>
-            <Text style={stylesheet.crossedOutPrice}>{crossOutPrice}</Text>
+            <Text style={globalStylesheet.price}>{price}</Text>
+            <Text style={globalStylesheet.crossedOutPrice}>{crossOutPrice}</Text>
           </View>
           <View style={stylesheet.shoppingCartButtonContainer}>
             <CardIcon width={16} height={16} fill={globals.shoppingCartColor} style={{position: "absolute"}}/>
@@ -79,40 +79,6 @@ export const stylesheet = StyleSheet.create({
     shadowOpacity: 0.20,
     shadowRadius: 1.41,
     elevation: 2,
-  },
-  name: {
-    fontFamily: "Muli",
-    fontStyle: "normal",
-    fontWeight: "bold",
-    fontSize: 14,
-    lineHeight: 18,
-    color: globals.mainTextColor,
-    paddingTop: 5,
-  },
-  composition: {
-    fontFamily: "Muli",
-    fontStyle: "normal",
-    fontSize: 10,
-    lineHeight: 13,
-    color: globals.additionalTextColor,
-  },
-  price: {
-    fontFamily: "Muli",
-    fontStyle: "normal",
-    fontWeight: "normal",
-    fontSize: 10,
-    lineHeight: 13,
-    color: globals.primaryColor,
-    paddingTop: 13,
-  },
-  crossedOutPrice: {
-    fontFamily: "Muli",
-    fontStyle: "normal",
-    fontWeight: "normal",
-    fontSize: 10,
-    lineHeight: 13,
-    color: globals.crossedOutPriceColor,
-    textDecorationLine: 'line-through',
   },
   shoppingCartButton:{
     borderRadius: 50,
