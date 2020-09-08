@@ -26,7 +26,7 @@ export interface IMainScreenState {
 }
 
 const imageSidesRatio = 1.2;
-const productCardHeight = 84;
+const productCardHeight = 72;
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();

@@ -37,13 +37,15 @@ class ProductCard extends Component<
 
         return (
             <View
+                onLayout={(event => {console.log(event.nativeEvent.layout.height)})}
                 style={{
                     width: width,
-                    height: height,
+                    //height: height,
                     ...stylesheet.container,
                     ...style,
                 }}>
                 <Image
+                    onLayout={(event => {console.log(event.nativeEvent.layout.height)})}
                     source={require("../../resources/assets/drawable/food.jpg")}
                     style={{
                         width: width - 2 * stylesheet.container.padding,
@@ -52,17 +54,22 @@ class ProductCard extends Component<
                         borderRadius: 20,
                     }}
                 />
-                <Text numberOfLines={1} style={globalStylesheet.primaryText}>
-                    {name}
-                </Text>
                 <View
                     style={{
                         flexDirection: "row",
-                        alignItems: "center",
+                        alignItems: "flex-end",
                         justifyContent: "space-between",
-                        marginTop: 10,
+                        marginTop: 2,
                     }}>
-                    <View style={{maxWidth: 100}}>
+                    <View style={{maxWidth: 100, justifyContent: "flex-end"}}>
+                        <Text
+                            numberOfLines={1}
+                            style={{
+                                marginTop: 5,
+                                ...globalStylesheet.primaryText,
+                            }}>
+                            {name}
+                        </Text>
                         <Text
                             numberOfLines={1}
                             style={globalStylesheet.crossedOutPrice}>
@@ -73,16 +80,16 @@ class ProductCard extends Component<
                         </Text>
                     </View>
                     <View style={stylesheet.shoppingCartButtonContainer}>
-                        <CardIcon
-                            width={16}
-                            height={16}
-                            fill={globals.shoppingCartColor}
-                            style={{position: "absolute"}}
-                        />
                         <TouchableOpacity
                             style={stylesheet.shoppingCartButton}
-                            activeOpacity={0.5}
-                        />
+                            activeOpacity={0.85}>
+                            <CardIcon
+                                width={20}
+                                height={20}
+                                fill={globals.shoppingCartColor}
+                                style={{position: "absolute"}}
+                            />
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
@@ -107,11 +114,13 @@ export const stylesheet = StyleSheet.create({
         elevation: 2,
     },
     shoppingCartButton: {
+        justifyContent: "center",
+        alignItems: "center",
         borderRadius: 50,
-        backgroundColor: globals.shadowColor,
-        width: 30,
-        height: 30,
-        opacity: 0.2,
+        backgroundColor: globals.primaryColor, //"#D1DAE2",//globals.shadowColor,
+        width: 38,
+        height: 38,
+        opacity: 0.5,
     },
     shoppingCartButtonContainer: {
         justifyContent: "center",
