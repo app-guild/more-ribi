@@ -233,6 +233,14 @@ class MainScreen extends Component<any, IMainScreenState> {
                         }}>
                         <ProductCard
                             width={this.state.productCardWidth}
+                            height={
+                                productCardHeight +
+                                (this.state.productCardWidth -
+                                    2 *
+                                        productCardStylesheet.container
+                                            .padding) /
+                                    imageSidesRatio
+                            }
                             name={data.name}
                             composition={data.composition}
                             price={data.price}
@@ -253,6 +261,14 @@ class MainScreen extends Component<any, IMainScreenState> {
                         }}>
                         <ProductCard
                             width={this.state.productCardWidth}
+                            height={
+                                productCardHeight +
+                                (this.state.productCardWidth -
+                                    2 *
+                                        productCardStylesheet.container
+                                            .padding) /
+                                    imageSidesRatio
+                            }
                             name={data.name}
                             composition={data.composition}
                             price={data.price}
