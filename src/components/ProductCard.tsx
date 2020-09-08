@@ -63,13 +63,13 @@ class ProductCard extends Component<
                         marginTop: 10,
                     }}>
                     <View style={{maxWidth: 100}}>
-                        <Text numberOfLines={1} style={globalStylesheet.price}>
-                            {price}
-                        </Text>
                         <Text
                             numberOfLines={1}
                             style={globalStylesheet.crossedOutPrice}>
                             {crossOutPrice}
+                        </Text>
+                        <Text numberOfLines={1} style={globalStylesheet.price}>
+                            {price}
                         </Text>
                     </View>
                     <View style={stylesheet.shoppingCartButtonContainer}>
