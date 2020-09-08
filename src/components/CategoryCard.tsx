@@ -58,6 +58,7 @@ export const stylesheet = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 6,
         top: "60%",
+        paddingHorizontal: 15,
     },
     cardTitle: {
         fontFamily: "Montserrat",

@@ -216,7 +216,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                                 stylesheet.productCardContainer
                                     .paddingHorizontal,
                         }}>
-                        <Text style={stylesheet.categoryText}>
+                        <Text numberOfLines={1} style={stylesheet.categoryText}>
                             {translateCategoryName(data.name)}
                         </Text>
                     </View>

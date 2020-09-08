@@ -51,8 +51,10 @@ class ProductCard extends Component<
                         borderRadius: 20,
                     }}
                 />
-                <Text style={globalStylesheet.primaryText}>{name}</Text>
-                <Text style={globalStylesheet.secondaryText}>
+                <Text numberOfLines={1} style={globalStylesheet.primaryText}>
+                    {name}
+                </Text>
+                <Text numberOfLines={2} style={globalStylesheet.secondaryText}>
                     {composition}
                 </Text>
                 <View
@@ -61,9 +63,13 @@ class ProductCard extends Component<
                         alignItems: "center",
                         justifyContent: "space-between",
                     }}>
-                    <View>
-                        <Text style={globalStylesheet.price}>{price}</Text>
-                        <Text style={globalStylesheet.crossedOutPrice}>
+                    <View style={{maxWidth: 100}}>
+                        <Text numberOfLines={1} style={globalStylesheet.price}>
+                            {price}
+                        </Text>
+                        <Text
+                            numberOfLines={1}
+                            style={globalStylesheet.crossedOutPrice}>
                             {crossOutPrice}
                         </Text>
                     </View>
