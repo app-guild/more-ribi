@@ -9,7 +9,6 @@ export interface IProductCardProps {
     width: number;
     height: number;
     name: string;
-    composition: string;
     price: number;
     crossOutPrice?: number;
     image?: any;
@@ -30,7 +29,6 @@ class ProductCard extends Component<
             width,
             height,
             name,
-            composition,
             price,
             crossOutPrice,
             image,
@@ -45,33 +43,24 @@ class ProductCard extends Component<
                     ...stylesheet.container,
                     ...style,
                 }}>
-                <View>
-                    <Image
-                        source={require("../../resources/assets/drawable/food.jpg")}
-                        style={{
-                            width: width - 2 * stylesheet.container.padding,
-                            height:
-                                (width - 2 * stylesheet.container.padding) /
-                                1.2,
-                            borderRadius: 20,
-                        }}
-                    />
-                    <Text
-                        numberOfLines={1}
-                        style={globalStylesheet.primaryText}>
-                        {name}
-                    </Text>
-                    <Text
-                        numberOfLines={2}
-                        style={globalStylesheet.secondaryText}>
-                        {composition}
-                    </Text>
-                </View>
+                <Image
+                    source={require("../../resources/assets/drawable/food.jpg")}
+                    style={{
+                        width: width - 2 * stylesheet.container.padding,
+                        height:
+                            (width - 2 * stylesheet.container.padding) / 1.2,
+                        borderRadius: 20,
+                    }}
+                />
+                <Text numberOfLines={1} style={globalStylesheet.primaryText}>
+                    {name}
+                </Text>
                 <View
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "space-between",
+                        marginTop: 10,
                     }}>
                     <View style={{maxWidth: 100}}>
                         <Text numberOfLines={1} style={globalStylesheet.price}>
@@ -103,7 +92,7 @@ class ProductCard extends Component<
 
 export const stylesheet = StyleSheet.create({
     container: {
-        justifyContent: "space-between",
+        //justifyContent: "space-between",
         borderRadius: 20,
         padding: 10,
         backgroundColor: globals.cardBackgroundColor,

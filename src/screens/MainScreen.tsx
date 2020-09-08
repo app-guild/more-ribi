@@ -26,7 +26,7 @@ export interface IMainScreenState {
 }
 
 const imageSidesRatio = 1.2;
-const productCardHeight = 111;
+const productCardHeight = 84;
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
@@ -242,7 +242,6 @@ class MainScreen extends Component<any, IMainScreenState> {
                                     imageSidesRatio
                             }
                             name={data.name}
-                            composition={data.composition}
                             price={data.price}
                             crossOutPrice={data.crossOutPrice}
                         />
@@ -270,7 +269,6 @@ class MainScreen extends Component<any, IMainScreenState> {
                                     imageSidesRatio
                             }
                             name={data.name}
-                            composition={data.composition}
                             price={data.price}
                             crossOutPrice={data.crossOutPrice}
                         />

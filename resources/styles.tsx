@@ -49,7 +49,6 @@ const globalStylesheet = StyleSheet.create({
         fontSize: 10,
         lineHeight: 13,
         color: globals.primaryColor,
-        paddingTop: 13,
     },
     crossedOutPrice: {
         fontFamily: "Muli",
