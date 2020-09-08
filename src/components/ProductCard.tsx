@@ -37,15 +37,13 @@ class ProductCard extends Component<
 
         return (
             <View
-                onLayout={(event => {console.log(event.nativeEvent.layout.height)})}
                 style={{
                     width: width,
-                    //height: height,
+                    height: height,
                     ...stylesheet.container,
                     ...style,
                 }}>
                 <Image
-                    onLayout={(event => {console.log(event.nativeEvent.layout.height)})}
                     source={require("../../resources/assets/drawable/food.jpg")}
                     style={{
                         width: width - 2 * stylesheet.container.padding,
