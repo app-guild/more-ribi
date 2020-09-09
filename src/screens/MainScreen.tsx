@@ -445,7 +445,6 @@ class MainScreen extends Component<any, IMainScreenState> {
             case "category":
                 return (
                     <View
-                        //onLayout={event => console.log(event.nativeEvent.layout.height)}
                         style={{
                             ...stylesheet.category,
                             marginHorizontal:

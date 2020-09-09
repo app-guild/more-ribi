@@ -60,7 +60,6 @@ export class CategorizedRecyclerListView extends Component<
                 }
             }
         }
-        //console.log(this.categories);
     }
 
     private onScroll(rawEvent: ScrollEvent) {
