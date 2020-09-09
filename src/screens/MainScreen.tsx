@@ -530,6 +530,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                         ref={this.list}
                         layoutProvider={this.layoutProvider}
                         dataProvider={this.dataProvider}
+                        initialRenderIndex={1}
                     />
                 </View>
             </ImageBackground>
