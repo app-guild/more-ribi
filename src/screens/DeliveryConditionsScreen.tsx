@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Text, View} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {globalStylesheet} from "../../resources/styles";
 
 export interface IDeliveryConditionsScreenState {}
 
@@ -15,7 +15,7 @@ class DeliveryConditionsScreen extends Component<
 
     render() {
         return (
-            <View style={stylesheet.centerBody}>
+            <View style={globalStylesheet.centerBody}>
                 <Text>Delivery Conditions Screen</Text>
             </View>
         );

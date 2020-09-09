@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Text, View} from "react-native";
-import {stylesheet} from "../../resources/styles";
+import {globalStylesheet} from "../../resources/styles";
 
 export interface IWokConstructorScreenState {}
 
@@ -15,7 +15,7 @@ class WokConstructorScreen extends Component<
 
     render() {
         return (
-            <View style={stylesheet.centerBody}>
+            <View style={globalStylesheet.centerBody}>
                 <Text>Wok Constructor Screen</Text>
             </View>
         );
