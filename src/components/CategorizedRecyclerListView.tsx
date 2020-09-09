@@ -50,14 +50,17 @@ export class CategorizedRecyclerListView extends Component<
             if (
                 this.props.dataProvider.getDataForIndex(i).type === "category"
             ) {
-                const offsetY = this.list.current?.getLayout(i)?.y;
-                this.categories.push({
-                    name: this.props.dataProvider.getDataForIndex(i).name,
-                    offset: offsetY !== undefined ? offsetY - 1 : -1,
-                    index: i,
-                });
+                if (i !== this.props.dataProvider.getSize() - 1) {
+                    const offsetY = this.list.current?.getLayout(i + 1)?.y;
+                    this.categories.push({
+                        name: this.props.dataProvider.getDataForIndex(i).name,
+                        offset: offsetY !== undefined ? offsetY - 1 : -1,
+                        index: i,
+                    });
+                }
             }
         }
+        //console.log(this.categories);
     }
 
     private onScroll(rawEvent: ScrollEvent) {
@@ -65,15 +68,16 @@ export class CategorizedRecyclerListView extends Component<
             this.collectCategories();
         }
         if (
+            this.categories[this.currentCategoryIndex + 1] &&
             rawEvent.nativeEvent.contentOffset.y >
-            this.categories[this.currentCategoryIndex + 1].offset
+                this.categories[this.currentCategoryIndex + 1].offset
         ) {
             this.props.onCrossCategory(
                 this.categories[this.currentCategoryIndex++ + 1].name,
             );
         }
         if (
-            rawEvent.nativeEvent.contentOffset.y > 0 &&
+            this.currentCategoryIndex > 0 &&
             rawEvent.nativeEvent.contentOffset.y <
                 this.categories[this.currentCategoryIndex].offset
         ) {

@@ -1,10 +1,10 @@
 import React, {Component, createRef} from "react";
 import {
     Dimensions,
-    View,
     ImageBackground,
-    Text,
     StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import Header from "../components/Header";
 import ProductCard, {
@@ -137,6 +137,242 @@ class MainScreen extends Component<any, IMainScreenState> {
                     },
                 ],
             },
+            {
+                category: ProductType.Beverages,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Deserts,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Beverages,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Deserts,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Beverages,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Deserts,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Beverages,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Deserts,
+                items: [
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "еда",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                    {
+                        name: "хрень",
+                        composition:
+                            "Рис, лосось, авокадо, красный лук, салат, морковь",
+                        price: 290,
+                    },
+                ],
+            },
+            {
+                category: ProductType.Empty,
+                items: [],
+            },
         ];
 
         this.state = {
@@ -209,8 +445,8 @@ class MainScreen extends Component<any, IMainScreenState> {
             case "category":
                 return (
                     <View
+                        //onLayout={event => console.log(event.nativeEvent.layout.height)}
                         style={{
-                            ...productCardStylesheet.container,
                             ...stylesheet.category,
                             marginHorizontal:
                                 stylesheet.productCardContainer
@@ -315,10 +551,8 @@ export const stylesheet = StyleSheet.create({
         paddingVertical: 17,
     },
     category: {
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 10,
-        backgroundColor: globals.cardBackgroundColor,
+        paddingLeft: 25,
+        marginTop: 15,
     },
     categoryText: {
         fontFamily: "Montserrat",
@@ -326,6 +560,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
+        color: globals.primaryColor,
     },
     categoryHeight: {
         height: 30,

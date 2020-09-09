@@ -84,7 +84,7 @@ class ProductCard extends Component<
                             <CardIcon
                                 width={20}
                                 height={20}
-                                fill={globals.shoppingCartColor}
+                                fill={globals.cardBackgroundColor}
                                 style={{position: "absolute"}}
                             />
                         </TouchableOpacity>
@@ -97,7 +97,6 @@ class ProductCard extends Component<
 
 export const stylesheet = StyleSheet.create({
     container: {
-        //justifyContent: "space-between",
         borderRadius: 20,
         padding: 10,
         backgroundColor: globals.cardBackgroundColor,
@@ -115,7 +114,7 @@ export const stylesheet = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 50,
-        backgroundColor: globals.primaryColor, //"#D1DAE2",//globals.shadowColor,
+        backgroundColor: globals.primaryColor,
         width: 38,
         height: 38,
         opacity: 0.5,

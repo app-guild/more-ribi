@@ -11,7 +11,6 @@ const globals = {
     shadowColor: "#000000",
     additionalTextColor: "#CFD2D7",
     crossedOutPriceColor: "#A5A5A5",
-    shoppingCartColor: "#FFFFFF",//"#909090",
     backgroundOverlay: "#FFFFFF",
     headerUnderlineColor: "#FFC11E",
     categoriesScreenCardTitleContainerBGColor: "rgba(0,0,0,0.35)",
@@ -46,7 +45,7 @@ const globalStylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontWeight: "normal",
         fontSize: 14,
-        lineHeight: 13,
+        lineHeight: 16,
         color: globals.primaryColor,
     },
     crossedOutPrice: {

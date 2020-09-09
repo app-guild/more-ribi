@@ -5,23 +5,26 @@ export enum ProductType {
     Poke = "poke",
     Rolls = "rolls",
     Soups = "soups",
+    Empty = "",
 }
 
-export function translateCategoryName(category: any){
+export function translateCategoryName(category: string) {
     switch (category) {
         case ProductType.Wok:
-            return "Вок"
+            return "Вок";
         case ProductType.Deserts:
-            return "Десерты"
+            return "Десерты";
         case ProductType.Beverages:
-            return "Напитки"
+            return "Напитки";
         case ProductType.Poke:
-            return "Поке"
+            return "Поке";
         case ProductType.Rolls:
-            return "Роллы"
+            return "Роллы";
         case ProductType.Soups:
-            return "Супы"
+            return "Супы";
+        case ProductType.Empty:
+            return "";
         default:
-            return "Поке"
+            return "";
     }
 }
