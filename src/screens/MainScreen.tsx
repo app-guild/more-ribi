@@ -1,5 +1,6 @@
 import React, {Component, createRef} from "react";
 import {
+    Button,
     Dimensions,
     ImageBackground,
     StyleSheet,
@@ -17,16 +18,22 @@ import {
     ICategorizedData,
 } from "../components/CategorizedRecyclerListView";
 import {globals} from "../../resources/styles";
+import Dialog, {DialogContent, ScaleAnimation} from "react-native-popup-dialog";
+import OpenDish from "../components/OpenDish";
+import {getStatusBarHeight} from "react-native-status-bar-height";
 
 export interface IMainScreenState {
     mainContainerWidth: number;
+    screenHeight: number;
     productCardWidth: number;
     productsData: ICategorizedData[];
     currentCategory: string;
+    visible: boolean;
 }
 
 const imageSidesRatio = 1.2;
 const productCardHeight = 72;
+const headerHeight = 83;
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
@@ -377,6 +384,7 @@ class MainScreen extends Component<any, IMainScreenState> {
 
         this.state = {
             mainContainerWidth: Dimensions.get("window").width,
+            screenHeight: Dimensions.get("window").height,
             productCardWidth:
                 (Dimensions.get("window").width -
                     2 * stylesheet.paddings.paddingHorizontal -
@@ -384,6 +392,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                 2,
             productsData: productsData,
             currentCategory: translateCategoryName(productsData[0].category),
+            visible: false,
         };
 
         this._rowRenderer = this._rowRenderer.bind(this);
@@ -439,6 +448,8 @@ class MainScreen extends Component<any, IMainScreenState> {
     onCategoryCross(category: string) {
         this.setState({currentCategory: translateCategoryName(category)});
     }
+
+    onCardClick() {}
 
     _rowRenderer(type: any, data: any) {
         switch (type) {
@@ -521,17 +532,81 @@ class MainScreen extends Component<any, IMainScreenState> {
                 style={{flex: 1}}>
                 <View style={stylesheet.backgroundOverlay}>
                     <Header
+                        needCategoryName={!this.state.visible}
                         navigation={this.props.navigation}
                         category={this.state.currentCategory}
+                        onPress={() => {
+                            this.setState({visible: true});
+                        }}
                     />
-                    <CategorizedRecyclerListView
-                        rowRenderer={this._rowRenderer}
-                        onCrossCategory={this.onCategoryCross}
-                        ref={this.list}
-                        layoutProvider={this.layoutProvider}
-                        dataProvider={this.dataProvider}
-                        initialRenderIndex={1}
-                    />
+                    <View style={{flex: 1}}>
+                        <CategorizedRecyclerListView
+                            rowRenderer={this._rowRenderer}
+                            onCrossCategory={this.onCategoryCross}
+                            ref={this.list}
+                            layoutProvider={this.layoutProvider}
+                            dataProvider={this.dataProvider}
+                            initialRenderIndex={1}
+                            visible={!this.state.visible}
+                        />
+                        <Dialog
+                            visible={this.state.visible}
+                            onTouchOutside={() => {
+                                this.setState({visible: false});
+                            }}
+                            dialogAnimation={
+                                new ScaleAnimation({slideFrom: "top"})
+                            }
+                            hasOverlay={false}
+                            //rounded={false}
+                            height={
+                                this.state.screenHeight -
+                                getStatusBarHeight() -
+                                headerHeight
+                            }
+                            width={
+                                this.state.mainContainerWidth -
+                                2 *
+                                    stylesheet.productCardContainer
+                                        .paddingHorizontal +
+                                1
+                            }
+                            //style={{borderRadius: 0}}
+                            containerStyle={{
+                                justifyContent: "flex-end",
+                                //padding: 27,
+                                // stylesheet.productCardContainer
+                                //     .paddingHorizontal,
+                            }}
+                            dialogStyle={{
+                                borderRadius: 20,
+                                //paddingTop: stylesheet.openDish.paddingTop,
+                                backgroundColor: "transparent",
+                            }}
+                            //animationDuration={0}
+                        >
+                            <OpenDish
+                                width={
+                                    this.state.mainContainerWidth -
+                                    2 *
+                                        stylesheet.productCardContainer
+                                            .paddingHorizontal
+                                }
+                                name={this.state.productsData[0].items[1].name}
+                                price={
+                                    this.state.productsData[0].items[1].price
+                                }
+                                crossOutPrice={
+                                    this.state.productsData[0].items[1]
+                                        .crossOutPrice
+                                }
+                                composition={
+                                    this.state.productsData[0].items[1]
+                                        .composition
+                                }
+                            />
+                        </Dialog>
+                    </View>
                 </View>
             </ImageBackground>
         );
@@ -569,6 +644,10 @@ export const stylesheet = StyleSheet.create({
         backgroundColor: globals.backgroundOverlay,
         flex: 1,
         opacity: 0.95,
+    },
+    openDish: {
+        paddingTop: 20,
+        //paddingBottom: 100,
     },
 });
 

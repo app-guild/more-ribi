@@ -36,6 +36,7 @@ const globalStylesheet = StyleSheet.create({
     secondaryText: {
         fontFamily: "Muli",
         fontStyle: "normal",
+        fontWeight: "300",
         fontSize: 10,
         lineHeight: 13,
         color: globals.additionalTextColor,

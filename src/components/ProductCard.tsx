@@ -57,13 +57,13 @@ class ProductCard extends Component<
                         flexDirection: "row",
                         alignItems: "flex-end",
                         justifyContent: "space-between",
-                        marginTop: 2,
+                        marginTop: 7,
                     }}>
                     <View style={{maxWidth: 100, justifyContent: "flex-end"}}>
                         <Text
                             numberOfLines={1}
                             style={{
-                                marginTop: 5,
+                                //marginTop: 5,
                                 ...globalStylesheet.primaryText,
                             }}>
                             {name}
@@ -71,10 +71,10 @@ class ProductCard extends Component<
                         <Text
                             numberOfLines={1}
                             style={globalStylesheet.crossedOutPrice}>
-                            {crossOutPrice}
+                            {crossOutPrice ? crossOutPrice + " руб" : ""}
                         </Text>
                         <Text numberOfLines={1} style={globalStylesheet.price}>
-                            {price}
+                            {price + " руб"}
                         </Text>
                     </View>
                     <View style={stylesheet.shoppingCartButtonContainer}>

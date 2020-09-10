@@ -1,13 +1,21 @@
 import React, {Component} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Button, StyleSheet, Text, View} from "react-native";
 import {globals} from "../../resources/styles";
 import MenuIcon from "./../../resources/assets/drawable/menu_icon.svg";
 import CartIcon from "./../../resources/assets/drawable/cart_icon.svg";
 import FishIcon from "./../../resources/assets/drawable/fish_icon2.svg";
+import FishBackButton from "./../../resources/assets/drawable/fish_back_button.svg";
+import {DrawerNavigationProp} from "@react-navigation/drawer";
 
 export interface IHeaderState {}
+export interface IHeaderProps {
+    needCategoryName: boolean;
+    category: string;
+    navigation: DrawerNavigationProp<any>;
+    onPress: any;
+}
 
-class Header extends Component<any, Readonly<IHeaderState>> {
+class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
     constructor(props: any) {
         super(props);
         this.state = {};
@@ -15,50 +23,58 @@ class Header extends Component<any, Readonly<IHeaderState>> {
 
     render() {
         return (
-            <View style={stylesheet.headerContainer}>
-                <View style={stylesheet.headerSubContainer}>
-                    <View style={stylesheet.headerTopContainer}>
+            <View style={stylesheet.container} onTouchEnd={this.props.onPress}>
+                <View style={stylesheet.subContainer}>
+                    <View style={stylesheet.topContainer}>
                         <MenuIcon
                             width={30}
                             height={30}
                             onTouchEnd={this.props.navigation.openDrawer}
                         />
-                        <Text style={stylesheet.headerTitle}>Много рыбы</Text>
+                        <Text style={stylesheet.title}>Много рыбы</Text>
                     </View>
-                    <View style={stylesheet.headerTopContainer}>
+                    <View style={stylesheet.topContainer}>
                         <CartIcon
                             width={19}
                             height={18}
                             fill={globals.primaryColor}
                         />
-                        <Text style={stylesheet.headerPriceText}>500P</Text>
+                        <Text numberOfLines={1} style={stylesheet.priceText}>
+                            500P
+                        </Text>
                     </View>
                 </View>
 
-                <View style={{alignSelf: "flex-start"}}>
-                    <View
-                        style={stylesheet.headerCategoryButton}
-                        onTouchEnd={() =>
-                            this.props.navigation.navigate("Categories")
-                        }>
-                        <Text style={stylesheet.headerSubTitle}>
-                            {this.props.category}
-                        </Text>
-                        <FishIcon width={15} height={25} />
+                {this.props.needCategoryName ? (
+                    <View style={{alignSelf: "flex-start"}}>
+                        <View
+                            style={stylesheet.categoryButton}
+                            onTouchEnd={() =>
+                                this.props.navigation.navigate("Categories")
+                            }>
+                            <Text style={stylesheet.subTitle}>
+                                {this.props.category}
+                            </Text>
+                            <FishIcon width={15} height={25} />
+                        </View>
+                        <View style={stylesheet.categoryUnderline} />
                     </View>
-                    <View style={stylesheet.headerCategoryUnderline} />
-                </View>
+                ) : (
+                    <View style={stylesheet.fishBackButton}>
+                        <FishBackButton width={47} heigth={17} />
+                    </View>
+                )}
             </View>
         );
     }
 }
 
 export const stylesheet = StyleSheet.create({
-    headerContainer: {
+    container: {
         paddingVertical: 8,
         paddingHorizontal: 12,
     },
-    headerTitle: {
+    title: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "bold",
@@ -67,7 +83,7 @@ export const stylesheet = StyleSheet.create({
         color: globals.primaryColor,
         marginLeft: 9,
     },
-    headerSubTitle: {
+    subTitle: {
         fontFamily: "Muli",
         fontStyle: "normal",
         fontWeight: "bold",
@@ -76,15 +92,15 @@ export const stylesheet = StyleSheet.create({
         color: globals.primaryColor,
         marginRight: 7,
     },
-    headerTopContainer: {
+    topContainer: {
         flexDirection: "row",
         alignItems: "center",
     },
-    headerSubContainer: {
+    subContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
     },
-    headerPriceText: {
+    priceText: {
         fontFamily: "Muli",
         fontStyle: "normal",
         fontWeight: "bold",
@@ -93,17 +109,21 @@ export const stylesheet = StyleSheet.create({
         color: globals.primaryColor,
         marginLeft: 6,
     },
-    headerCategoryButton: {
+    categoryButton: {
         flexDirection: "row",
         marginLeft: 40,
         marginTop: 10,
     },
-    headerCategoryUnderline: {
+    categoryUnderline: {
         backgroundColor: globals.headerUnderlineColor,
         width: "auto",
         height: 2,
         marginLeft: 38,
         marginTop: 3,
+    },
+    fishBackButton: {
+        marginLeft: 34,
+        marginTop: 20,
     },
 });
 
