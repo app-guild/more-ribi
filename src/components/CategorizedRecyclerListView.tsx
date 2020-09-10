@@ -66,24 +66,27 @@ export class CategorizedRecyclerListView extends Component<
         if (this.categories.length === 0) {
             this.collectCategories();
         }
-        if (
-            this.categories[this.currentCategoryIndex + 1] &&
-            rawEvent.nativeEvent.contentOffset.y >
-                this.categories[this.currentCategoryIndex + 1].offset
-        ) {
-            this.props.onCrossCategory(
-                this.categories[this.currentCategoryIndex++ + 1].name,
+        const currentCategory = this.categories.find((val, i, array) => {
+            if (
+                i === 0 &&
+                rawEvent.nativeEvent.contentOffset.y < array[0].offset
+            ) {
+                return true;
+            }
+            if (
+                i === array.length - 1 &&
+                rawEvent.nativeEvent.contentOffset.y > val.offset
+            ) {
+                return true;
+            }
+            return (
+                rawEvent.nativeEvent.contentOffset.y > val.offset &&
+                rawEvent.nativeEvent.contentOffset.y < array[i + 1]?.offset
             );
-        }
-        if (
-            this.currentCategoryIndex > 0 &&
-            rawEvent.nativeEvent.contentOffset.y <
-                this.categories[this.currentCategoryIndex].offset
-        ) {
-            this.props.onCrossCategory(
-                this.categories[this.currentCategoryIndex-- - 1].name,
-            );
-        }
+        });
+        this.props.onCrossCategory(
+            currentCategory ? currentCategory.name : this.categories[0].name,
+        );
     }
 
     private static transformData(
