@@ -9,6 +9,7 @@ export default function App() {
     useEffect(() => {
         SplashScreen.hide();
     }, []);
+
     return <Navigation />;
 }
 
