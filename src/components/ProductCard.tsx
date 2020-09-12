@@ -2,17 +2,17 @@ import React, {Component} from "react";
 import {Image, Text, View, TouchableOpacity, StyleSheet} from "react-native";
 import {globals, globalStylesheet} from "../../resources/styles";
 import CardIcon from "../../resources/assets/drawable/cart_icon.svg";
+import {IProduct} from "../screens/MainScreen";
 
 export interface IProductCardState {}
 
 export interface IProductCardProps {
     width: number;
     height: number;
-    name: string;
-    price: number;
-    crossOutPrice?: number;
-    image?: any;
+    product: IProduct;
+    //image?: any;
     style?: any;
+    onClick: (product: IProduct) => any;
 }
 
 class ProductCard extends Component<
@@ -23,20 +23,23 @@ class ProductCard extends Component<
         super(props);
         this.state = {};
     }
+    ongdgfdgdf() {}
 
     render() {
         const {
             width,
             height,
-            name,
-            price,
-            crossOutPrice,
-            image,
+            product,
+            //image,
+            onClick,
             style,
         } = this.props;
 
         return (
             <View
+                onTouchEnd={() => {
+                    onClick(product);
+                }}
                 style={{
                     width: width,
                     height: height,
@@ -66,15 +69,17 @@ class ProductCard extends Component<
                                 //marginTop: 5,
                                 ...globalStylesheet.primaryText,
                             }}>
-                            {name}
+                            {product.name}
                         </Text>
                         <Text
                             numberOfLines={1}
                             style={globalStylesheet.crossedOutPrice}>
-                            {crossOutPrice ? crossOutPrice + " руб" : ""}
+                            {product.crossOutPrice
+                                ? product.crossOutPrice + " руб"
+                                : ""}
                         </Text>
                         <Text numberOfLines={1} style={globalStylesheet.price}>
-                            {price + " руб"}
+                            {product.price + " руб"}
                         </Text>
                     </View>
                     <View style={stylesheet.shoppingCartButtonContainer}>

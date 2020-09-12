@@ -1,6 +1,5 @@
 import React, {Component, createRef} from "react";
 import {
-    Button,
     Dimensions,
     ImageBackground,
     StyleSheet,
@@ -18,9 +17,11 @@ import {
     ICategorizedData,
 } from "../components/CategorizedRecyclerListView";
 import {globals} from "../../resources/styles";
-import Dialog, {DialogContent, ScaleAnimation} from "react-native-popup-dialog";
+//import Dialog, {ScaleAnimation} from "react-native-popup-dialog";
+import Modal, {ScaleAnimation, ModalContent} from "react-native-modals";
 import OpenDish from "../components/OpenDish";
 import {getStatusBarHeight} from "react-native-status-bar-height";
+import Product from "../entities/Product";
 
 export interface IMainScreenState {
     mainContainerWidth: number;
@@ -29,6 +30,15 @@ export interface IMainScreenState {
     productsData: ICategorizedData[];
     currentCategory: string;
     visible: boolean;
+    currentProduct: IProduct | null;
+}
+
+export interface IProduct {
+    name: string;
+    //image: any;
+    price: number;
+    crossOutPrice: number;
+    composition?: string;
 }
 
 const imageSidesRatio = 1.2;
@@ -45,6 +55,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         super(props);
 
         this.onCategoryCross = this.onCategoryCross.bind(this);
+        this.onCardClick = this.onCardClick.bind(this);
         const productsData = [
             {
                 category: ProductType.Wok,
@@ -393,6 +404,7 @@ class MainScreen extends Component<any, IMainScreenState> {
             productsData: productsData,
             currentCategory: translateCategoryName(productsData[0].category),
             visible: false,
+            currentProduct: null,
         };
 
         this._rowRenderer = this._rowRenderer.bind(this);
@@ -449,7 +461,9 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.setState({currentCategory: translateCategoryName(category)});
     }
 
-    onCardClick() {}
+    onCardClick(product: IProduct) {
+        this.setState({visible: true, currentProduct: product});
+    }
 
     _rowRenderer(type: any, data: any) {
         switch (type) {
@@ -487,9 +501,8 @@ class MainScreen extends Component<any, IMainScreenState> {
                                             .padding) /
                                     imageSidesRatio
                             }
-                            name={data.name}
-                            price={data.price}
-                            crossOutPrice={data.crossOutPrice}
+                            product={data}
+                            onClick={this.onCardClick}
                         />
                     </View>
                 );
@@ -514,9 +527,8 @@ class MainScreen extends Component<any, IMainScreenState> {
                                             .padding) /
                                     imageSidesRatio
                             }
-                            name={data.name}
-                            price={data.price}
-                            crossOutPrice={data.crossOutPrice}
+                            product={data}
+                            onClick={this.onCardClick}
                         />
                     </View>
                 );
@@ -549,42 +561,20 @@ class MainScreen extends Component<any, IMainScreenState> {
                             initialRenderIndex={1}
                             visible={!this.state.visible}
                         />
-                        <Dialog
+                        <Modal
                             visible={this.state.visible}
                             onTouchOutside={() => {
                                 this.setState({visible: false});
                             }}
-                            dialogAnimation={
-                                new ScaleAnimation({slideFrom: "top"})
+                            modalAnimation={
+                                new ScaleAnimation({useNativeDriver: true})
                             }
                             hasOverlay={false}
-                            //rounded={false}
-                            height={
-                                this.state.screenHeight -
-                                getStatusBarHeight() -
-                                headerHeight
-                            }
-                            width={
-                                this.state.mainContainerWidth -
-                                2 *
-                                    stylesheet.productCardContainer
-                                        .paddingHorizontal +
-                                1
-                            }
-                            //style={{borderRadius: 0}}
-                            containerStyle={{
-                                justifyContent: "flex-end",
-                                //padding: 27,
-                                // stylesheet.productCardContainer
-                                //     .paddingHorizontal,
-                            }}
-                            dialogStyle={{
-                                borderRadius: 20,
-                                //paddingTop: stylesheet.openDish.paddingTop,
-                                backgroundColor: "transparent",
-                            }}
-                            //animationDuration={0}
-                        >
+                            rounded={false}
+                            useNativeDriver={true}
+                            style={{justifyContent: "flex-end"}}
+                            width={this.state.mainContainerWidth}
+                            modalStyle={stylesheet.openDishModal}>
                             <OpenDish
                                 width={
                                     this.state.mainContainerWidth -
@@ -592,20 +582,15 @@ class MainScreen extends Component<any, IMainScreenState> {
                                         stylesheet.productCardContainer
                                             .paddingHorizontal
                                 }
-                                name={this.state.productsData[0].items[1].name}
-                                price={
-                                    this.state.productsData[0].items[1].price
+                                height={
+                                    this.state.screenHeight -
+                                    getStatusBarHeight() -
+                                    headerHeight -
+                                    2 * stylesheet.openDishModal.paddingVertical
                                 }
-                                crossOutPrice={
-                                    this.state.productsData[0].items[1]
-                                        .crossOutPrice
-                                }
-                                composition={
-                                    this.state.productsData[0].items[1]
-                                        .composition
-                                }
+                                product={this.state.currentProduct}
                             />
-                        </Dialog>
+                        </Modal>
                     </View>
                 </View>
             </ImageBackground>
@@ -645,9 +630,11 @@ export const stylesheet = StyleSheet.create({
         flex: 1,
         opacity: 0.95,
     },
-    openDish: {
-        paddingTop: 20,
-        //paddingBottom: 100,
+    openDishModal: {
+        backgroundColor: "transparent",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        paddingVertical: 20,
     },
 });
 

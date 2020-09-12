@@ -1,13 +1,8 @@
 import React, {Component} from "react";
-import {
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globals, globalStylesheet} from "../../resources/styles";
-import {stylesheet as productCardStyleseet} from "../components/ProductCard";
+import {stylesheet as productCardStylesheet} from "./ProductCard";
+import {IProduct} from "../screens/MainScreen";
 // import MenuIcon from "./../../resources/assets/drawable/menu_icon.svg";
 // import CartIcon from "./../../resources/assets/drawable/cart_icon.svg";
 // import FishIcon from "./../../resources/assets/drawable/fish_icon2.svg";
@@ -17,11 +12,9 @@ import {stylesheet as productCardStyleseet} from "../components/ProductCard";
 export interface IOpenDishState {}
 export interface IOpenDishProps {
     width: number;
+    height: number;
     image?: any;
-    name: string;
-    composition: string;
-    price: string;
-    crossOutPrice?: number;
+    product: IProduct | null;
 }
 
 class OpenDish extends Component<
@@ -34,57 +27,37 @@ class OpenDish extends Component<
     }
 
     render() {
-        const {
-            width,
-            //height,
-            name,
-            composition,
-            price,
-            crossOutPrice,
-            image,
-            style,
-        } = this.props;
+        const {width, height, product, image} = this.props;
         const widthWithoutPadding =
             width - 2 * stylesheet.container.paddingHorizontal;
-        return (
+        return product !== null ? (
             <View
                 style={{
-                    ...productCardStyleseet.container,
                     ...stylesheet.container,
                     width: width,
+                    height: height,
                 }}>
                 <Image
                     source={require("../../resources/assets/drawable/food.jpg")}
                     style={{
                         width: widthWithoutPadding,
-                        height: widthWithoutPadding,
+                        flex: 1,
+                        resizeMode: "cover",
                         borderRadius: 10,
                     }}
                 />
-                <Text style={stylesheet.title}>{name}</Text>
-                <Text style={stylesheet.composition}>{composition}</Text>
-                <View
-                    style={{
-                        //flexDirection: "row",
-                        //alignItems: "center",
-                        marginTop: 13,
-                        //paddingRight: width / 2,
-                        //width: widthWithoutPadding,
-                    }}>
-                    <Text
-                        style={{
-                            ...stylesheet.crossOutPrice,
-                            position: "absolute",
-                            left: 30,
-                        }}>
-                        {crossOutPrice}
+                <Text style={stylesheet.title}>{product.name}</Text>
+                <Text style={stylesheet.composition}>
+                    {product.composition}
+                </Text>
+                <View style={stylesheet.priceContainer}>
+                    <Text style={stylesheet.crossOutPrice}>
+                        {product.crossOutPrice
+                            ? product.crossOutPrice + " руб"
+                            : ""}
                     </Text>
-                    <Text
-                        style={{
-                            ...stylesheet.price,
-                            left: widthWithoutPadding / 2 - 30,
-                        }}>
-                        {price}
+                    <Text style={stylesheet.price}>
+                        {product.price + " руб"}
                     </Text>
                 </View>
                 <TouchableOpacity
@@ -96,6 +69,8 @@ class OpenDish extends Component<
                     </Text>
                 </TouchableOpacity>
             </View>
+        ) : (
+            <></>
         );
     }
 }
@@ -104,6 +79,18 @@ export const stylesheet = StyleSheet.create({
     container: {
         paddingHorizontal: 23,
         paddingVertical: 27,
+        borderRadius: 20,
+        backgroundColor: globals.cardBackgroundColor,
+
+        shadowColor: globals.shadowColor,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+
+        elevation: 4,
     },
     title: {
         ...globalStylesheet.primaryText,
@@ -117,6 +104,12 @@ export const stylesheet = StyleSheet.create({
         lineHeight: 18,
         marginTop: 6,
     },
+    priceContainer: {
+        marginTop: 13,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
     price: {
         ...globalStylesheet.price,
         fontSize: 18,
@@ -126,13 +119,14 @@ export const stylesheet = StyleSheet.create({
         ...globalStylesheet.crossedOutPrice,
         fontSize: 14,
         lineHeight: 23,
+        right: 10,
     },
     addToCartButton: {
         paddingVertical: 11,
         paddingHorizontal: 22,
         backgroundColor: globals.primaryColor,
         borderRadius: 7,
-        opacity: productCardStyleseet.shoppingCartButton.opacity,
+        opacity: productCardStylesheet.shoppingCartButton.opacity,
         alignSelf: "center",
         marginTop: 15,
     },
