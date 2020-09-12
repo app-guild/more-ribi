@@ -5,26 +5,46 @@ export enum ProductType {
     Poke = "poke",
     Rolls = "rolls",
     Soups = "soups",
-    Empty = "",
+    None = "",
 }
 
-export function translateCategoryName(category: string) {
-    switch (category) {
-        case ProductType.Wok:
-            return "Вок";
-        case ProductType.Deserts:
-            return "Десерты";
-        case ProductType.Beverages:
-            return "Напитки";
-        case ProductType.Poke:
-            return "Поке";
-        case ProductType.Rolls:
-            return "Роллы";
-        case ProductType.Soups:
-            return "Супы";
-        case ProductType.Empty:
-            return "";
-        default:
-            return "";
+export namespace ProductType {
+    export function parse(value: string): ProductType {
+        switch (value) {
+            case ProductType.Wok:
+                return ProductType.Wok;
+            case ProductType.Deserts:
+                return ProductType.Deserts;
+            case ProductType.Beverages:
+                return ProductType.Beverages;
+            case ProductType.Poke:
+                return ProductType.Poke;
+            case ProductType.Rolls:
+                return ProductType.Rolls;
+            case ProductType.Soups:
+                return ProductType.Soups;
+            default:
+                return ProductType.None;
+        }
+    }
+
+    export function translateCategoryName(category: string) {
+        switch (category) {
+            case ProductType.Wok:
+                return "Вок";
+            case ProductType.Deserts:
+                return "Десерты";
+            case ProductType.Beverages:
+                return "Напитки";
+            case ProductType.Poke:
+                return "Поке";
+            case ProductType.Rolls:
+                return "Роллы";
+            case ProductType.Soups:
+                return "Супы";
+            default:
+                return "";
+        }
     }
 }
+

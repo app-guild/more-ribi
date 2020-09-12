@@ -12,9 +12,7 @@ export default class MoySkladAPI {
      */
     static loadProducts(productType: ProductType): Promise<Product[]> {
         return this.getGroupUrl(productType).then((groupUrl: string) => {
-            const url =
-                "https://online.moysklad.ru/api/remap/1.1/entity/assortment?filter=productFolder=" +
-                groupUrl;
+            const url = "https://online.moysklad.ru/api/remap/1.1/entity/assortment?filter=productFolder=" + groupUrl;
             return this.fetchUrl(url, "GET").then((json) => {
                 return this.parseProducts(json);
             });
@@ -27,9 +25,7 @@ export default class MoySkladAPI {
      * @private
      */
     private static getGroupUrl(productType: ProductType): Promise<string> {
-        const url =
-            "https://online.moysklad.ru/api/remap/1.1/entity/productfolder?filter=code=" +
-            productType;
+        const url = "https://online.moysklad.ru/api/remap/1.1/entity/productfolder?filter=code=" + productType;
         return this.fetchUrl(url, "GET").then((json) => {
             return json.rows[0].meta.href;
         });
@@ -42,14 +38,7 @@ export default class MoySkladAPI {
      * @private
      */
     private static parseProducts(json: any): Product[] {
-        const products: Product[] = [];
-
-        json.rows.forEach((jsonProduct: any) => {
-            const product = new Product(jsonProduct);
-            products.push(product);
-        });
-
-        return products;
+        return json.rows.map((productJson: any) => Product.parseMoySkladJson(productJson));
     }
 
     private static fetchUrl(url: string, method: string): Promise<any> {
