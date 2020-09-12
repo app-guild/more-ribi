@@ -1,4 +1,4 @@
-import {globals} from "../../../resources/styles";
+import {globalColors} from "../../../resources/styles";
 import PushNotification, {
     ChannelObject,
     PushNotificationObject,
@@ -26,7 +26,7 @@ const mainNotificationPattern: PushNotificationObject = {
     smallIcon: "ic_notification",
     bigText: "My big text that will be shown when notification is expanded",
     vibrate: true,
-    color: globals.primaryColor,
+    color: globalColors.primaryColor,
     vibration: 300,
     tag: "Море Рыбы",
     group: "group",

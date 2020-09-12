@@ -1,6 +1,6 @@
 import {StyleSheet} from "react-native";
 
-const globals = {
+const globalColors = {
     primaryColor: "#779DB9",
     accentColor: "#E5E5E5",
     mainBackgroundColor: "#E5E5E5",
@@ -18,7 +18,7 @@ const globals = {
 
 const globalStylesheet = StyleSheet.create({
     centerBody: {
-        backgroundColor: globals.mainBackgroundColor,
+        backgroundColor: globalColors.mainBackgroundColor,
         position: "relative",
         height: "100%",
         display: "flex",
@@ -31,14 +31,14 @@ const globalStylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 18,
-        color: globals.mainTextColor,
+        color: globalColors.mainTextColor,
     },
     secondaryText: {
         fontFamily: "Muli",
         fontStyle: "normal",
         fontSize: 10,
         lineHeight: 13,
-        color: globals.additionalTextColor,
+        color: globalColors.additionalTextColor,
     },
     price: {
         fontFamily: "Muli",
@@ -46,7 +46,7 @@ const globalStylesheet = StyleSheet.create({
         fontWeight: "normal",
         fontSize: 14,
         lineHeight: 16,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
     },
     crossedOutPrice: {
         fontFamily: "Muli",
@@ -54,9 +54,9 @@ const globalStylesheet = StyleSheet.create({
         fontWeight: "normal",
         fontSize: 10,
         lineHeight: 13,
-        color: globals.crossedOutPriceColor,
+        color: globalColors.crossedOutPriceColor,
         textDecorationLine: "line-through",
     },
 });
 
-export {globals, globalStylesheet};
+export {globalColors, globalStylesheet};
