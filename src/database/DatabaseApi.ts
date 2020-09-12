@@ -37,6 +37,55 @@ const selectCartPriceSql = `
 `;
 
 export default class DatabaseApi {
+    /**
+     * Get array of products
+     * @return {Promise<Product[]>} Promise contains array of products
+     */
+    static getProducts(): Promise<Product[]> {
+        const sql = `
+            SELECT 
+                id as product_id,
+                name, price, discountPrice, imageUrl, type, composition, available
+            FROM Products
+        `;
+        return this.executeQuery(sql).then((results) => {
+            return this.parseProducts(results);
+        });
+    }
+
+    /**
+     * Get user orders with products
+     * @return {Promise<Order>} Promise contains order
+     */
+    static getOrders(): Promise<Order> {
+        const sql = `
+            SELECT 
+                Orders.id as order_id, 
+                date, address, comment,
+                Products.id as product_id,
+                name, price, discountPrice, imageUrl, type, composition, available
+            FROM Orders
+            INNER JOIN OrderProducts ON Orders.id = OrderProducts.order_id
+            INNER JOIN Products ON OrderProducts.product_id = Products.id  
+            WHERE Orders.date IS NOT NULL
+        `;
+
+        return this.executeQuery(sql).then((results) => {
+            const products = this.parseProducts(results);
+            return Order.parseDatabaseResponse(results.rows.raw(), products);
+        });
+    }
+
+    /**
+     * Get restaurants
+     * @return {Promise<Restaurant[]>} Promise contains array of restaurant
+     */
+    static getRestaurants(): Promise<Restaurant[]> {
+        const sql = `SELECT * FROM Restaurants`;
+        return this.executeQuery(sql).then((results) => {
+            return results.rows.raw().map((json) => Restaurant.parseDatabaseJson(json));
+        });
+    }
 
     // region Cart
 
@@ -137,56 +186,6 @@ export default class DatabaseApi {
     }
 
     // endregion
-
-    /**
-     * Get array of products
-     * @return {Promise<Product[]>} Promise contains array of products
-     */
-    static getProducts(): Promise<Product[]> {
-        const sql = `
-            SELECT 
-                id as product_id,
-                name, price, discountPrice, imageUrl, type, composition, available
-            FROM Products
-        `;
-        return this.executeQuery(sql).then((results) => {
-            return this.parseProducts(results);
-        });
-    }
-
-    /**
-     * Get user orders with products
-     * @return {Promise<Order>} Promise contains order
-     */
-    static getOrders(): Promise<Order> {
-        const sql = `
-            SELECT 
-                Orders.id as order_id, 
-                date, address, comment,
-                Products.id as product_id,
-                name, price, discountPrice, imageUrl, type, composition, available
-            FROM Orders
-            INNER JOIN OrderProducts ON Orders.id = OrderProducts.order_id
-            INNER JOIN Products ON OrderProducts.product_id = Products.id  
-            WHERE Orders.date IS NOT NULL
-        `;
-
-        return this.executeQuery(sql).then((results) => {
-            const products = this.parseProducts(results);
-            return Order.parseDatabaseResponse(results.rows.raw(), products);
-        });
-    }
-
-    /**
-     * Get restaurants
-     * @return {Promise<Restaurant[]>} Promise contains array of restaurant
-     */
-    static getRestaurants(): Promise<Restaurant[]> {
-        const sql = `SELECT * FROM Restaurants`;
-        return this.executeQuery(sql).then((results) => {
-            return results.rows.raw().map((json) => Restaurant.parseDatabaseJson(json));
-        });
-    }
 
     // TODO for test, need remove
     static addProduct(): void {
