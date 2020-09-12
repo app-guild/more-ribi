@@ -1,12 +1,14 @@
 import SQLite from "react-native-sqlite-storage";
 import Product from "../entities/Product";
 import Cart from "../entities/Cart";
+import Order from "../entities/Order";
+import Restaurant from "../entities/Restaurant";
 
 SQLite.DEBUG = true;
 
 export type TKey = string | number;
 
-type Json = any;
+export type Json = any;
 
 interface IRows {
     length: number;
@@ -35,8 +37,12 @@ const selectCartPriceSql = `
 `;
 
 export default class DatabaseApi {
+
+    // region Cart
+
     /**
      * Get cart with all products
+     * @return {Promise<Cart>} Promise contains cart
      */
     static getCart(): Promise<Cart> {
         const sql = `
@@ -65,30 +71,120 @@ export default class DatabaseApi {
 
     /**
      * Add product to cart and return new cart price
-     * @param productId
+     * @param {TKey} productId
+     * @return {Promise<number>} Promise contains new cart price
      */
     static addProductToCart(productId: TKey): Promise<number> {
-        // TODO попробовать написать запрос, который сам посчитает cartId без доп запроса
         return this.getCartId().then((cartId) => {
             const sql = `
                 INSERT INTO OrderProducts (order_id, product_id) VALUES (${cartId}, ${productId})
                 ${selectCartPriceSql}
             `;
             return this.executeQuery(sql).then((results) => {
-                return results.rows.raw()[0]?.cart_sum;
+                return results.rows.raw()[0]?.cart_sum || 0;
             });
         });
     }
 
     /**
+     * Remove product from cart and return new cart price
+     * @param {TKey} productId
+     * @return {Promise<number>} Promise contains new cart price
+     */
+    static removeProductFromCart(productId: TKey): Promise<number> {
+        return this.getCartId().then((cartId) => {
+            const sql = `
+                DELETE FROM OrderProducts WHERE order_id = ${cartId} & product_id = ${productId})
+                ${selectCartPriceSql}
+            `;
+            return this.executeQuery(sql).then((results) => {
+                return results.rows.raw()[0]?.cart_sum || 0;
+            });
+        });
+    }
+
+    /**
+     * Remove all products from cart and return new cart price
+     * @remark After clear cart price is 0
+     * @return {Promise<number>} Promise contains new cart price.
+     */
+    static clearCart(): Promise<number> {
+        return this.getCartId().then((cartId) => {
+            const sql = `DELETE FROM OrderProducts WHERE order_id = ${cartId}`;
+            return this.executeQuery(sql).then(() => 0);
+        });
+    }
+
+    /**
+     * Create order from cart and create new cart
+     * @return {Promise<TKey>} Promise contains new cart id
+     */
+    static createOrderFromCart(address: string, comment: string): Promise<TKey> {
+        return this.getCartId().then((cartId) => {
+            const sql = `
+                UPDATE Orders SET 
+                    date=datetime('now','localtime'), 
+                    address=${address}, 
+                    comment=${comment} 
+                WHERE id=${cartId};
+                INSERT INTO Orders DEFAULT VALUES;
+                SELECT max(id) as id FROM Orders WHERE date IS NULL
+            `;
+            return this.executeQuery(sql).then((results) => {
+                return results.rows.raw()[0]?.id;
+            });
+        });
+    }
+
+    // endregion
+
+    /**
      * Get array of products
+     * @return {Promise<Product[]>} Promise contains array of products
      */
     static getProducts(): Promise<Product[]> {
         const sql = `
-            SELECT * FROM Products
+            SELECT 
+                id as product_id,
+                name, price, discountPrice, imageUrl, type, composition, available
+            FROM Products
         `;
         return this.executeQuery(sql).then((results) => {
             return this.parseProducts(results);
+        });
+    }
+
+    /**
+     * Get user orders with products
+     * @return {Promise<Order>} Promise contains order
+     */
+    static getOrders(): Promise<Order> {
+        const sql = `
+            SELECT 
+                Orders.id as order_id, 
+                date, address, comment,
+                Products.id as product_id,
+                name, price, discountPrice, imageUrl, type, composition, available
+            FROM Orders
+            INNER JOIN OrderProducts ON Orders.id = OrderProducts.order_id
+            INNER JOIN Products ON OrderProducts.product_id = Products.id  
+            WHERE Orders.date IS NOT NULL
+        `;
+
+        return this.executeQuery(sql).then((results) => {
+            const products = this.parseProducts(results);
+            return Order.parseDatabaseResponse(results.rows.raw(), products);
+        });
+    }
+
+    /**
+     * Get restaurants
+     * @return {Promise<Restaurant[]>} Promise contains array of restaurant
+     */
+    static getRestaurants(): Promise<Restaurant[]> {
+        const sql = `SELECT * FROM Restaurants`;
+        return this.executeQuery(sql).then((results) => {
+            return results.rows.raw().map((json) => Restaurant.parseDatabaseJson(json));
         });
     }
 
@@ -105,6 +201,8 @@ export default class DatabaseApi {
         });
     }
 
+    // TODO попробовать написать запросы, работающие с корзиной, так, чтобы они сами высчитывали cart id
+    //  Благодаря этому будет выполняться всегда один запрос к БД
     private static getCartId(): Promise<number> {
         const sql = `SELECT max(id) as id FROM Orders WHERE date IS NULL`;
         return this.executeQuery(sql).then((results) => {

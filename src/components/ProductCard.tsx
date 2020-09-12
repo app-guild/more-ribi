@@ -21,6 +21,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
     }
 
     private addToCart(productId: TKey) {
+        // TODO notify to MainScreen new cart price
         DatabaseApi.addProductToCart(productId);
     }
 

@@ -47,12 +47,12 @@ export default class Product {
 
     static parseDatabaseJson(json: any): Product {
         return new Product(
-            json.id,
+            json.product_id,
             json.name,
             ProductType.parse(json.type),
             json.price,
             json.discountPrice,
-            json.available,
+            !!json.available,
             json.imageUrl,
             json.composition,
         );

@@ -2,14 +2,13 @@ import Product from "./Product";
 import {TKey} from "../database/DatabaseApi";
 
 export default class Cart {
-    private _products: Product[];
     private _totalPrice: number;
-    private _id: TKey;
 
-    constructor(id: TKey, products: Product[]) {
-        this._id = id;
-        this._products = products;
-        this._totalPrice = this.countTotalPrice(products);
+    constructor(
+        protected _id: TKey,
+        protected _products: Product[],
+    ) {
+        this._totalPrice = this.countTotalPrice(this._products);
     }
 
     private countTotalPrice(products: Product[]): number {
@@ -31,9 +30,5 @@ export default class Cart {
 
     get id(): TKey {
         return this._id;
-    }
-
-    static parseDatabaseResponse(response: string): Cart {
-        return new Cart([]);
     }
 }

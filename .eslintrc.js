@@ -28,5 +28,6 @@ module.exports = {
         }
       }
     }],
+    "react-native/no-inline-styles": "off"
   }
 };

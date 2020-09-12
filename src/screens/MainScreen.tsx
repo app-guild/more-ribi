@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
-import {CategorizedRecyclerListView, ICategorizedData} from "../components/CategorizedRecyclerListView";
+import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import {globals} from "../../resources/styles";
 import DatabaseApi from "../database/DatabaseApi";
 import Product from "../entities/Product";

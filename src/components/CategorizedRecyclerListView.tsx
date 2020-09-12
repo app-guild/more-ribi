@@ -32,20 +32,17 @@ export class CategorizedRecyclerListView extends Component<
 
     constructor(props: ICategorizedRecyclerListViewProps) {
         super(props);
-        this.state = {
-            dataProvider: this.props.dataProvider,
-        };
         this.categories = [];
         this.onScroll = this.onScroll.bind(this);
     }
 
     private collectCategories() {
-        for (let i = 0; i < this.state.dataProvider.getSize(); i++) {
-            if (this.state.dataProvider.getDataForIndex(i).type === "category") {
-                if (i !== this.state.dataProvider.getSize() - 1) {
+        for (let i = 0; i < this.props.dataProvider.getSize(); i++) {
+            if (this.props.dataProvider.getDataForIndex(i).type === "category") {
+                if (i !== this.props.dataProvider.getSize() - 1) {
                     const offsetY = this.list.current?.getLayout(i + 1)?.y;
                     this.categories.push({
-                        name: this.state.dataProvider.getDataForIndex(i).name,
+                        name: this.props.dataProvider.getDataForIndex(i).name,
                         offset: offsetY !== undefined ? offsetY - 1 : -1,
                         index: i,
                     });
@@ -140,13 +137,18 @@ export class CategorizedRecyclerListView extends Component<
     }
 
     render() {
-        return (
-            <RecyclerListView
-                {...this.props}
-                dataProvider={this.state.dataProvider}
-                ref={this.list}
-                onScroll={this.onScroll}
-            />
-        );
+        let resultRender = null;
+
+        if (this.props.dataProvider.getSize()) {
+            resultRender = (
+                <RecyclerListView
+                    {...this.props}
+                    ref={this.list}
+                    onScroll={this.onScroll}
+                />
+            );
+        }
+
+        return resultRender;
     }
 }

@@ -18,19 +18,11 @@ class Header extends Component<any, Readonly<IHeaderState>> {
             <View style={stylesheet.headerContainer}>
                 <View style={stylesheet.headerSubContainer}>
                     <View style={stylesheet.headerTopContainer}>
-                        <MenuIcon
-                            width={30}
-                            height={30}
-                            onTouchEnd={this.props.navigation.openDrawer}
-                        />
+                        <MenuIcon width={30} height={30} onTouchEnd={this.props.navigation.openDrawer} />
                         <Text style={stylesheet.headerTitle}>Много рыбы</Text>
                     </View>
                     <View style={stylesheet.headerTopContainer}>
-                        <CartIcon
-                            width={19}
-                            height={18}
-                            fill={globals.primaryColor}
-                        />
+                        <CartIcon width={19} height={18} fill={globals.primaryColor} />
                         <Text style={stylesheet.headerPriceText}>500P</Text>
                     </View>
                 </View>
@@ -38,12 +30,8 @@ class Header extends Component<any, Readonly<IHeaderState>> {
                 <View style={{alignSelf: "flex-start"}}>
                     <View
                         style={stylesheet.headerCategoryButton}
-                        onTouchEnd={() =>
-                            this.props.navigation.navigate("Categories")
-                        }>
-                        <Text style={stylesheet.headerSubTitle}>
-                            {this.props.category}
-                        </Text>
+                        onTouchEnd={() => this.props.navigation.navigate("Categories")}>
+                        <Text style={stylesheet.headerSubTitle}>{this.props.category}</Text>
                         <FishIcon width={15} height={25} />
                     </View>
                     <View style={stylesheet.headerCategoryUnderline} />

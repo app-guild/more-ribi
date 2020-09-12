@@ -12,17 +12,14 @@ export interface ICategoryCardProps {
     style?: any;
 }
 
-class CategoryCard extends Component<
-    Readonly<ICategoryCardProps>,
-    Readonly<ICategoryCardState>
-> {
+class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICategoryCardState>> {
     constructor(props: any) {
         super(props);
         this.state = {};
     }
 
     render() {
-        const {size, text, onTouchEnd, image, style} = this.props;
+        const {size, text, onTouchEnd, style} = this.props;
         return (
             <View
                 style={{
