@@ -558,6 +558,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                             layoutProvider={this.layoutProvider}
                             dataProvider={this.dataProvider}
                             initialRenderIndex={1}
+                            visible={!this.state.modalVisible}
                         />
                         <Modal
                             animationType="slide"
@@ -636,11 +637,13 @@ export const stylesheet = StyleSheet.create({
     },
     openDishModal: {
         paddingVertical: 20,
+        //backgroundColor: globals.cardBackgroundColor
+        //backgroundColor: "blue",
     },
     centeredView: {
-        backgroundColor: globals.cardBackgroundColor,
         alignItems: "center",
         justifyContent: "flex-end",
+        //backgroundColor: "red",
     },
 });
 
