@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {StyleSheet, Text, View} from "react-native";
-import {globals} from "../../resources/styles";
+import {globalColors} from "../../resources/styles";
 import MenuIcon from "./../../resources/assets/drawable/menu_icon.svg";
 import CartIcon from "./../../resources/assets/drawable/cart_icon.svg";
 import FishIcon from "./../../resources/assets/drawable/fish_icon2.svg";
@@ -37,7 +37,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                         <CartIcon
                             width={19}
                             height={18}
-                            fill={globals.primaryColor}
+                            fill={globalColors.primaryColor}
                         />
                         <Text numberOfLines={1} style={stylesheet.priceText}>
                             500P
@@ -82,7 +82,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 24,
         lineHeight: 29,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
         marginLeft: 9,
     },
     subTitle: {
@@ -91,7 +91,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 16,
         lineHeight: 20,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
         marginRight: 7,
     },
     topContainer: {
@@ -108,7 +108,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 18,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
         marginLeft: 6,
     },
     categoryButton: {
@@ -117,7 +117,7 @@ export const stylesheet = StyleSheet.create({
         marginTop: 10,
     },
     categoryUnderline: {
-        backgroundColor: globals.headerUnderlineColor,
+        backgroundColor: globalColors.headerUnderlineColor,
         width: "auto",
         height: 2,
         marginLeft: 38,
