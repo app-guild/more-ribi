@@ -16,7 +16,7 @@ import {
     CategorizedRecyclerListView,
     ICategorizedData,
 } from "../components/CategorizedRecyclerListView";
-import {globals} from "../../resources/styles";
+import {globalColors} from "../../resources/styles";
 
 export interface IMainScreenState {
     mainContainerWidth: number;
@@ -560,13 +560,13 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
     },
     categoryHeight: {
         height: 30,
     },
     backgroundOverlay: {
-        backgroundColor: globals.backgroundOverlay,
+        backgroundColor: globalColors.backgroundOverlay,
         flex: 1,
         opacity: 0.95,
     },
