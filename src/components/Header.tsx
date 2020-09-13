@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {StyleSheet, Text, View} from "react-native";
-import {globals} from "../../resources/styles";
+import {globalColors} from "../../resources/styles";
 import MenuIcon from "./../../resources/assets/drawable/menu_icon.svg";
 import CartIcon from "./../../resources/assets/drawable/cart_icon.svg";
 import FishIcon from "./../../resources/assets/drawable/fish_icon2.svg";
@@ -22,7 +22,11 @@ class Header extends Component<any, Readonly<IHeaderState>> {
                         <Text style={stylesheet.headerTitle}>Много рыбы</Text>
                     </View>
                     <View style={stylesheet.headerTopContainer}>
-                        <CartIcon width={19} height={18} fill={globals.primaryColor} />
+                        <CartIcon
+                            width={19}
+                            height={18}
+                            fill={globalColors.primaryColor}
+                        />
                         <Text style={stylesheet.headerPriceText}>500P</Text>
                     </View>
                 </View>
@@ -52,7 +56,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 24,
         lineHeight: 29,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
         marginLeft: 9,
     },
     headerSubTitle: {
@@ -61,7 +65,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 16,
         lineHeight: 20,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
         marginRight: 7,
     },
     headerTopContainer: {
@@ -78,7 +82,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 18,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
         marginLeft: 6,
     },
     headerCategoryButton: {
@@ -87,7 +91,7 @@ export const stylesheet = StyleSheet.create({
         marginTop: 10,
     },
     headerCategoryUnderline: {
-        backgroundColor: globals.headerUnderlineColor,
+        backgroundColor: globalColors.headerUnderlineColor,
         width: "auto",
         height: 2,
         marginLeft: 38,

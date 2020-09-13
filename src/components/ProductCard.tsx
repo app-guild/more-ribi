@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Image, Text, View, TouchableOpacity, StyleSheet} from "react-native";
-import {globals, globalStylesheet} from "../../resources/styles";
+import {globalColors, globalStylesheet} from "../../resources/styles";
 import CardIcon from "../../resources/assets/drawable/cart_icon.svg";
 import DatabaseApi, {TKey} from "../database/DatabaseApi";
 import Product from "../entities/Product";
@@ -75,7 +75,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                             <CardIcon
                                 width={20}
                                 height={20}
-                                fill={globals.cardBackgroundColor}
+                                fill={globalColors.cardBackgroundColor}
                                 style={{position: "absolute"}}
                             />
                         </TouchableOpacity>
@@ -90,9 +90,9 @@ export const stylesheet = StyleSheet.create({
     container: {
         borderRadius: 20,
         padding: 10,
-        backgroundColor: globals.cardBackgroundColor,
+        backgroundColor: globalColors.cardBackgroundColor,
 
-        shadowColor: globals.shadowColor,
+        shadowColor: globalColors.shadowColor,
         shadowOffset: {
             width: 0,
             height: 1,
@@ -105,7 +105,7 @@ export const stylesheet = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 50,
-        backgroundColor: globals.primaryColor,
+        backgroundColor: globalColors.primaryColor,
         width: 38,
         height: 38,
         opacity: 0.5,

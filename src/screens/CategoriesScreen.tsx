@@ -10,7 +10,7 @@ import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
-import {globals} from "../../resources/styles";
+import {globalColors} from "../../resources/styles";
 
 export interface ICategoriesScreenState {
     mainContainerWidth: number;
@@ -185,7 +185,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 16,
         lineHeight: 20,
-        color: globals.primaryColor,
+        color: globalColors.primaryColor,
     },
     headerFishBackButton: {
         position: "absolute",

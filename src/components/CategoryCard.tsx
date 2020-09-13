@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Image, StyleSheet, Text, View} from "react-native";
-import {globals} from "../../resources/styles";
+import {globalColors} from "../../resources/styles";
 
 export interface ICategoryCardState {}
 
@@ -51,7 +51,7 @@ export const stylesheet = StyleSheet.create({
     cardTitleContainer: {
         position: "absolute",
         width: "100%",
-        backgroundColor: globals.categoriesScreenCardTitleContainerBGColor,
+        backgroundColor: globalColors.categoriesScreenCardTitleContainerBGColor,
         alignItems: "center",
         paddingVertical: 6,
         top: "60%",
@@ -63,7 +63,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globals.categoryCardTextColor,
+        color: globalColors.categoryCardTextColor,
     },
 });
 
