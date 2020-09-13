@@ -12,7 +12,6 @@ export interface IHeaderProps {
     needCategoryName: boolean;
     category: string;
     navigation: DrawerNavigationProp<any>;
-    onPress: any;
 }
 
 class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
@@ -23,7 +22,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
 
     render() {
         return (
-            <View style={stylesheet.container} onTouchEnd={this.props.onPress}>
+            <View style={stylesheet.container}>
                 <View style={stylesheet.subContainer}>
                     <View style={stylesheet.topContainer}>
                         <MenuIcon

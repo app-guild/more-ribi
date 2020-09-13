@@ -3,11 +3,6 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globals, globalStylesheet} from "../../resources/styles";
 import {stylesheet as productCardStylesheet} from "./ProductCard";
 import {IProduct} from "../screens/MainScreen";
-// import MenuIcon from "./../../resources/assets/drawable/menu_icon.svg";
-// import CartIcon from "./../../resources/assets/drawable/cart_icon.svg";
-// import FishIcon from "./../../resources/assets/drawable/fish_icon2.svg";
-// import FishBackButton from "./../../resources/assets/drawable/fish_back_button.svg";
-// import {DrawerNavigationProp} from "@react-navigation/drawer";
 
 export interface IOpenDishState {}
 export interface IOpenDishProps {
@@ -27,7 +22,7 @@ class OpenDish extends Component<
     }
 
     render() {
-        const {width, height, product, image} = this.props;
+        const {width, height, product} = this.props;
         const widthWithoutPadding =
             width - 2 * stylesheet.container.paddingHorizontal;
         return product !== null ? (

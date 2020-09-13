@@ -17,11 +17,9 @@ import {
     ICategorizedData,
 } from "../components/CategorizedRecyclerListView";
 import {globals} from "../../resources/styles";
-//import Dialog, {ScaleAnimation} from "react-native-popup-dialog";
-import Modal, {ScaleAnimation, ModalContent} from "react-native-modals";
+import Modal, {ScaleAnimation} from "react-native-modals";
 import OpenDish from "../components/OpenDish";
 import {getStatusBarHeight} from "react-native-status-bar-height";
-import Product from "../entities/Product";
 
 export interface IMainScreenState {
     mainContainerWidth: number;
@@ -547,9 +545,6 @@ class MainScreen extends Component<any, IMainScreenState> {
                         needCategoryName={!this.state.visible}
                         navigation={this.props.navigation}
                         category={this.state.currentCategory}
-                        onPress={() => {
-                            this.setState({visible: true});
-                        }}
                     />
                     <View style={{flex: 1}}>
                         <CategorizedRecyclerListView
