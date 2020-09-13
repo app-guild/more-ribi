@@ -24,14 +24,7 @@ class ProductCard extends Component<
     }
 
     render() {
-        const {
-            width,
-            height,
-            product,
-            //image,
-            onClick,
-            style,
-        } = this.props;
+        const {width, height, product, onClick, style} = this.props;
 
         return (
             <View
