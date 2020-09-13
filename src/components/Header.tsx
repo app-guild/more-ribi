@@ -12,6 +12,7 @@ export interface IHeaderProps {
     needCategoryName: boolean;
     category: string;
     navigation: DrawerNavigationProp<any>;
+    onFishButton: any;
 }
 
 class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
@@ -59,7 +60,9 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                         <View style={stylesheet.categoryUnderline} />
                     </View>
                 ) : (
-                    <View style={stylesheet.fishBackButton}>
+                    <View
+                        onTouchEnd={this.props.onFishButton}
+                        style={stylesheet.fishBackButton}>
                         <FishBackButton width={47} heigth={17} />
                     </View>
                 )}

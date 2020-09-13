@@ -22,7 +22,6 @@ interface ICategory {
 export interface ICategorizedRecyclerListViewProps
     extends RecyclerListViewProps {
     onCrossCategory: (category: string) => void;
-    visible?: boolean;
 }
 
 export interface ICategorizedRecyclerListViewState {
@@ -35,7 +34,6 @@ export class CategorizedRecyclerListView extends Component<
 > {
     private list = createRef<RecyclerListView<any, any>>();
     private categories: ICategory[];
-    private currentCategoryIndex: number = 0;
 
     constructor(props: ICategorizedRecyclerListViewProps) {
         super(props);
@@ -119,7 +117,7 @@ export class CategorizedRecyclerListView extends Component<
         } else {
             itemIndex = this.categories[category].index;
         }
-        this.list.current?.scrollToIndex(itemIndex, true);
+        this.list.current?.scrollToIndex(itemIndex + 1, true);
     }
 
     static buildProviders(
@@ -178,24 +176,19 @@ export class CategorizedRecyclerListView extends Component<
             rowRenderer,
             layoutProvider,
             dataProvider,
-            visible,
             children,
             ...otherProps
         } = this.props;
 
         return (
-            <>
-                {visible ? (
-                    <RecyclerListView
-                        layoutProvider={layoutProvider}
-                        dataProvider={this.state.dataProvider}
-                        ref={this.list}
-                        rowRenderer={rowRenderer}
-                        onScroll={this.onScroll}
-                        {...otherProps}
-                    />
-                ) : null}
-            </>
+            <RecyclerListView
+                layoutProvider={layoutProvider}
+                dataProvider={this.state.dataProvider}
+                ref={this.list}
+                rowRenderer={rowRenderer}
+                onScroll={this.onScroll}
+                {...otherProps}
+            />
         );
     }
 }

@@ -5,6 +5,8 @@ import {
     StyleSheet,
     Text,
     View,
+    Modal,
+    TouchableWithoutFeedback,
 } from "react-native";
 import Header from "../components/Header";
 import ProductCard, {
@@ -17,7 +19,6 @@ import {
     ICategorizedData,
 } from "../components/CategorizedRecyclerListView";
 import {globals} from "../../resources/styles";
-import Modal, {ScaleAnimation} from "react-native-modals";
 import OpenDish from "../components/OpenDish";
 import {getStatusBarHeight} from "react-native-status-bar-height";
 
@@ -27,7 +28,7 @@ export interface IMainScreenState {
     productCardWidth: number;
     productsData: ICategorizedData[];
     currentCategory: string;
-    visible: boolean;
+    modalVisible: boolean;
     currentProduct: IProduct | null;
 }
 
@@ -401,7 +402,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                 2,
             productsData: productsData,
             currentCategory: translateCategoryName(productsData[0].category),
-            visible: false,
+            modalVisible: false,
             currentProduct: null,
         };
 
@@ -460,7 +461,7 @@ class MainScreen extends Component<any, IMainScreenState> {
     }
 
     onCardClick(product: IProduct) {
-        this.setState({visible: true, currentProduct: product});
+        this.setState({modalVisible: true, currentProduct: product});
     }
 
     _rowRenderer(type: any, data: any) {
@@ -542,9 +543,12 @@ class MainScreen extends Component<any, IMainScreenState> {
                 style={{flex: 1}}>
                 <View style={stylesheet.backgroundOverlay}>
                     <Header
-                        needCategoryName={!this.state.visible}
+                        needCategoryName={!this.state.modalVisible}
                         navigation={this.props.navigation}
                         category={this.state.currentCategory}
+                        onFishButton={() => {
+                            this.setState({modalVisible: false});
+                        }}
                     />
                     <View style={{flex: 1}}>
                         <CategorizedRecyclerListView
@@ -554,37 +558,42 @@ class MainScreen extends Component<any, IMainScreenState> {
                             layoutProvider={this.layoutProvider}
                             dataProvider={this.dataProvider}
                             initialRenderIndex={1}
-                            visible={!this.state.visible}
                         />
                         <Modal
-                            visible={this.state.visible}
-                            onTouchOutside={() => {
-                                this.setState({visible: false});
-                            }}
-                            modalAnimation={
-                                new ScaleAnimation({useNativeDriver: true})
-                            }
-                            hasOverlay={false}
-                            rounded={false}
-                            useNativeDriver={true}
-                            style={{justifyContent: "flex-end"}}
-                            width={this.state.mainContainerWidth}
-                            modalStyle={stylesheet.openDishModal}>
-                            <OpenDish
-                                width={
-                                    this.state.mainContainerWidth -
-                                    2 *
-                                        stylesheet.productCardContainer
-                                            .paddingHorizontal
-                                }
-                                height={
-                                    this.state.screenHeight -
-                                    getStatusBarHeight() -
-                                    headerHeight -
-                                    2 * stylesheet.openDishModal.paddingVertical
-                                }
-                                product={this.state.currentProduct}
-                            />
+                            animationType="slide"
+                            transparent={true}
+                            visible={this.state.modalVisible}
+                            onRequestClose={() => {
+                                this.setState({modalVisible: false});
+                            }}>
+                            <TouchableWithoutFeedback
+                                onPress={() => {
+                                    this.setState({modalVisible: false});
+                                }}>
+                                <View style={{flex: 1}} />
+                            </TouchableWithoutFeedback>
+
+                            <View style={stylesheet.centeredView}>
+                                <View style={stylesheet.openDishModal}>
+                                    <OpenDish
+                                        width={
+                                            this.state.mainContainerWidth -
+                                            2 *
+                                                stylesheet.productCardContainer
+                                                    .paddingHorizontal
+                                        }
+                                        height={
+                                            this.state.screenHeight -
+                                            getStatusBarHeight() -
+                                            headerHeight -
+                                            2 *
+                                                stylesheet.openDishModal
+                                                    .paddingVertical
+                                        }
+                                        product={this.state.currentProduct}
+                                    />
+                                </View>
+                            </View>
                         </Modal>
                     </View>
                 </View>
@@ -626,10 +635,12 @@ export const stylesheet = StyleSheet.create({
         opacity: 0.95,
     },
     openDishModal: {
-        backgroundColor: "transparent",
+        paddingVertical: 20,
+    },
+    centeredView: {
+        backgroundColor: globals.cardBackgroundColor,
         alignItems: "center",
         justifyContent: "flex-end",
-        paddingVertical: 20,
     },
 });
 
