@@ -12,7 +12,7 @@ export interface IHeaderProps {
     needCategoryName: boolean;
     category: string;
     navigation: DrawerNavigationProp<any>;
-    onFishButton: any;
+    onFishButton: () => any;
 }
 
 class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {

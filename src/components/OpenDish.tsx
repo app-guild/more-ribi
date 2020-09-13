@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {globals, globalStylesheet} from "../../resources/styles";
+import {globalColors, globalStylesheet} from "../../resources/styles";
 import {stylesheet as productCardStylesheet} from "./ProductCard";
 import {IProduct} from "../screens/MainScreen";
 
@@ -75,9 +75,9 @@ export const stylesheet = StyleSheet.create({
         paddingHorizontal: 23,
         paddingVertical: 27,
         borderRadius: 20,
-        backgroundColor: globals.cardBackgroundColor,
+        backgroundColor: globalColors.cardBackgroundColor,
 
-        shadowColor: globals.shadowColor,
+        shadowColor: globalColors.shadowColor,
         shadowOffset: {
             width: 0,
             height: 2,
@@ -119,7 +119,7 @@ export const stylesheet = StyleSheet.create({
     addToCartButton: {
         paddingVertical: 11,
         paddingHorizontal: 22,
-        backgroundColor: globals.primaryColor,
+        backgroundColor: globalColors.primaryColor,
         borderRadius: 7,
         opacity: productCardStylesheet.shoppingCartButton.opacity,
         alignSelf: "center",
@@ -131,7 +131,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globals.categoryCardTextColor,
+        color: globalColors.categoryCardTextColor,
     },
 });
 

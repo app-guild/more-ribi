@@ -34,7 +34,6 @@ export interface IMainScreenState {
 
 export interface IProduct {
     name: string;
-    //image: any;
     price: number;
     crossOutPrice: number;
     composition?: string;

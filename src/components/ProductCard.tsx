@@ -10,7 +10,6 @@ export interface IProductCardProps {
     width: number;
     height: number;
     product: IProduct;
-    //image?: any;
     style?: any;
     onClick: (product: IProduct) => any;
 }
@@ -23,7 +22,6 @@ class ProductCard extends Component<
         super(props);
         this.state = {};
     }
-    ongdgfdgdf() {}
 
     render() {
         const {
@@ -65,10 +63,7 @@ class ProductCard extends Component<
                     <View style={{maxWidth: 100, justifyContent: "flex-end"}}>
                         <Text
                             numberOfLines={1}
-                            style={{
-                                //marginTop: 5,
-                                ...globalStylesheet.primaryText,
-                            }}>
+                            style={globalStylesheet.primaryText}>
                             {product.name}
                         </Text>
                         <Text
