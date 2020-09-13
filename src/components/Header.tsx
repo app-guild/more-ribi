@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {globals} from "../../resources/styles";
 import MenuIcon from "./../../resources/assets/drawable/menu_icon.svg";
 import CartIcon from "./../../resources/assets/drawable/cart_icon.svg";
