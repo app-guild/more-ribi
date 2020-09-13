@@ -29,9 +29,6 @@ class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
     private layoutSize: Dimension[];
 
-    private countProductCardHeight = (productCardWidth: number) =>
-        productCardHeight + (productCardWidth - 2 * productCardStylesheet.container.padding) / imageSidesRatio;
-
     constructor(props: any) {
         super(props);
 
@@ -48,11 +45,11 @@ class MainScreen extends Component<any, IMainScreenState> {
             },
             {
                 width: containerWidth / 2 - 0.0001,
-                height: this.countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
+                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
             },
             {
                 width: containerWidth / 2 - 0.0001,
-                height: this.countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
+                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
             },
         ];
 
@@ -95,6 +92,10 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.setState({currentCategory: ProductType.translateCategoryName(category)});
     }
 
+    private _countProductCardHeight(productCardWidth: number) {
+        return productCardHeight + (productCardWidth - 2 * productCardStylesheet.container.padding) / imageSidesRatio;
+    }
+
     // TODO нужно явно указать типы, хуй поймешь что это такое
     private _rowRenderer(type: any, data: any) {
         switch (type) {
@@ -120,7 +121,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                         }}>
                         <ProductCard
                             width={this.state.productCardWidth}
-                            height={this.countProductCardHeight(this.state.productCardWidth)}
+                            height={this._countProductCardHeight(this.state.productCardWidth)}
                             product={data.item}
                         />
                     </View>
@@ -135,7 +136,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                         }}>
                         <ProductCard
                             width={this.state.productCardWidth}
-                            height={this.countProductCardHeight(this.state.productCardWidth)}
+                            height={this._countProductCardHeight(this.state.productCardWidth)}
                             product={data.item}
                         />
                     </View>
@@ -156,7 +157,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                         ref={this.list}
                         layoutProvider={this.state.layoutProvider}
                         dataProvider={this.state.dataProvider}
-                        initialRenderIndex={0} // TODO почему 1? Если нет данных валится ошибка
+                        initialRenderIndex={0}
                     />
                 </View>
             </ImageBackground>

@@ -26,8 +26,8 @@ const selectCartPriceSql = `
     SELECT 
         SUM(
             CASE WHEN discountPrice IS NULL 
-                THEN price 
-                ELSE discountPrice 
+                THEN price * count
+                ELSE discountPrice * count
             END
         ) as cart_sum
     FROM Orders
@@ -121,12 +121,33 @@ export default class DatabaseApi {
     /**
      * Add product to cart and return new cart price
      * @param {TKey} productId
+     * @param {number} count
      * @return {Promise<number>} Promise contains new cart price
      */
-    static addProductToCart(productId: TKey): Promise<number> {
+    static addProductToCart(productId: TKey, count?: number): Promise<number> {
+        return this.getCartId().then((cartId) => {
+            count = count ? count : 1;
+
+            const sql = `
+                INSERT INTO OrderProducts (order_id, product_id, count) VALUES (${cartId}, ${productId}, ${count})
+                ${selectCartPriceSql}
+            `;
+            return this.executeQuery(sql).then((results) => {
+                return results.rows.raw()[0]?.cart_sum || 0;
+            });
+        });
+    }
+
+    /**
+     * Add product to cart and return new cart price
+     * @param {TKey} productId
+     * @param {number} count New count of product
+     * @return {Promise<number>} Promise contains new cart price
+     */
+    static updateProductCount(productId: TKey, count: number): Promise<number> {
         return this.getCartId().then((cartId) => {
             const sql = `
-                INSERT INTO OrderProducts (order_id, product_id) VALUES (${cartId}, ${productId})
+                UPDATE OrderProducts SET count=${count} WHERE order_id = ${cartId} & product_id = ${productId}
                 ${selectCartPriceSql}
             `;
             return this.executeQuery(sql).then((results) => {
@@ -143,7 +164,7 @@ export default class DatabaseApi {
     static removeProductFromCart(productId: TKey): Promise<number> {
         return this.getCartId().then((cartId) => {
             const sql = `
-                DELETE FROM OrderProducts WHERE order_id = ${cartId} & product_id = ${productId})
+                DELETE FROM OrderProducts WHERE order_id = ${cartId} & product_id = ${productId}
                 ${selectCartPriceSql}
             `;
             return this.executeQuery(sql).then((results) => {
@@ -186,19 +207,6 @@ export default class DatabaseApi {
     }
 
     // endregion
-
-    // TODO for test, need remove
-    static addProduct(): void {
-        const sql = `
-            INSERT INTO Products
-                (name, price, type, discountPrice) 
-            VALUES
-                ('poke1', 100, 'poke', NULL)
-        `;
-        this.executeQuery(sql).then((results) => {
-            console.log(results);
-        });
-    }
 
     // TODO попробовать написать запросы, работающие с корзиной, так, чтобы они сами высчитывали cart id
     //  Благодаря этому будет выполняться всегда один запрос к БД
