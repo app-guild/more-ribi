@@ -31,23 +31,25 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
         return (
             <View
-                onTouchEnd={() => {
-                    onClick(product);
-                }}
                 style={{
                     width: width,
                     height: height,
                     ...stylesheet.container,
                     ...style,
                 }}>
-                <Image
-                    source={require("../../resources/assets/drawable/food.jpg")}
-                    style={{
-                        width: width - 2 * stylesheet.container.padding,
-                        height: (width - 2 * stylesheet.container.padding) / 1.2,
-                        borderRadius: 20,
-                    }}
-                />
+                <View
+                    onTouchEnd={() => {
+                        onClick(product);
+                    }}>
+                    <Image
+                        source={require("../../resources/assets/drawable/food.jpg")}
+                        style={{
+                            width: width - 2 * stylesheet.container.padding,
+                            height: (width - 2 * stylesheet.container.padding) / 1.2,
+                            borderRadius: 20,
+                        }}
+                    />
+                </View>
                 <View
                     style={{
                         flexDirection: "row",
@@ -56,9 +58,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                         marginTop: 7,
                     }}>
                     <View style={{maxWidth: 100, justifyContent: "flex-end"}}>
-                        <Text
-                            numberOfLines={1}
-                            style={globalStylesheet.primaryText}>
+                        <Text numberOfLines={1} style={globalStylesheet.primaryText}>
                             {product.name}
                         </Text>
                         <Text numberOfLines={1} style={globalStylesheet.crossedOutPrice}>

@@ -77,7 +77,7 @@ export class CategorizedRecyclerListView extends Component<
             transformedData.push({type: "category", name: value.category});
             value.items.forEach((item: object, index: number) => {
                 transformedData.push({
-                    type: index % columns,
+                    type: "column" + (index % columns),
                     item,
                 });
             });
@@ -124,8 +124,8 @@ export class CategorizedRecyclerListView extends Component<
                         dim.width = layouts[0].width;
                         dim.height = layouts[0].height;
                     } else {
-                        dim.width = layouts[typeof type === "number" ? type + 1 : 0].width;
-                        dim.height = layouts[typeof type === "number" ? type + 1 : 0].height;
+                        dim.width = layouts[typeof type === "string" ? parseInt(type.slice(-1)) + 1 : 0].width;
+                        dim.height = layouts[typeof type === "string" ? parseInt(type.slice(-1)) + 1 : 0].height;
                     }
                 },
             );

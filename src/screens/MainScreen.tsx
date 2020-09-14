@@ -1,5 +1,5 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, ImageBackground, StyleSheet, Text, View, Modal, TouchableWithoutFeedback} from "react-native";
+import {Dimensions, ImageBackground, Modal, StyleSheet, Text, TouchableWithoutFeedback, View} from "react-native";
 import Header from "../components/Header";
 import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
@@ -7,8 +7,6 @@ import {ProductType} from "../entities/ProductType";
 import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import OpenDish from "../components/OpenDish";
 import {getStatusBarHeight} from "react-native-status-bar-height";
-import {ProductType} from "../entities/ProductType";
-import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import {globalColors} from "../../resources/styles";
 import DatabaseApi from "../database/DatabaseApi";
 import Product from "../entities/Product";
@@ -44,7 +42,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         this._rowRenderer = this._rowRenderer.bind(this);
         this.onCardClick = this.onCardClick.bind(this);
         const containerWidth = Dimensions.get("window").width;
-        const containerHeigth = Dimensions.get("window").height;
+        const containerHeight = Dimensions.get("window").height;
         const productCardWidth =
             (containerWidth - 2 * stylesheet.paddings.paddingHorizontal - stylesheet.paddings.paddingVertical) / 2;
         this.layoutSize = [
@@ -54,11 +52,13 @@ class MainScreen extends Component<any, IMainScreenState> {
             },
             {
                 width: containerWidth / 2 - 0.0001,
-                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
+                height:
+                    this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
             },
             {
                 width: containerWidth / 2 - 0.0001,
-                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
+                height:
+                    this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
             },
         ];
 
@@ -66,7 +66,7 @@ class MainScreen extends Component<any, IMainScreenState> {
 
         this.state = {
             mainContainerWidth: containerWidth,
-            screenHeight: containerHeigth,
+            screenHeight: containerHeight,
             productCardWidth,
             currentCategory: "",
             dataProvider: providers.dataProvider,
@@ -78,11 +78,11 @@ class MainScreen extends Component<any, IMainScreenState> {
 
     componentDidMount() {
         return DatabaseApi.getProducts().then((products) => {
-            const productsData = splitProductsByType(products);
+            let productsData = splitProductsByType(products);
+            productsData.push({category: ProductType.None, items: []});
             const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, productsData);
 
             this.setState({
-                ...this.state,
                 currentCategory: ProductType.translateCategoryName(productsData[0]?.category),
                 dataProvider: providers.dataProvider,
                 layoutProvider: providers.layoutProvider,
@@ -111,7 +111,7 @@ class MainScreen extends Component<any, IMainScreenState> {
     private onCardClick(product: Product) {
         this.setState({modalVisible: true, currentProduct: product});
     }
-    // TODO нужно явно указать типы, хуй поймешь что это такое
+
     private _rowRenderer(type: any, data: any) {
         switch (type) {
             case "category":
@@ -126,30 +126,22 @@ class MainScreen extends Component<any, IMainScreenState> {
                         </Text>
                     </View>
                 );
-            case 0:
-                // TODO в case 1 дублирование кода, отличается одним стилем
+            case "column0":
+            case "column1":
                 return (
                     <View
-                        style={{
-                            marginTop: stylesheet.productCardContainer.paddingVertical,
-                            marginLeft: stylesheet.productCardContainer.paddingHorizontal,
-                        }}>
-                        <ProductCard
-                            width={this.state.productCardWidth}
-                            height={this._countProductCardHeight(this.state.productCardWidth)}
-                            product={data.item}
-                            onClick={this.onCardClick}
-                        />
-                    </View>
-                );
-            case 1:
-                return (
-                    <View
-                        style={{
-                            marginTop: stylesheet.productCardContainer.paddingVertical,
-                            marginRight: stylesheet.productCardContainer.paddingHorizontal,
-                            alignItems: "flex-end",
-                        }}>
+                        style={
+                            type === "column0"
+                                ? {
+                                      marginTop: stylesheet.productCardContainer.paddingVertical,
+                                      marginLeft: stylesheet.productCardContainer.paddingHorizontal,
+                                  }
+                                : {
+                                      marginTop: stylesheet.productCardContainer.paddingVertical,
+                                      marginRight: stylesheet.productCardContainer.paddingHorizontal,
+                                      alignItems: "flex-end",
+                                  }
+                        }>
                         <ProductCard
                             width={this.state.productCardWidth}
                             height={this._countProductCardHeight(this.state.productCardWidth)}
@@ -182,7 +174,6 @@ class MainScreen extends Component<any, IMainScreenState> {
                             ref={this.list}
                             layoutProvider={this.state.layoutProvider}
                             dataProvider={this.state.dataProvider}
-                            // TODO сделать проверку на пустость данных
                             initialRenderIndex={1}
                             visible={!this.state.modalVisible}
                         />

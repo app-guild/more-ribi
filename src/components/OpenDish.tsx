@@ -2,29 +2,31 @@ import React, {Component} from "react";
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {stylesheet as productCardStylesheet} from "./ProductCard";
-import {IProduct} from "../screens/MainScreen";
+import Product from "../entities/Product";
+import DatabaseApi, {TKey} from "../database/DatabaseApi";
 
 export interface IOpenDishState {}
 export interface IOpenDishProps {
     width: number;
     height: number;
     image?: any;
-    product: IProduct | null;
+    product: Product | null;
 }
 
-class OpenDish extends Component<
-    Readonly<IOpenDishProps>,
-    Readonly<IOpenDishState>
-> {
+class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishState>> {
     constructor(props: any) {
         super(props);
         this.state = {};
     }
 
+    private addToCart(productId: TKey) {
+        // TODO notify to MainScreen new cart price
+        DatabaseApi.addProductToCart(productId);
+    }
+
     render() {
         const {width, height, product} = this.props;
-        const widthWithoutPadding =
-            width - 2 * stylesheet.container.paddingHorizontal;
+        const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
         return product !== null ? (
             <View
                 style={{
@@ -42,26 +44,18 @@ class OpenDish extends Component<
                     }}
                 />
                 <Text style={stylesheet.title}>{product.name}</Text>
-                <Text style={stylesheet.composition}>
-                    {product.composition}
-                </Text>
+                <Text style={stylesheet.composition}>{product.composition}</Text>
                 <View style={stylesheet.priceContainer}>
                     <Text style={stylesheet.crossOutPrice}>
-                        {product.crossOutPrice
-                            ? product.crossOutPrice + " руб"
-                            : ""}
+                        {product.discountPrice ? product.discountPrice + " руб" : ""}
                     </Text>
-                    <Text style={stylesheet.price}>
-                        {product.price + " руб"}
-                    </Text>
+                    <Text style={stylesheet.price}>{product.price + " руб"}</Text>
                 </View>
                 <TouchableOpacity
                     style={stylesheet.addToCartButton}
-                    onPress={() => {}}
+                    onPress={() => this.addToCart(product.id)}
                     activeOpacity={0.85}>
-                    <Text style={stylesheet.addToCartText}>
-                        Добавить в корзину
-                    </Text>
+                    <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
                 </TouchableOpacity>
             </View>
         ) : (
