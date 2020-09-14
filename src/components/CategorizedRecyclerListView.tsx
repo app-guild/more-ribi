@@ -1,9 +1,4 @@
-import {
-    DataProvider,
-    Dimension,
-    LayoutProvider,
-    RecyclerListView,
-} from "recyclerlistview";
+import {DataProvider, Dimension, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import React, {Component, createRef} from "react";
 import {RecyclerListViewProps} from "recyclerlistview/dist/reactnative/core/RecyclerListView";
 import {ScrollEvent} from "recyclerlistview/src/core/scrollcomponent/BaseScrollView";
@@ -19,8 +14,7 @@ interface ICategory {
     index: number;
 }
 
-export interface ICategorizedRecyclerListViewProps
-    extends RecyclerListViewProps {
+export interface ICategorizedRecyclerListViewProps extends RecyclerListViewProps {
     onCrossCategory: (category: string) => void;
     visible: boolean;
 }
@@ -38,18 +32,13 @@ export class CategorizedRecyclerListView extends Component<
 
     constructor(props: ICategorizedRecyclerListViewProps) {
         super(props);
-        this.state = {
-            dataProvider: this.props.dataProvider,
-        };
         this.categories = [];
         this.onScroll = this.onScroll.bind(this);
     }
 
     private collectCategories() {
         for (let i = 0; i < this.props.dataProvider.getSize(); i++) {
-            if (
-                this.props.dataProvider.getDataForIndex(i).type === "category"
-            ) {
+            if (this.props.dataProvider.getDataForIndex(i).type === "category") {
                 if (i !== this.props.dataProvider.getSize() - 1) {
                     const offsetY = this.list.current?.getLayout(i + 1)?.y;
                     this.categories.push({
@@ -67,16 +56,10 @@ export class CategorizedRecyclerListView extends Component<
             this.collectCategories();
         }
         const currentCategory = this.categories.find((val, i, array) => {
-            if (
-                i === 0 &&
-                rawEvent.nativeEvent.contentOffset.y < array[0].offset
-            ) {
+            if (i === 0 && rawEvent.nativeEvent.contentOffset.y < array[0].offset) {
                 return true;
             }
-            if (
-                i === array.length - 1 &&
-                rawEvent.nativeEvent.contentOffset.y > val.offset
-            ) {
+            if (i === array.length - 1 && rawEvent.nativeEvent.contentOffset.y > val.offset) {
                 return true;
             }
             return (
@@ -84,22 +67,18 @@ export class CategorizedRecyclerListView extends Component<
                 rawEvent.nativeEvent.contentOffset.y < array[i + 1]?.offset
             );
         });
-        this.props.onCrossCategory(
-            currentCategory ? currentCategory.name : this.categories[0].name,
-        );
+        this.props.onCrossCategory(currentCategory ? currentCategory.name : this.categories[0].name);
     }
 
-    private static transformData(
-        data: ICategorizedData[],
-        columns: number,
-    ): any[] {
+    private static transformData(data: ICategorizedData[], columns: number): any[] {
         let transformedData: any[] = [];
         data.forEach((value) => {
+            // TODO наверное не нужно добавлять категорию если items пуст
             transformedData.push({type: "category", name: value.category});
             value.items.forEach((item: object, index: number) => {
                 transformedData.push({
                     type: index % columns,
-                    ...item,
+                    item,
                 });
             });
         });
@@ -121,10 +100,7 @@ export class CategorizedRecyclerListView extends Component<
         this.list.current?.scrollToIndex(itemIndex + 1, true);
     }
 
-    static buildProviders(
-        layouts: LayoutProvider | Dimension[],
-        data: DataProvider | ICategorizedData[],
-    ) {
+    static buildProviders(layouts: LayoutProvider | Dimension[], data: DataProvider | ICategorizedData[]) {
         let dataProvider: DataProvider;
         let layoutProvider: LayoutProvider;
 
@@ -133,12 +109,7 @@ export class CategorizedRecyclerListView extends Component<
         } else {
             dataProvider = new DataProvider((r1, r2) => {
                 return r1.id !== r2.id;
-            }).cloneWithRows(
-                this.transformData(
-                    data,
-                    layouts instanceof LayoutProvider ? 1 : layouts.length - 1,
-                ),
-            );
+            }).cloneWithRows(this.transformData(data, layouts instanceof LayoutProvider ? 1 : layouts.length - 1));
         }
 
         if (layouts instanceof LayoutProvider) {
@@ -153,14 +124,8 @@ export class CategorizedRecyclerListView extends Component<
                         dim.width = layouts[0].width;
                         dim.height = layouts[0].height;
                     } else {
-                        dim.width =
-                            layouts[
-                                typeof type === "number" ? type + 1 : 0
-                            ].width;
-                        dim.height =
-                            layouts[
-                                typeof type === "number" ? type + 1 : 0
-                            ].height;
+                        dim.width = layouts[typeof type === "number" ? type + 1 : 0].width;
+                        dim.height = layouts[typeof type === "number" ? type + 1 : 0].height;
                     }
                 },
             );
@@ -173,24 +138,19 @@ export class CategorizedRecyclerListView extends Component<
     }
 
     render() {
-        const {
-            rowRenderer,
-            layoutProvider,
-            dataProvider,
-            visible,
-            ...otherProps
-        } = this.props;
+        let resultRender = null;
 
-        return (
-            <RecyclerListView
-                layoutProvider={layoutProvider}
-                dataProvider={this.state.dataProvider}
-                ref={this.list}
-                rowRenderer={rowRenderer}
-                onScroll={this.onScroll}
-                style={visible ? {} : {opacity: 0}}
-                {...otherProps}
-            />
-        );
+        if (this.props.dataProvider.getSize()) {
+            resultRender = (
+                <RecyclerListView
+                    {...this.props}
+                    ref={this.list}
+                    onScroll={this.onScroll}
+                    style={this.props.visible ? {} : {opacity: 0}}
+                />
+            );
+        }
+
+        return resultRender;
     }
 }

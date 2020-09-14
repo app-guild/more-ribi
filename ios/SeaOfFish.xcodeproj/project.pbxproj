@@ -72,6 +72,7 @@
 		1BC40C91831A49F180683A07 /* Muli-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E67D540C2E104AA3816A932F /* Muli-Regular.ttf */; };
 		D7A3F06CE9DC456786EB4973 /* Muli-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05E69A39AB584ECBA9C4C9DA /* Muli-SemiBold.ttf */; };
 		D5159F237E174F818A18607F /* Muli-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F274049C5A184A4FAEB690B0 /* Muli-SemiBoldItalic.ttf */; };
+		C6B4809AE54844C49B371769 /* fish_back_button.svg in Resources */ = {isa = PBXBuildFile; fileRef = A5CC50A0CD8645A39C252959 /* fish_back_button.svg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -163,6 +164,7 @@
 		E67D540C2E104AA3816A932F /* Muli-Regular.ttf */ = {isa = PBXFileReference; name = "Muli-Regular.ttf"; path = "../resources/assets/fonts/Muli-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		05E69A39AB584ECBA9C4C9DA /* Muli-SemiBold.ttf */ = {isa = PBXFileReference; name = "Muli-SemiBold.ttf"; path = "../resources/assets/fonts/Muli-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		F274049C5A184A4FAEB690B0 /* Muli-SemiBoldItalic.ttf */ = {isa = PBXFileReference; name = "Muli-SemiBoldItalic.ttf"; path = "../resources/assets/fonts/Muli-SemiBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A5CC50A0CD8645A39C252959 /* fish_back_button.svg */ = {isa = PBXFileReference; name = "fish_back_button.svg"; path = "../resources/assets/drawable/fish_back_button.svg"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -329,6 +331,7 @@
 				E67D540C2E104AA3816A932F /* Muli-Regular.ttf */,
 				05E69A39AB584ECBA9C4C9DA /* Muli-SemiBold.ttf */,
 				F274049C5A184A4FAEB690B0 /* Muli-SemiBoldItalic.ttf */,
+				A5CC50A0CD8645A39C252959 /* fish_back_button.svg */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -528,6 +531,7 @@
 				1BC40C91831A49F180683A07 /* Muli-Regular.ttf in Resources */,
 				D7A3F06CE9DC456786EB4973 /* Muli-SemiBold.ttf in Resources */,
 				D5159F237E174F818A18607F /* Muli-SemiBoldItalic.ttf in Resources */,
+				C6B4809AE54844C49B371769 /* fish_back_button.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

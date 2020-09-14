@@ -1,42 +1,32 @@
 import React, {Component, createRef} from "react";
-import {
-    Dimensions,
-    ImageBackground,
-    StyleSheet,
-    Text,
-    View,
-    Modal,
-    TouchableWithoutFeedback,
-} from "react-native";
+import {Dimensions, ImageBackground, StyleSheet, Text, View, Modal, TouchableWithoutFeedback} from "react-native";
 import Header from "../components/Header";
-import ProductCard, {
-    stylesheet as productCardStylesheet,
-} from "../components/ProductCard";
+import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
-import {ProductType, translateCategoryName} from "../entities/ProductType";
-import {
-    CategorizedRecyclerListView,
-    ICategorizedData,
-} from "../components/CategorizedRecyclerListView";
+import {ProductType} from "../entities/ProductType";
+import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import OpenDish from "../components/OpenDish";
 import {getStatusBarHeight} from "react-native-status-bar-height";
+import {ProductType} from "../entities/ProductType";
+import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import {globalColors} from "../../resources/styles";
+import DatabaseApi from "../database/DatabaseApi";
+import Product from "../entities/Product";
 
 export interface IMainScreenState {
     mainContainerWidth: number;
     screenHeight: number;
     productCardWidth: number;
-    productsData: ICategorizedData[];
     currentCategory: string;
     modalVisible: boolean;
-    currentProduct: IProduct | null;
+    currentProduct: Product | null;
+    dataProvider: DataProvider;
+    layoutProvider: LayoutProvider;
 }
 
-export interface IProduct {
-    name: string;
-    price: number;
-    crossOutPrice: number;
-    composition?: string;
+interface IProductGroup {
+    category: ProductType;
+    items: Product[];
 }
 
 const imageSidesRatio = 1.2;
@@ -46,398 +36,58 @@ const headerHeight = 83;
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
     private layoutSize: Dimension[];
-    private layoutProvider: LayoutProvider;
-    private dataProvider: DataProvider;
 
     constructor(props: any) {
         super(props);
 
         this.onCategoryCross = this.onCategoryCross.bind(this);
-        this.onCardClick = this.onCardClick.bind(this);
-        const productsData = [
-            {
-                category: ProductType.Wok,
-                items: [
-                    {
-                        name: "Вок 1",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "Вок 2",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 999.999,
-                        crossOutPrice: 1000,
-                    },
-                    {
-                        name: "Вок 3",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "Вок 4",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Poke,
-                items: [
-                    {
-                        name: "Поке 1",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                        crossOutPrice: 10000,
-                    },
-                    {
-                        name: "Поке 2",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Rolls,
-                items: [
-                    {
-                        name: "Ролл 1",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Soups,
-                items: [
-                    {
-                        name: "Суп 1",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 999999,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Beverages,
-                items: [
-                    {
-                        name: "Русиано",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Deserts,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Beverages,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Deserts,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Beverages,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Deserts,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Beverages,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Deserts,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Beverages,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Deserts,
-                items: [
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "еда",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                    {
-                        name: "хрень",
-                        composition:
-                            "Рис, лосось, авокадо, красный лук, салат, морковь",
-                        price: 290,
-                    },
-                ],
-            },
-            {
-                category: ProductType.Empty,
-                items: [],
-            },
-        ];
-
-        this.state = {
-            mainContainerWidth: Dimensions.get("window").width,
-            screenHeight: Dimensions.get("window").height,
-            productCardWidth:
-                (Dimensions.get("window").width -
-                    2 * stylesheet.paddings.paddingHorizontal -
-                    stylesheet.paddings.paddingVertical) /
-                2,
-            productsData: productsData,
-            currentCategory: translateCategoryName(productsData[0].category),
-            modalVisible: false,
-            currentProduct: null,
-        };
-
         this._rowRenderer = this._rowRenderer.bind(this);
-
+        this.onCardClick = this.onCardClick.bind(this);
+        const containerWidth = Dimensions.get("window").width;
+        const containerHeigth = Dimensions.get("window").height;
+        const productCardWidth =
+            (containerWidth - 2 * stylesheet.paddings.paddingHorizontal - stylesheet.paddings.paddingVertical) / 2;
         this.layoutSize = [
             {
-                width: this.state.mainContainerWidth,
+                width: containerWidth,
                 height: stylesheet.categoryHeight.height,
             },
             {
-                width: this.state.mainContainerWidth / 2 - 0.0001,
-                height:
-                    productCardHeight +
-                    (this.state.productCardWidth -
-                        2 * productCardStylesheet.container.padding) /
-                        imageSidesRatio +
-                    stylesheet.productCardContainer.paddingVertical,
+                width: containerWidth / 2 - 0.0001,
+                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
             },
             {
-                width: this.state.mainContainerWidth / 2 - 0.0001,
-                height:
-                    productCardHeight +
-                    (this.state.productCardWidth -
-                        2 * productCardStylesheet.container.padding) /
-                        imageSidesRatio +
-                    stylesheet.productCardContainer.paddingVertical,
+                width: containerWidth / 2 - 0.0001,
+                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
             },
         ];
 
-        const providers = CategorizedRecyclerListView.buildProviders(
-            this.layoutSize,
-            this.state.productsData,
-        );
-        this.dataProvider = providers.dataProvider;
-        this.layoutProvider = providers.layoutProvider;
+        const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, []);
+
+        this.state = {
+            mainContainerWidth: containerWidth,
+            screenHeight: containerHeigth,
+            productCardWidth,
+            currentCategory: "",
+            dataProvider: providers.dataProvider,
+            layoutProvider: providers.layoutProvider,
+            modalVisible: false,
+            currentProduct: null,
+        };
+    }
+
+    componentDidMount() {
+        return DatabaseApi.getProducts().then((products) => {
+            const productsData = splitProductsByType(products);
+            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, productsData);
+
+            this.setState({
+                ...this.state,
+                currentCategory: ProductType.translateCategoryName(productsData[0]?.category),
+                dataProvider: providers.dataProvider,
+                layoutProvider: providers.layoutProvider,
+            });
+        });
     }
 
     componentDidUpdate(
@@ -445,61 +95,49 @@ class MainScreen extends Component<any, IMainScreenState> {
         prevState: Readonly<Readonly<IMainScreenState>>,
         snapshot?: any,
     ) {
-        if (
-            this.props.route.params?.category !=
-            prevProps.route.params?.category
-        ) {
-            this.list.current?.scrollToCategory(
-                this.props.route.params.category,
-            );
+        if (this.props.route.params?.category !== prevProps.route.params?.category) {
+            this.list.current?.scrollToCategory(this.props.route.params.category);
         }
     }
 
     onCategoryCross(category: string) {
-        this.setState({currentCategory: translateCategoryName(category)});
+        this.setState({currentCategory: ProductType.translateCategoryName(category)});
     }
 
-    onCardClick(product: IProduct) {
+    private _countProductCardHeight(productCardWidth: number) {
+        return productCardHeight + (productCardWidth - 2 * productCardStylesheet.container.padding) / imageSidesRatio;
+    }
+
+    private onCardClick(product: Product) {
         this.setState({modalVisible: true, currentProduct: product});
     }
-
-    _rowRenderer(type: any, data: any) {
+    // TODO нужно явно указать типы, хуй поймешь что это такое
+    private _rowRenderer(type: any, data: any) {
         switch (type) {
             case "category":
                 return (
                     <View
                         style={{
                             ...stylesheet.category,
-                            marginHorizontal:
-                                stylesheet.productCardContainer
-                                    .paddingHorizontal,
+                            marginHorizontal: stylesheet.productCardContainer.paddingHorizontal,
                         }}>
                         <Text numberOfLines={1} style={stylesheet.categoryText}>
-                            {translateCategoryName(data.name)}
+                            {ProductType.translateCategoryName(data.name)}
                         </Text>
                     </View>
                 );
             case 0:
+                // TODO в case 1 дублирование кода, отличается одним стилем
                 return (
                     <View
                         style={{
-                            marginTop:
-                                stylesheet.productCardContainer.paddingVertical,
-                            marginLeft:
-                                stylesheet.productCardContainer
-                                    .paddingHorizontal,
+                            marginTop: stylesheet.productCardContainer.paddingVertical,
+                            marginLeft: stylesheet.productCardContainer.paddingHorizontal,
                         }}>
                         <ProductCard
                             width={this.state.productCardWidth}
-                            height={
-                                productCardHeight +
-                                (this.state.productCardWidth -
-                                    2 *
-                                        productCardStylesheet.container
-                                            .padding) /
-                                    imageSidesRatio
-                            }
-                            product={data}
+                            height={this._countProductCardHeight(this.state.productCardWidth)}
+                            product={data.item}
                             onClick={this.onCardClick}
                         />
                     </View>
@@ -508,24 +146,14 @@ class MainScreen extends Component<any, IMainScreenState> {
                 return (
                     <View
                         style={{
-                            marginTop:
-                                stylesheet.productCardContainer.paddingVertical,
-                            marginRight:
-                                stylesheet.productCardContainer
-                                    .paddingHorizontal,
+                            marginTop: stylesheet.productCardContainer.paddingVertical,
+                            marginRight: stylesheet.productCardContainer.paddingHorizontal,
                             alignItems: "flex-end",
                         }}>
                         <ProductCard
                             width={this.state.productCardWidth}
-                            height={
-                                productCardHeight +
-                                (this.state.productCardWidth -
-                                    2 *
-                                        productCardStylesheet.container
-                                            .padding) /
-                                    imageSidesRatio
-                            }
-                            product={data}
+                            height={this._countProductCardHeight(this.state.productCardWidth)}
+                            product={data.item}
                             onClick={this.onCardClick}
                         />
                     </View>
@@ -537,9 +165,7 @@ class MainScreen extends Component<any, IMainScreenState> {
 
     render() {
         return (
-            <ImageBackground
-                source={require("../../resources/assets/drawable/background.png")}
-                style={{flex: 1}}>
+            <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
                 <View style={stylesheet.backgroundOverlay}>
                     <Header
                         needCategoryName={!this.state.modalVisible}
@@ -554,8 +180,9 @@ class MainScreen extends Component<any, IMainScreenState> {
                             rowRenderer={this._rowRenderer}
                             onCrossCategory={this.onCategoryCross}
                             ref={this.list}
-                            layoutProvider={this.layoutProvider}
-                            dataProvider={this.dataProvider}
+                            layoutProvider={this.state.layoutProvider}
+                            dataProvider={this.state.dataProvider}
+                            // TODO сделать проверку на пустость данных
                             initialRenderIndex={1}
                             visible={!this.state.modalVisible}
                         />
@@ -578,17 +205,13 @@ class MainScreen extends Component<any, IMainScreenState> {
                                     <OpenDish
                                         width={
                                             this.state.mainContainerWidth -
-                                            2 *
-                                                stylesheet.productCardContainer
-                                                    .paddingHorizontal
+                                            2 * stylesheet.productCardContainer.paddingHorizontal
                                         }
                                         height={
                                             this.state.screenHeight -
                                             getStatusBarHeight() -
                                             headerHeight -
-                                            2 *
-                                                stylesheet.openDishModal
-                                                    .paddingVertical
+                                            2 * stylesheet.openDishModal.paddingVertical
                                         }
                                         product={this.state.currentProduct}
                                     />
@@ -600,6 +223,35 @@ class MainScreen extends Component<any, IMainScreenState> {
             </ImageBackground>
         );
     }
+}
+
+function splitProductsByType(products: Product[]): IProductGroup[] {
+    return [
+        {
+            category: ProductType.Wok,
+            items: products.filter((product) => product.type === ProductType.Wok),
+        },
+        {
+            category: ProductType.Deserts,
+            items: products.filter((product) => product.type === ProductType.Deserts),
+        },
+        {
+            category: ProductType.Poke,
+            items: products.filter((product) => product.type === ProductType.Poke),
+        },
+        {
+            category: ProductType.Beverages,
+            items: products.filter((product) => product.type === ProductType.Beverages),
+        },
+        {
+            category: ProductType.Rolls,
+            items: products.filter((product) => product.type === ProductType.Rolls),
+        },
+        {
+            category: ProductType.Soups,
+            items: products.filter((product) => product.type === ProductType.Soups),
+        },
+    ];
 }
 
 export const stylesheet = StyleSheet.create({

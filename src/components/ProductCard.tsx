@@ -2,25 +2,28 @@ import React, {Component} from "react";
 import {Image, Text, View, TouchableOpacity, StyleSheet} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import CardIcon from "../../resources/assets/drawable/cart_icon.svg";
-import {IProduct} from "../screens/MainScreen";
+import DatabaseApi, {TKey} from "../database/DatabaseApi";
+import Product from "../entities/Product";
 
 export interface IProductCardState {}
 
 export interface IProductCardProps {
     width: number;
     height: number;
-    product: IProduct;
+    product: Product;
     style?: any;
-    onClick: (product: IProduct) => any;
+    onClick: (product: Product) => any;
 }
 
-class ProductCard extends Component<
-    Readonly<IProductCardProps>,
-    Readonly<IProductCardState>
-> {
+class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProductCardState>> {
     constructor(props: any) {
         super(props);
         this.state = {};
+    }
+
+    private addToCart(productId: TKey) {
+        // TODO notify to MainScreen new cart price
+        DatabaseApi.addProductToCart(productId);
     }
 
     render() {
@@ -41,8 +44,7 @@ class ProductCard extends Component<
                     source={require("../../resources/assets/drawable/food.jpg")}
                     style={{
                         width: width - 2 * stylesheet.container.padding,
-                        height:
-                            (width - 2 * stylesheet.container.padding) / 1.2,
+                        height: (width - 2 * stylesheet.container.padding) / 1.2,
                         borderRadius: 20,
                     }}
                 />
@@ -59,12 +61,8 @@ class ProductCard extends Component<
                             style={globalStylesheet.primaryText}>
                             {product.name}
                         </Text>
-                        <Text
-                            numberOfLines={1}
-                            style={globalStylesheet.crossedOutPrice}>
-                            {product.crossOutPrice
-                                ? product.crossOutPrice + " руб"
-                                : ""}
+                        <Text numberOfLines={1} style={globalStylesheet.crossedOutPrice}>
+                            {product.discountPrice ? product.discountPrice + " руб" : ""}
                         </Text>
                         <Text numberOfLines={1} style={globalStylesheet.price}>
                             {product.price + " руб"}
@@ -73,7 +71,8 @@ class ProductCard extends Component<
                     <View style={stylesheet.shoppingCartButtonContainer}>
                         <TouchableOpacity
                             style={stylesheet.shoppingCartButton}
-                            activeOpacity={0.85}>
+                            activeOpacity={0.85}
+                            onPress={() => this.addToCart(product.id)}>
                             <CardIcon
                                 width={20}
                                 height={20}

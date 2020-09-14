@@ -26,19 +26,11 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
             <View style={stylesheet.container}>
                 <View style={stylesheet.subContainer}>
                     <View style={stylesheet.topContainer}>
-                        <MenuIcon
-                            width={30}
-                            height={30}
-                            onTouchEnd={this.props.navigation.openDrawer}
-                        />
+                        <MenuIcon width={30} height={30} onTouchEnd={this.props.navigation.openDrawer} />
                         <Text style={stylesheet.title}>Много рыбы</Text>
                     </View>
                     <View style={stylesheet.topContainer}>
-                        <CartIcon
-                            width={19}
-                            height={18}
-                            fill={globalColors.primaryColor}
-                        />
+                        <CartIcon width={19} height={18} fill={globalColors.primaryColor} />
                         <Text numberOfLines={1} style={stylesheet.priceText}>
                             500P
                         </Text>
@@ -49,20 +41,14 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                     <View style={{alignSelf: "flex-start"}}>
                         <View
                             style={stylesheet.categoryButton}
-                            onTouchEnd={() =>
-                                this.props.navigation.navigate("Categories")
-                            }>
-                            <Text style={stylesheet.subTitle}>
-                                {this.props.category}
-                            </Text>
+                            onTouchEnd={() => this.props.navigation.navigate("Categories")}>
+                            <Text style={stylesheet.subTitle}>{this.props.category}</Text>
                             <FishIcon width={15} height={25} />
                         </View>
                         <View style={stylesheet.categoryUnderline} />
                     </View>
                 ) : (
-                    <View
-                        onTouchEnd={this.props.onFishButton}
-                        style={stylesheet.fishBackButton}>
+                    <View onTouchEnd={this.props.onFishButton} style={stylesheet.fishBackButton}>
                         <FishBackButton width={47} heigth={17} />
                     </View>
                 )}
