@@ -9,7 +9,7 @@ import {
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
-import {ProductType, translateCategoryName} from "../entities/ProductType";
+import {ProductType} from "../entities/ProductType";
 import {globalColors} from "../../resources/styles";
 
 export interface ICategoriesScreenState {
@@ -29,27 +29,27 @@ class CategoriesScreen extends Component<
                 return r1.value !== r2.value;
             }).cloneWithRows([
                 {
-                    text: translateCategoryName(ProductType.Rolls),
+                    text: ProductType.translateCategoryName(ProductType.Rolls),
                     value: ProductType.Rolls,
                 },
                 {
-                    text: translateCategoryName(ProductType.Poke),
+                    text: ProductType.translateCategoryName(ProductType.Poke),
                     value: ProductType.Poke,
                 },
                 {
-                    text: translateCategoryName(ProductType.Wok),
+                    text: ProductType.translateCategoryName(ProductType.Wok),
                     value: ProductType.Wok,
                 },
                 {
-                    text: translateCategoryName(ProductType.Beverages),
+                    text: ProductType.translateCategoryName(ProductType.Beverages),
                     value: ProductType.Beverages,
                 },
                 {
-                    text: translateCategoryName(ProductType.Deserts),
+                    text: ProductType.translateCategoryName(ProductType.Deserts),
                     value: ProductType.Deserts,
                 },
                 {
-                    text: translateCategoryName(ProductType.Soups),
+                    text: ProductType.translateCategoryName(ProductType.Soups),
                     value: ProductType.Soups,
                 },
             ]),

@@ -1,35 +1,73 @@
+import {TKey} from "../database/DatabaseApi";
+import {ProductType} from "./ProductType";
+
 export default class Product {
-    private id: string | number;
-    private name: string;
-    private price: number;
-    private available: boolean = false;
-    private imageUrl: string = "";
+    constructor(
+        private _id: TKey,
+        private _name: string,
+        private _type: ProductType,
+        private _price: number,
+        private _discountPrice: number | null,
+        private _available: boolean,
+        private _imageUrl: string,
+        private _composition: string,
+    ) {}
 
-    constructor(json: any) {
-        this.id = json.id;
-        this.name = json.name;
-        this.price = json?.salePrices[0]?.value;
-        this.available = !!json.quantity;
-        this.imageUrl = json?.image?.meta?.href;
+    get id(): TKey {
+        return this._id;
     }
 
-    getId(): string | number {
-        return this.id;
+    get name(): string {
+        return this._name;
     }
 
-    getName(): string {
-        return this.name;
+    get type(): ProductType {
+        return this._type;
     }
 
-    isAvailable(): boolean {
-        return this.available;
+    get isAvailable(): boolean {
+        return this._available;
     }
 
-    getImage(): string {
-        return this.imageUrl;
+    get imageUrl(): string {
+        return this._imageUrl;
     }
 
-    getPrice(): number {
-        return this.price;
+    get price(): number {
+        return this._price;
+    }
+
+    get discountPrice(): number | null {
+        return this._discountPrice;
+    }
+
+    get composition(): string {
+        return this._composition;
+    }
+
+    static parseDatabaseJson(json: any): Product {
+        return new Product(
+            json.product_id,
+            json.name,
+            ProductType.parse(json.type),
+            json.price,
+            json.discountPrice,
+            !!json.available,
+            json.imageUrl,
+            json.composition,
+        );
+    }
+
+    static parseMoySkladJson(json: any): Product {
+        return new Product(
+            json.id,
+            json.name,
+            ProductType.parse(json.type), // TODO уточнить какое поле нужно брать
+            json?.salePrices[0]?.value,
+            null, // TODO уточнить чему равно
+            !!json.quantity,
+            json?.image?.meta?.href,
+            json.composition, // TODO уточнить чему равно
+        );
     }
 }
