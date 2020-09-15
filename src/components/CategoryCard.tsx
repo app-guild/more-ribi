@@ -1,12 +1,14 @@
 import React, {Component} from "react";
 import {Image, StyleSheet, Text, View} from "react-native";
-import {globalColors} from "../../resources/styles";
+import {globalColors, globalStylesheet} from "../../resources/styles";
 
 export interface ICategoryCardState {}
 
 export interface ICategoryCardProps {
-    size: number;
+    width: number;
+    height?: number;
     text: string;
+    additionalText?: string;
     onTouchEnd: any;
     image?: any;
     style?: any;
@@ -19,11 +21,13 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
     }
 
     render() {
-        const {size, text, onTouchEnd, style} = this.props;
+        const {width, text, onTouchEnd, style, additionalText} = this.props;
+        const height = this.props.height ? this.props.height : this.props.width;
         return (
             <View
                 style={{
-                    width: size,
+                    width: width,
+                    height: height,
                     ...stylesheet.card,
                     ...style,
                 }}
@@ -31,13 +35,28 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
                 <Image
                     source={require("../../resources/assets/drawable/food.jpg")}
                     style={{
-                        width: size,
-                        height: size,
+                        width: width,
+                        height: height,
                         borderRadius: stylesheet.card.borderRadius,
+                        position: "absolute",
                     }}
                 />
-                <View style={stylesheet.cardTitleContainer}>
-                    <Text style={stylesheet.cardTitle}>{text}</Text>
+
+                {additionalText ? <Text style={{...stylesheet.additionalText}}>{additionalText}</Text> : null}
+
+                <View
+                    style={
+                        additionalText
+                            ? {
+                                  ...stylesheet.titleContainer,
+                                  marginTop: 5,
+                                  marginBottom: 10,
+                                  alignItems: "flex-start",
+                                  paddingHorizontal: 32,
+                              }
+                            : {...stylesheet.titleContainer, marginTop: "60%"}
+                    }>
+                    <Text style={stylesheet.text}>{text}</Text>
                 </View>
             </View>
         );
@@ -48,21 +67,29 @@ export const stylesheet = StyleSheet.create({
     card: {
         borderRadius: 10,
     },
-    cardTitleContainer: {
-        position: "absolute",
+    titleContainer: {
         width: "100%",
         backgroundColor: globalColors.categoriesScreenCardTitleContainerBGColor,
         alignItems: "center",
         paddingVertical: 6,
-        top: "60%",
         paddingHorizontal: 15,
     },
-    cardTitle: {
+    text: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
+        color: globalColors.categoryCardTextColor,
+    },
+    additionalText: {
+        fontFamily: "Montserrat",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 18,
+        lineHeight: 22,
+        marginTop: 27,
+        marginHorizontal: 32,
         color: globalColors.categoryCardTextColor,
     },
 });

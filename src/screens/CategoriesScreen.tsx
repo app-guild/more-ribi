@@ -1,11 +1,5 @@
 import React, {Component} from "react";
-import {
-    Dimensions,
-    ImageBackground,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import {Dimensions, ImageBackground, StyleSheet, Text, View} from "react-native";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
@@ -17,40 +11,23 @@ export interface ICategoriesScreenState {
     dataProvider: DataProvider;
 }
 
-class CategoriesScreen extends Component<
-    Readonly<any>,
-    Readonly<ICategoriesScreenState>
-> {
+class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScreenState>> {
     constructor(props: any) {
         super(props);
         this.state = {
             mainContainerWidth: Dimensions.get("window").width,
             dataProvider: new DataProvider((r1, r2) => {
-                return r1.value !== r2.value;
+                return r1.text !== r2.text;
             }).cloneWithRows([
+                {text: ProductType.Rolls},
+                {text: ProductType.Poke},
+                {text: ProductType.Wok},
+                {text: ProductType.Beverages},
+                {text: ProductType.Deserts},
+                {text: ProductType.Soups},
                 {
-                    text: ProductType.translateCategoryName(ProductType.Rolls),
-                    value: ProductType.Rolls,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Poke),
-                    value: ProductType.Poke,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Wok),
-                    value: ProductType.Wok,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Beverages),
-                    value: ProductType.Beverages,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Deserts),
-                    value: ProductType.Deserts,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Soups),
-                    value: ProductType.Soups,
+                    text: "Конструктор поке",
+                    additionalText: "Собери свой идеальный поке!",
                 },
             ]),
         };
@@ -59,12 +36,12 @@ class CategoriesScreen extends Component<
 
     private layoutProvider = new LayoutProvider(
         (index) => {
-            return index % 2;
+            return index === this.state.dataProvider.getSize() - 1 ? "fullRow" : "column" + (index % 2);
         },
         (type, dim) => {
             switch (type) {
-                case 0:
-                case 1:
+                case "column0":
+                case "column1":
                     dim.width = this.state.mainContainerWidth / 2 - 0.0001;
                     dim.height =
                         (this.state.mainContainerWidth -
@@ -73,26 +50,42 @@ class CategoriesScreen extends Component<
                             2 +
                         stylesheet.columnMargin.margin;
                     break;
+                case "fullRow":
+                    dim.width = this.state.mainContainerWidth;
+                    dim.height =
+                        (this.state.mainContainerWidth -
+                            2 * stylesheet.containerPadding.padding -
+                            stylesheet.columnMargin.margin) /
+                            4 +
+                        2 * stylesheet.columnMargin.margin;
             }
         },
     );
 
     _rowRenderer(type: any, data: any) {
         switch (type) {
-            case 0:
+            case "column0":
+            case "column1":
                 return (
                     <View
-                        style={{
-                            marginLeft: stylesheet.containerPadding.padding,
-                        }}>
+                        style={
+                            parseInt(type.slice(-1)) === 0
+                                ? {
+                                      marginLeft: stylesheet.containerPadding.padding,
+                                  }
+                                : {
+                                      alignItems: "flex-end",
+                                      marginRight: stylesheet.containerPadding.padding,
+                                  }
+                        }>
                         <CategoryCard
-                            size={
+                            width={
                                 (this.state.mainContainerWidth -
                                     2 * stylesheet.containerPadding.padding -
                                     stylesheet.columnMargin.margin) /
                                 2
                             }
-                            text={data.text}
+                            text={ProductType.translateCategoryName(data.text)}
                             onTouchEnd={() =>
                                 this.props.navigation.navigate("Main", {
                                     category: data.value,
@@ -101,21 +94,14 @@ class CategoriesScreen extends Component<
                         />
                     </View>
                 );
-            case 1:
+            case "fullRow":
                 return (
-                    <View
-                        style={{
-                            alignItems: "flex-end",
-                            marginRight: stylesheet.containerPadding.padding,
-                        }}>
+                    <View style={{marginLeft: stylesheet.containerPadding.padding}}>
                         <CategoryCard
-                            size={
-                                (this.state.mainContainerWidth -
-                                    2 * stylesheet.containerPadding.padding -
-                                    stylesheet.columnMargin.margin) /
-                                2
-                            }
+                            width={this.state.mainContainerWidth - 2 * stylesheet.containerPadding.padding}
+                            height={93}
                             text={data.text}
+                            additionalText={data.additionalText}
                             onTouchEnd={() =>
                                 this.props.navigation.navigate("Main", {
                                     category: data.value,
@@ -131,9 +117,7 @@ class CategoriesScreen extends Component<
 
     render() {
         return (
-            <ImageBackground
-                source={require("../../resources/assets/drawable/background.png")}
-                style={{flex: 1}}>
+            <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
                 <View style={stylesheet.container}>
                     <View style={stylesheet.headerContainer}>
                         <View style={stylesheet.header}>
@@ -141,9 +125,7 @@ class CategoriesScreen extends Component<
                                 width={47}
                                 height={17}
                                 style={stylesheet.headerFishBackButton}
-                                onTouchEnd={() =>
-                                    this.props.navigation.goBack()
-                                }
+                                onTouchEnd={() => this.props.navigation.goBack()}
                             />
                             <Text style={stylesheet.headerText}>Разделы</Text>
                         </View>
