@@ -10,31 +10,22 @@ import DeliveryConditionsScreen from "../screens/DeliveryConditionsScreen";
 import FeedbackScreen from "../screens/FeedbackScreen";
 import AboutUsScreen from "../screens/AboutUsScreen";
 import MainScreenNavigator from "./MainScreenNavigator";
+import PokeConstructorScreen from "../screens/PokeConstructorScreen";
 
 const Drawer = createDrawerNavigator();
 
 export default function Navigation() {
     return (
         <NavigationContainer>
-            <Drawer.Navigator
-                initialRouteName="Меню доставки"
-                edgeWidth={Dimensions.get("window").width / 3}>
-                <Drawer.Screen
-                    name="Меню доставки"
-                    component={MainScreenNavigator}
-                />
+            <Drawer.Navigator initialRouteName="Конструктор поке" edgeWidth={Dimensions.get("window").width / 3}>
+                <Drawer.Screen name="Меню доставки" component={MainScreenNavigator} />
                 <Drawer.Screen name="Мои заказы" component={MyOrdersScreen} />
                 <Drawer.Screen name="Рестораны" component={RestaurantsScreen} />
                 <Drawer.Screen name="Акции" component={PromotionsScreen} />
-                <Drawer.Screen
-                    name="Условия доставки"
-                    component={DeliveryConditionsScreen}
-                />
-                <Drawer.Screen
-                    name="Обратная связь"
-                    component={FeedbackScreen}
-                />
+                <Drawer.Screen name="Условия доставки" component={DeliveryConditionsScreen} />
+                <Drawer.Screen name="Обратная связь" component={FeedbackScreen} />
                 <Drawer.Screen name="О приложении" component={AboutUsScreen} />
+                <Drawer.Screen name="Конструктор поке" component={PokeConstructorScreen} />
             </Drawer.Navigator>
         </NavigationContainer>
     );

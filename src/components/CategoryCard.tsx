@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Image, StyleSheet, Text, View} from "react-native";
-import {globalColors, globalStylesheet} from "../../resources/styles";
+import {globalColors} from "../../resources/styles";
 
 export interface ICategoryCardState {}
 
@@ -80,7 +80,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globalColors.categoryCardTextColor,
+        color: globalColors.whiteTextColor,
     },
     additionalText: {
         fontFamily: "Montserrat",
@@ -90,7 +90,7 @@ export const stylesheet = StyleSheet.create({
         lineHeight: 22,
         marginTop: 27,
         marginHorizontal: 32,
-        color: globalColors.categoryCardTextColor,
+        color: globalColors.whiteTextColor,
     },
 });
 

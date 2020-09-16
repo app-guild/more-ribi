@@ -7,7 +7,7 @@ const globalColors = {
     navigatorBackgroundColor: "white",
     mainTextColor: "#000000",
     cardBackgroundColor: "#FFFFFF",
-    categoryCardTextColor: "#FFFFFF",
+    whiteTextColor: "#FFFFFF",
     shadowColor: "#000000",
     additionalTextColor: "#CFD2D7",
     crossedOutPriceColor: "#A5A5A5",

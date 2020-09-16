@@ -88,7 +88,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                             text={ProductType.translateCategoryName(data.text)}
                             onTouchEnd={() =>
                                 this.props.navigation.navigate("Main", {
-                                    category: data.value,
+                                    category: data.text,
                                 })
                             }
                         />
@@ -104,7 +104,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                             additionalText={data.additionalText}
                             onTouchEnd={() =>
                                 this.props.navigation.navigate("Main", {
-                                    category: data.value,
+                                    category: "pokeConstructor",
                                 })
                             }
                         />
