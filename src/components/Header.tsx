@@ -23,7 +23,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
 
     render() {
         return (
-            <View style={stylesheet.container} >
+            <View style={stylesheet.container}>
                 <View style={stylesheet.subContainer}>
                     <View style={stylesheet.topContainer}>
                         <MenuIcon width={30} height={30} onTouchEnd={this.props.navigation.openDrawer} />
@@ -37,21 +37,15 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                     </View>
                 </View>
 
-                {this.props.needCategoryName ? (
-                    <View style={{alignSelf: "flex-start"}}>
-                        <View
-                            style={stylesheet.categoryButton}
-                            onTouchEnd={() => this.props.navigation.navigate("Categories")}>
-                            <Text style={stylesheet.subTitle}>{this.props.category}</Text>
-                            <FishIcon width={15} height={25} />
-                        </View>
-                        <View style={stylesheet.categoryUnderline} />
+                <View style={{alignSelf: "flex-start"}}>
+                    <View
+                        style={stylesheet.categoryButton}
+                        onTouchEnd={() => this.props.navigation.navigate("Categories")}>
+                        <Text style={stylesheet.subTitle}>{this.props.category}</Text>
+                        <FishIcon width={15} height={25} />
                     </View>
-                ) : (
-                    <View onTouchEnd={this.props.onFishButton} style={stylesheet.fishBackButton}>
-                        <FishBackButton width={47} heigth={17} />
-                    </View>
-                )}
+                    <View style={stylesheet.categoryUnderline} />
+                </View>
             </View>
         );
     }

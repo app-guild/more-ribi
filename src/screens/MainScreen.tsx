@@ -181,15 +181,14 @@ class MainScreen extends Component<any, IMainScreenState> {
                             isVisible={this.state.modalVisible}
                             animationIn={"zoomInUp"}
                             animationOut={"zoomOutUp"}
-                            style={{margin: 0}}>
+                            style={{margin: 0}}
+                            onBackdropPress={() => {
+                                this.setState({modalVisible: false});
+                            }}
+                            onBackButtonPress={() => {
+                                this.setState({modalVisible: false});
+                            }}>
                             <View style={{flex: 1}}>
-                                <TouchableWithoutFeedback
-                                    onPress={() => {
-                                        this.setState({modalVisible: false});
-                                    }}>
-                                    <View style={{flex: 1}} />
-                                </TouchableWithoutFeedback>
-
                                 <View style={stylesheet.centeredView}>
                                     <View style={stylesheet.openDishModal}>
                                         <OpenDish
@@ -284,6 +283,7 @@ export const stylesheet = StyleSheet.create({
         paddingBottom: 40,
     },
     centeredView: {
+        flex: 1,
         alignItems: "center",
         justifyContent: "flex-end",
     },
