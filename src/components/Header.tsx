@@ -23,7 +23,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
 
     render() {
         return (
-            <View style={stylesheet.container}>
+            <View style={stylesheet.container} >
                 <View style={stylesheet.subContainer}>
                     <View style={stylesheet.topContainer}>
                         <MenuIcon width={30} height={30} onTouchEnd={this.props.navigation.openDrawer} />
@@ -112,6 +112,7 @@ export const stylesheet = StyleSheet.create({
     fishBackButton: {
         marginLeft: 34,
         marginTop: 20,
+        paddingBottom: 3,
     },
 });
 

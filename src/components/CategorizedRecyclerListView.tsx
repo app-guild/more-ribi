@@ -16,7 +16,6 @@ interface ICategory {
 
 export interface ICategorizedRecyclerListViewProps extends RecyclerListViewProps {
     onCrossCategory: (category: string) => void;
-    visible: boolean;
 }
 
 export interface ICategorizedRecyclerListViewState {
@@ -141,14 +140,7 @@ export class CategorizedRecyclerListView extends Component<
         let resultRender = null;
 
         if (this.props.dataProvider.getSize()) {
-            resultRender = (
-                <RecyclerListView
-                    {...this.props}
-                    ref={this.list}
-                    onScroll={this.onScroll}
-                    style={this.props.visible ? {} : {opacity: 0}}
-                />
-            );
+            resultRender = <RecyclerListView {...this.props} ref={this.list} onScroll={this.onScroll} />;
         }
 
         return resultRender;

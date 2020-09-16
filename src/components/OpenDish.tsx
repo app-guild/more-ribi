@@ -54,7 +54,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                 <TouchableOpacity
                     style={stylesheet.addToCartButton}
                     onPress={() => this.addToCart(product.id)}
-                    activeOpacity={0.85}>
+                    activeOpacity={0.5}>
                     <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
                 </TouchableOpacity>
             </View>
@@ -71,15 +71,15 @@ export const stylesheet = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: globalColors.cardBackgroundColor,
 
-        shadowColor: globalColors.shadowColor,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
-
-        elevation: 4,
+        // shadowColor: globalColors.shadowColor,
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 2,
+        // },
+        // shadowOpacity: 0.23,
+        // shadowRadius: 2.62,
+        //
+        // elevation: 4,
     },
     title: {
         ...globalStylesheet.primaryText,
@@ -115,7 +115,6 @@ export const stylesheet = StyleSheet.create({
         paddingHorizontal: 22,
         backgroundColor: globalColors.primaryColor,
         borderRadius: 7,
-        opacity: productCardStylesheet.shoppingCartButton.opacity,
         alignSelf: "center",
         marginTop: 15,
     },

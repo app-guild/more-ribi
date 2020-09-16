@@ -1,5 +1,5 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, ImageBackground, Modal, StyleSheet, Text, TouchableWithoutFeedback, View} from "react-native";
+import {Dimensions, ImageBackground, StyleSheet, Text, TouchableWithoutFeedback, View} from "react-native";
 import Header from "../components/Header";
 import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
@@ -10,6 +10,7 @@ import {getStatusBarHeight} from "react-native-status-bar-height";
 import {globalColors} from "../../resources/styles";
 import DatabaseApi from "../database/DatabaseApi";
 import Product from "../entities/Product";
+import Modal from "react-native-modal";
 
 export interface IMainScreenState {
     mainContainerWidth: number;
@@ -175,37 +176,38 @@ class MainScreen extends Component<any, IMainScreenState> {
                             layoutProvider={this.state.layoutProvider}
                             dataProvider={this.state.dataProvider}
                             initialRenderIndex={1}
-                            visible={!this.state.modalVisible}
                         />
                         <Modal
-                            animationType="slide"
-                            transparent={true}
-                            visible={this.state.modalVisible}
-                            onRequestClose={() => {
-                                this.setState({modalVisible: false});
-                            }}>
-                            <TouchableWithoutFeedback
-                                onPress={() => {
-                                    this.setState({modalVisible: false});
-                                }}>
-                                <View style={{flex: 1}} />
-                            </TouchableWithoutFeedback>
+                            isVisible={this.state.modalVisible}
+                            animationIn={"zoomInUp"}
+                            animationOut={"zoomOutUp"}
+                            style={{margin: 0}}>
+                            <View style={{flex: 1}}>
+                                <TouchableWithoutFeedback
+                                    onPress={() => {
+                                        this.setState({modalVisible: false});
+                                    }}>
+                                    <View style={{flex: 1}} />
+                                </TouchableWithoutFeedback>
 
-                            <View style={stylesheet.centeredView}>
-                                <View style={stylesheet.openDishModal}>
-                                    <OpenDish
-                                        width={
-                                            this.state.mainContainerWidth -
-                                            2 * stylesheet.productCardContainer.paddingHorizontal
-                                        }
-                                        height={
-                                            this.state.screenHeight -
-                                            getStatusBarHeight() -
-                                            headerHeight -
-                                            2 * stylesheet.openDishModal.paddingVertical
-                                        }
-                                        product={this.state.currentProduct}
-                                    />
+                                <View style={stylesheet.centeredView}>
+                                    <View style={stylesheet.openDishModal}>
+                                        <OpenDish
+                                            width={
+                                                this.state.mainContainerWidth -
+                                                2 * stylesheet.productCardContainer.paddingHorizontal -
+                                                40
+                                            }
+                                            height={
+                                                this.state.screenHeight -
+                                                getStatusBarHeight() -
+                                                headerHeight -
+                                                stylesheet.openDishModal.paddingTop -
+                                                stylesheet.openDishModal.paddingBottom
+                                            }
+                                            product={this.state.currentProduct}
+                                        />
+                                    </View>
                                 </View>
                             </View>
                         </Modal>
@@ -278,7 +280,8 @@ export const stylesheet = StyleSheet.create({
         opacity: 0.95,
     },
     openDishModal: {
-        paddingVertical: 20,
+        paddingTop: 30,
+        paddingBottom: 40,
     },
     centeredView: {
         alignItems: "center",
