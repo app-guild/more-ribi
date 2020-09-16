@@ -8,4 +8,9 @@ declare namespace NodeJS {
     }
 }
 
+declare module "react-native-gpay";
+declare module "react-native-sqlite-storage";
+
 declare var db: any;
+
+// declare var GPay: any;

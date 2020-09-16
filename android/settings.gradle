@@ -5,6 +5,8 @@ include ':react-native-sqlite-storage'
 project(':react-native-sqlite-storage').projectDir = new File(rootProject.projectDir, '../../node_modules/react-native-sqlite-storage/platforms/android-native')
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
+include ':react-native-gpay'
+project(':react-native-gpay').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-gpay/android')
 include ':react-native-payments'
 project(':react-native-payments').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-payments/android')
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
