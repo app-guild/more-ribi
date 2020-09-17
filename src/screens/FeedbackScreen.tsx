@@ -4,10 +4,7 @@ import {globalStylesheet} from "../../resources/styles";
 
 export interface IFeedbackScreenState {}
 
-class FeedbackScreen extends Component<
-    Readonly<any>,
-    Readonly<IFeedbackScreenState>
-> {
+class FeedbackScreen extends Component<Readonly<any>, Readonly<IFeedbackScreenState>> {
     constructor(props: any) {
         super(props);
         this.state = {};
@@ -17,6 +14,7 @@ class FeedbackScreen extends Component<
         return (
             <View style={globalStylesheet.centerBody}>
                 <Text>Feedback Screen</Text>
+                <Text>Welcome to react-native-google-pay!</Text>
             </View>
         );
     }
