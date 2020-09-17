@@ -6,7 +6,7 @@ import DatabaseApi, {TKey} from "../database/DatabaseApi";
 import Product from "../entities/Product";
 import {Dimension} from "recyclerlistview";
 
-const CART_FOOTER_HEIGHT = 50;
+const CART_FOOTER_HEIGHT = 60;
 
 export interface IProductCardState {}
 
@@ -39,7 +39,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
     render() {
         const {width, height, product, onClick, style} = this.props;
         const cartButtonSize = {width: width / 3.5, height: width / 3.5};
-        const cartIconSize = {width: cartButtonSize.width * 0.75, height: cartButtonSize.width * 0.75};
+        const cartIconSize = {width: cartButtonSize.width * 0.6, height: cartButtonSize.width * 0.6};
         const imageSize = {
             width: width - 2 * stylesheet.container.padding,
             height: (width - 2 * stylesheet.container.padding) / 1.2,
@@ -65,12 +65,9 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                         }}
                     />
                 </View>
-                <View
-                    style={{
-                        ...stylesheet.shoppingCartFooter,
-                    }}>
-                    <View style={{justifyContent: "flex-end"}}>
-                        <Text numberOfLines={1} style={globalStylesheet.primaryText}>
+                <View style={stylesheet.shoppingCartFooter}>
+                    <View style={stylesheet.shoppingCartFooterText}>
+                        <Text numberOfLines={2} style={globalStylesheet.primaryText}>
                             {product.name}
                         </Text>
                         <Text numberOfLines={1} style={globalStylesheet.crossedOutPrice}>
@@ -124,7 +121,12 @@ export const stylesheet = StyleSheet.create({
         alignItems: "center",
         borderRadius: 50,
         backgroundColor: globalColors.primaryColor,
-        opacity: 0.5,
+    },
+    shoppingCartFooterText: {
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        width: "70%",
     },
     shoppingCartFooter: {
         flexDirection: "row",
