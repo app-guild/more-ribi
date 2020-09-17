@@ -54,14 +54,6 @@ export class GooglePayService {
         }
     }
 
-    public setTestEnvironment() {
-        GooglePay.setEnvironment(GooglePay.ENVIRONMENT_TEST);
-    }
-
-    public setProductionEnvironment() {
-        GooglePay.setEnvironment(GooglePay.ENVIRONMENT_PRODUCTION);
-    }
-
     public async doPaymentRequest(
         transaction: IPaymentTransaction,
         tokenCallback?: (token: string) => void,
