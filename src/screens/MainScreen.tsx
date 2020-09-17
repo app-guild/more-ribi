@@ -30,7 +30,7 @@ interface IProductGroup {
 
 const imageSidesRatio = 1.2;
 const productCardHeight = 72;
-const headerHeight = 83;
+const headerHeight = 86;
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
@@ -188,26 +188,18 @@ class MainScreen extends Component<any, IMainScreenState> {
                             onBackButtonPress={() => {
                                 this.setState({modalVisible: false});
                             }}>
-                            <View style={{flex: 1}}>
-                                <View style={stylesheet.centeredView}>
-                                    <View style={stylesheet.openDishModal}>
-                                        <OpenDish
-                                            width={
-                                                this.state.mainContainerWidth -
-                                                2 * stylesheet.productCardContainer.paddingHorizontal -
-                                                40
-                                            }
-                                            height={
-                                                this.state.screenHeight -
-                                                getStatusBarHeight() -
-                                                headerHeight -
-                                                stylesheet.openDishModal.paddingTop -
-                                                stylesheet.openDishModal.paddingBottom
-                                            }
-                                            product={this.state.currentProduct}
-                                        />
-                                    </View>
-                                </View>
+                            <View
+                                style={{
+                                    ...stylesheet.openDishModal,
+                                    paddingTop: headerHeight,
+                                }}>
+                                <OpenDish
+                                    width={
+                                        this.state.mainContainerWidth -
+                                        1.5 * stylesheet.productCardContainer.paddingHorizontal
+                                    }
+                                    product={this.state.currentProduct}
+                                />
                             </View>
                         </Modal>
                     </View>
@@ -279,13 +271,9 @@ export const stylesheet = StyleSheet.create({
         opacity: 0.95,
     },
     openDishModal: {
-        paddingTop: 30,
-        paddingBottom: 40,
-    },
-    centeredView: {
         flex: 1,
         alignItems: "center",
-        justifyContent: "flex-end",
+        paddingBottom: 30,
     },
 });
 
