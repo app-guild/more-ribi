@@ -9,7 +9,6 @@ import {DrawerNavigationProp} from "@react-navigation/drawer";
 
 export interface IHeaderState {}
 export interface IHeaderProps {
-    needCategoryName: boolean;
     category: string;
     navigation: DrawerNavigationProp<any>;
     onFishButton: () => any;

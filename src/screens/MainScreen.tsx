@@ -150,7 +150,6 @@ class MainScreen extends Component<any, IMainScreenState> {
             <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
                 <View style={stylesheet.backgroundOverlay}>
                     <Header
-                        needCategoryName={!this.state.modalVisible}
                         navigation={this.props.navigation}
                         category={this.state.currentCategory}
                         onFishButton={() => {
