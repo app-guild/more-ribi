@@ -15,7 +15,7 @@ import Modal from "react-native-modal";
 export interface IMainScreenState {
     mainContainerWidth: number;
     screenHeight: number;
-    productCardWidth: number;
+    productCardSize: Dimension;
     currentCategory: string;
     modalVisible: boolean;
     currentProduct: Product | null;
@@ -28,8 +28,6 @@ interface IProductGroup {
     items: Product[];
 }
 
-const imageSidesRatio = 1.2;
-const productCardHeight = 72;
 const headerHeight = 83;
 
 class MainScreen extends Component<any, IMainScreenState> {
@@ -42,25 +40,21 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.onCategoryCross = this.onCategoryCross.bind(this);
         this._rowRenderer = this._rowRenderer.bind(this);
         this.onCardClick = this.onCardClick.bind(this);
-        const containerWidth = Dimensions.get("window").width;
-        const containerHeight = Dimensions.get("window").height;
-        const productCardWidth =
-            (containerWidth - 2 * stylesheet.paddings.paddingHorizontal - stylesheet.paddings.paddingVertical) / 2;
+        const windowSize = Dimensions.get("window");
+        const containerWidth = windowSize.width - 2 * stylesheet.paddings.paddingHorizontal;
+        const containerHeight = windowSize.height - 2 * stylesheet.paddings.paddingVertical;
+        const productCardSize = ProductCard.countCardSize({width: containerWidth, height: containerHeight});
+        const cardLayoutSize = {
+            width: windowSize.width / 2 - 0.001,
+            height: productCardSize.height + stylesheet.paddings.paddingVertical,
+        };
         this.layoutSize = [
             {
                 width: containerWidth,
                 height: stylesheet.categoryHeight.height,
             },
-            {
-                width: containerWidth / 2 - 0.0001,
-                height:
-                    this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
-            },
-            {
-                width: containerWidth / 2 - 0.0001,
-                height:
-                    this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
-            },
+            cardLayoutSize,
+            cardLayoutSize,
         ];
 
         const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, []);
@@ -68,7 +62,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.state = {
             mainContainerWidth: containerWidth,
             screenHeight: containerHeight,
-            productCardWidth,
+            productCardSize,
             currentCategory: "",
             dataProvider: providers.dataProvider,
             layoutProvider: providers.layoutProvider,
@@ -103,10 +97,6 @@ class MainScreen extends Component<any, IMainScreenState> {
 
     onCategoryCross(category: string) {
         this.setState({currentCategory: ProductType.translateCategoryName(category)});
-    }
-
-    private _countProductCardHeight(productCardWidth: number) {
-        return productCardHeight + (productCardWidth - 2 * productCardStylesheet.container.padding) / imageSidesRatio;
     }
 
     private onCardClick(product: Product) {
@@ -144,8 +134,8 @@ class MainScreen extends Component<any, IMainScreenState> {
                                   }
                         }>
                         <ProductCard
-                            width={this.state.productCardWidth}
-                            height={this._countProductCardHeight(this.state.productCardWidth)}
+                            width={this.state.productCardSize.width}
+                            height={this.state.productCardSize.height}
                             product={data.item}
                             onClick={this.onCardClick}
                         />

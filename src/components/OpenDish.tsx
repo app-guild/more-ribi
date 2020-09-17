@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
-import {stylesheet as productCardStylesheet} from "./ProductCard";
 import Product from "../entities/Product";
 import DatabaseApi, {TKey} from "../database/DatabaseApi";
 

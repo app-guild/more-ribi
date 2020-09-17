@@ -1,9 +1,12 @@
 import React, {Component} from "react";
 import {Image, Text, View, TouchableOpacity, StyleSheet} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
-import CardIcon from "../../resources/assets/drawable/cart_icon.svg";
+import CartIcon from "../../resources/assets/drawable/cart_icon.svg";
 import DatabaseApi, {TKey} from "../database/DatabaseApi";
 import Product from "../entities/Product";
+import {Dimension} from "recyclerlistview";
+
+const CART_FOOTER_HEIGHT = 50;
 
 export interface IProductCardState {}
 
@@ -26,8 +29,21 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         DatabaseApi.addProductToCart(productId);
     }
 
+    public static countCardSize(containerSize: Dimension): Dimension {
+        const width = containerSize.width / 2 - 2 * stylesheet.container.marginHorizontal - 0.0001;
+        const height = width + CART_FOOTER_HEIGHT;
+
+        return {width: width, height: height};
+    }
+
     render() {
         const {width, height, product, onClick, style} = this.props;
+        const cartButtonSize = {width: width / 3.5, height: width / 3.5};
+        const cartIconSize = {width: cartButtonSize.width * 0.75, height: cartButtonSize.width * 0.75};
+        const imageSize = {
+            width: width - 2 * stylesheet.container.padding,
+            height: (width - 2 * stylesheet.container.padding) / 1.2,
+        };
 
         return (
             <View
@@ -44,20 +60,16 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                     <Image
                         source={require("../../resources/assets/drawable/food.jpg")}
                         style={{
-                            width: width - 2 * stylesheet.container.padding,
-                            height: (width - 2 * stylesheet.container.padding) / 1.2,
+                            ...imageSize,
                             borderRadius: 20,
                         }}
                     />
                 </View>
                 <View
                     style={{
-                        flexDirection: "row",
-                        alignItems: "flex-end",
-                        justifyContent: "space-between",
-                        marginTop: 7,
+                        ...stylesheet.shoppingCartFooter,
                     }}>
-                    <View style={{maxWidth: 100, justifyContent: "flex-end"}}>
+                    <View style={{justifyContent: "flex-end"}}>
                         <Text numberOfLines={1} style={globalStylesheet.primaryText}>
                             {product.name}
                         </Text>
@@ -70,12 +82,15 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                     </View>
                     <View style={stylesheet.shoppingCartButtonContainer}>
                         <TouchableOpacity
-                            style={stylesheet.shoppingCartButton}
+                            style={{
+                                ...stylesheet.shoppingCartButton,
+                                ...cartButtonSize,
+                            }}
                             activeOpacity={0.85}
                             onPress={() => this.addToCart(product.id)}>
-                            <CardIcon
-                                width={20}
-                                height={20}
+                            <CartIcon
+                                width={cartIconSize.width}
+                                height={cartIconSize.height}
                                 fill={globalColors.cardBackgroundColor}
                                 style={{position: "absolute"}}
                             />
@@ -89,6 +104,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
 export const stylesheet = StyleSheet.create({
     container: {
+        marginHorizontal: 10,
         borderRadius: 20,
         padding: 10,
         backgroundColor: globalColors.cardBackgroundColor,
@@ -101,15 +117,19 @@ export const stylesheet = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 1.41,
         elevation: 2,
+        justifyContent: "space-between",
     },
     shoppingCartButton: {
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 50,
         backgroundColor: globalColors.primaryColor,
-        width: 38,
-        height: 38,
         opacity: 0.5,
+    },
+    shoppingCartFooter: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "space-between",
     },
     shoppingCartButtonContainer: {
         justifyContent: "center",
