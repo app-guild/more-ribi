@@ -7,7 +7,6 @@ import DatabaseApi, {TKey} from "../database/DatabaseApi";
 export interface IOpenDishState {}
 export interface IOpenDishProps {
     width: number;
-    height: number;
     image?: any;
     product: Product | null;
 }
@@ -24,26 +23,23 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     render() {
-        const {width, height, product} = this.props;
+        const {width, product} = this.props;
         const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
+
         return product !== null ? (
-            <View
-                style={{
-                    ...stylesheet.container,
-                    width: width,
-                    height: height,
-                }}>
+            <View style={stylesheet.container}>
                 <Image
                     source={require("../../resources/assets/drawable/food.jpg")}
                     style={{
                         width: widthWithoutPadding,
+                        maxHeight: widthWithoutPadding,
                         flex: 1,
                         resizeMode: "cover",
                         borderRadius: 10,
                     }}
                 />
                 <Text style={stylesheet.title}>{product.name}</Text>
-                <Text style={stylesheet.composition}>{product.composition}</Text>
+                <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>{product.composition}</Text>
                 <View style={stylesheet.priceContainer}>
                     <Text style={stylesheet.crossOutPrice}>
                         {product.discountPrice ? product.discountPrice + " руб" : ""}
@@ -51,7 +47,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                     <Text style={stylesheet.price}>{product.price + " руб"}</Text>
                 </View>
                 <TouchableOpacity
-                    style={stylesheet.addToCartButton}
+                    style={{...stylesheet.addToCartButton, maxWidth: widthWithoutPadding}}
                     onPress={() => this.addToCart(product.id)}
                     activeOpacity={0.5}>
                     <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
@@ -69,16 +65,6 @@ export const stylesheet = StyleSheet.create({
         paddingVertical: 27,
         borderRadius: 20,
         backgroundColor: globalColors.cardBackgroundColor,
-
-        // shadowColor: globalColors.shadowColor,
-        // shadowOffset: {
-        //     width: 0,
-        //     height: 2,
-        // },
-        // shadowOpacity: 0.23,
-        // shadowRadius: 2.62,
-        //
-        // elevation: 4,
     },
     title: {
         ...globalStylesheet.primaryText,

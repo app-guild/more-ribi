@@ -1,12 +1,11 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, ImageBackground, StyleSheet, Text, TouchableWithoutFeedback, View} from "react-native";
+import {Dimensions, ImageBackground, StyleSheet, Text, View} from "react-native";
 import Header from "../components/Header";
-import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
+import ProductCard from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import OpenDish from "../components/OpenDish";
-import {getStatusBarHeight} from "react-native-status-bar-height";
 import {globalColors} from "../../resources/styles";
 import DatabaseApi from "../database/DatabaseApi";
 import Product from "../entities/Product";
@@ -28,7 +27,7 @@ interface IProductGroup {
     items: Product[];
 }
 
-const headerHeight = 83;
+const headerHeight = 86;
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
@@ -178,26 +177,18 @@ class MainScreen extends Component<any, IMainScreenState> {
                             onBackButtonPress={() => {
                                 this.setState({modalVisible: false});
                             }}>
-                            <View style={{flex: 1}}>
-                                <View style={stylesheet.centeredView}>
-                                    <View style={stylesheet.openDishModal}>
-                                        <OpenDish
-                                            width={
-                                                this.state.mainContainerWidth -
-                                                2 * stylesheet.productCardContainer.paddingHorizontal -
-                                                40
-                                            }
-                                            height={
-                                                this.state.screenHeight -
-                                                getStatusBarHeight() -
-                                                headerHeight -
-                                                stylesheet.openDishModal.paddingTop -
-                                                stylesheet.openDishModal.paddingBottom
-                                            }
-                                            product={this.state.currentProduct}
-                                        />
-                                    </View>
-                                </View>
+                            <View
+                                style={{
+                                    ...stylesheet.openDishModal,
+                                    paddingTop: headerHeight,
+                                }}>
+                                <OpenDish
+                                    width={
+                                        this.state.mainContainerWidth -
+                                        1.5 * stylesheet.productCardContainer.paddingHorizontal
+                                    }
+                                    product={this.state.currentProduct}
+                                />
                             </View>
                         </Modal>
                     </View>
@@ -269,13 +260,9 @@ export const stylesheet = StyleSheet.create({
         opacity: 0.95,
     },
     openDishModal: {
-        paddingTop: 30,
-        paddingBottom: 40,
-    },
-    centeredView: {
         flex: 1,
         alignItems: "center",
-        justifyContent: "flex-end",
+        paddingBottom: 30,
     },
 });
 
