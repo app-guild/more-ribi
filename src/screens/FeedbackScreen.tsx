@@ -14,7 +14,6 @@ class FeedbackScreen extends Component<Readonly<any>, Readonly<IFeedbackScreenSt
         return (
             <View style={globalStylesheet.centerBody}>
                 <Text>Feedback Screen</Text>
-                <Text>Welcome to react-native-google-pay!</Text>
             </View>
         );
     }
