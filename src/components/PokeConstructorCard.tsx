@@ -12,7 +12,11 @@ export interface IPokeConstructorCardProps {
     image: string;
     smallImage: string;
     choices: string[];
+    choiceType: "radioButton" | "checkBox";
+    choicesLocation: "bottom" | "left";
 }
+
+const checkBoxWidth = 44;
 
 class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstructorCardState>> {
     private readonly screenWidth = Dimensions.get("window").width;
@@ -23,70 +27,124 @@ class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstru
     }
 
     render() {
-        const {title, number, image, smallImage, choices} = this.props;
+        const {title, number, image, smallImage, choices, choiceType, choicesLocation} = this.props;
+        const halfWidth = (this.screenWidth - 2 * stylesheet.container.paddingHorizontal) / 2;
         const choicesList = choices.map((val: any, index: any) => (
             <View
                 key={index}
                 style={{
                     flexDirection: "row",
                     alignItems: "center",
+                    width: halfWidth,
                 }}>
                 <CheckBox
                     checked={this.state.checked[index]}
-                    onPress={() =>
-                        this.setState({
-                            checked: this.state.checked.splice(index, 1, !this.state.checked[index]),
-                        })
-                    }
-                    wrapperStyle={{paddingVertical: 10}}
+                    onPress={() => {
+                        if (choiceType === "radioButton") {
+                            this.state.checked.fill(false).splice(index, 1, !this.state.checked[index]);
+                            this.setState({checked: this.state.checked});
+                        } else {
+                            this.state.checked.splice(index, 1, !this.state.checked[index]);
+                            this.setState({checked: this.state.checked});
+                        }
+                    }}
+                    wrapperStyle={{paddingVertical: 4}}
                     containerStyle={{
                         padding: 0,
                         margin: 0,
                     }}
-                    checkedIcon="dot-circle-o"
-                    uncheckedIcon="circle-o"
+                    checkedIcon={choiceType === "radioButton" ? "dot-circle-o" : undefined}
+                    uncheckedIcon={choiceType === "radioButton" ? "circle-o" : undefined}
                 />
-                <Text style={stylesheet.radioButtonText}>{val}</Text>
+                <Text
+                    style={{
+                        ...stylesheet.radioButtonText,
+                        width:
+                            choicesLocation === "bottom"
+                                ? halfWidth + (this.screenWidth - halfWidth) / 2 - checkBoxWidth
+                                : halfWidth - checkBoxWidth,
+                    }}>
+                    {val}
+                </Text>
             </View>
         ));
         return (
-            <View style={{flexDirection: "row", justifyContent: "center", marginTop: 20}}>
-                <View>
+            <View
+                style={
+                    choicesLocation === "bottom"
+                        ? {
+                              ...stylesheet.container,
+                              flexDirection: "column",
+                              alignItems: "center",
+                          }
+                        : {
+                              ...stylesheet.container,
+                              flexDirection: "row",
+                              alignItems: "flex-start",
+                          }
+                }>
+                <View
+                    style={{width: halfWidth}}>
                     <View
                         style={{
                             flexDirection: "row",
                             alignItems: "flex-end",
-                            marginLeft: 20,
+                            justifyContent: "center",
                         }}>
-                        <Text style={{...stylesheet.number, ...stylesheet.odd}}>{number}</Text>
-                        <Image
-                            source={smallImage}
-                            style={{
-                                position: "absolute",
-                                width: 30,
-                                height: 30,
-                                left: 15,
-                            }}
-                        />
-                        <Text style={stylesheet.subTitleText}>{title}</Text>
+                        <View>
+                            <Text
+                                style={
+                                    number % 2
+                                        ? {...stylesheet.number, ...stylesheet.odd}
+                                        : {...stylesheet.number, ...stylesheet.even}
+                                }>
+                                {number}
+                            </Text>
+                            <Image
+                                source={smallImage}
+                                style={{
+                                    position: "absolute",
+                                    width: 30,
+                                    height: 30,
+                                    left: 17,
+                                    top: 32,
+                                }}
+                            />
+                        </View>
+                        <Text
+                            numberOfLines={2}
+                            style={stylesheet.subTitleText}>
+                            {title}
+                        </Text>
                     </View>
                     <Image
                         source={image}
                         style={{
-                            borderRadius: this.screenWidth / 8,
-                            width: this.screenWidth / 2,
+                            borderRadius: halfWidth / 4,
+                            width: halfWidth,
                             height: "auto",
                             aspectRatio: 1.5,
                         }}
                     />
                 </View>
-                <View style={{marginLeft: 20}}>{choicesList}</View>
+                <View
+                    style={{
+                        marginTop: 20,
+                        marginLeft: choicesLocation === "bottom" ? 0 : stylesheet.spaceBetweenColumns.marginLeft,
+                    }}>
+                    {choicesList}
+                </View>
             </View>
         );
     }
 }
 
 export const stylesheet = StyleSheet.create({
+    container: {
+        flexDirection: "row",
+        marginBottom: 40,
+        paddingHorizontal: 20,
+    },
     topText: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
@@ -128,7 +186,8 @@ export const stylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 23,
-        lineHeight: 50,
+        //lineHeight: 50,
+        marginBottom: 8,
         color: globalColors.mainTextColor,
         marginLeft: 12,
     },
@@ -136,7 +195,8 @@ export const stylesheet = StyleSheet.create({
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "300",
-        fontSize: 13,
+        fontSize: 20,
+        lineHeight: 20,
         color: globalColors.mainTextColor,
     },
     odd: {
@@ -144,6 +204,9 @@ export const stylesheet = StyleSheet.create({
     },
     even: {
         color: "#ffc11e",
+    },
+    spaceBetweenColumns: {
+        marginLeft: 20,
     },
 });
 
