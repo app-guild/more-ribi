@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {Text, View, Dimensions, StyleSheet, Image} from "react-native";
 import {globalColors} from "../../resources/styles";
-import {CheckBox} from "react-native-elements";
 import CheckBoxSelect from "./СheckBoxSelect";
 
 export interface IPokeConstructorCardState {
@@ -19,8 +18,6 @@ export interface IPokeConstructorCardProps {
     choiceLimit?: number;
 }
 
-const checkBoxWidth = 44;
-
 class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>, Readonly<IPokeConstructorCardState>> {
     private readonly screenWidth = Dimensions.get("window").width;
 
@@ -28,8 +25,6 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
         super(props);
         this.state = {checked: new Array(props.choices.length).fill(false)};
     }
-
-
 
     render() {
         const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props;
@@ -99,6 +94,7 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
                     <CheckBoxSelect
                         choices={choices}
                         choiceType={choiceType}
+                        choicesLocation={choicesLocation}
                         width={halfWidth}
                         choiceLimit={choiceLimit}
                     />
@@ -159,14 +155,6 @@ export const stylesheet = StyleSheet.create({
         marginBottom: 8,
         color: globalColors.mainTextColor,
         marginLeft: 12,
-    },
-    radioButtonText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
-        fontSize: 20,
-        lineHeight: 20,
-        color: globalColors.mainTextColor,
     },
     odd: {
         color: globalColors.primaryColor,

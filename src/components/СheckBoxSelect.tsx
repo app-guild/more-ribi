@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Dimensions, StyleSheet, Text, View} from "react-native";
 import {CheckBox} from "react-native-elements";
-import {IPokeConstructorCardProps, IPokeConstructorCardState} from "./PokeConstructorCard";
+import {globalColors} from "../../resources/styles";
 
 export interface ICheckBoxSelectState {
     checked: boolean[];
@@ -11,8 +11,12 @@ export interface ICheckBoxSelectProps {
     choices: string[];
     choiceType: "radioButton" | "checkBox";
     width: number;
+    choicesLocation: "bottom" | "left";
     choiceLimit?: number;
 }
+
+const checkBoxWidth = 44;
+const screenWidth = Dimensions.get("window").width;
 
 class CheckBoxSelect extends Component<Readonly<ICheckBoxSelectProps>, Readonly<ICheckBoxSelectState>> {
     constructor(props: ICheckBoxSelectProps) {
@@ -34,8 +38,8 @@ class CheckBoxSelect extends Component<Readonly<ICheckBoxSelectProps>, Readonly<
     }
 
     render() {
-        const {choices, choiceType, width, choiceLimit} = this.props;
-        const choicesList = choices.map((val: any, index: any) => (
+        const {choices, choiceType, width, choiceLimit, choicesLocation} = this.props;
+        return choices.map((val: any, index: any) => (
             <View
                 key={index}
                 style={{
@@ -70,22 +74,26 @@ class CheckBoxSelect extends Component<Readonly<ICheckBoxSelectProps>, Readonly<
                 <Text
                     style={{
                         ...stylesheet.radioButtonText,
-                        // width:
-                        //     choicesLocation === "bottom"
-                        //         ? width + (this.screenWidth - width) / 2 - checkBoxWidth
-                        //         : width - checkBoxWidth,
+                        width:
+                            choicesLocation === "bottom"
+                                ? width + (screenWidth - width) / 2 - checkBoxWidth
+                                : width - checkBoxWidth,
                     }}>
                     {val}
                 </Text>
             </View>
         ));
-        return choicesList;
     }
 }
 
 export const stylesheet = StyleSheet.create({
-    width2: {
-        width: 100,
+    radioButtonText: {
+        fontFamily: "Montserrat",
+        fontStyle: "normal",
+        fontWeight: "300",
+        fontSize: 20,
+        lineHeight: 20,
+        color: globalColors.mainTextColor,
     },
 });
 
