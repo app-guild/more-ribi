@@ -8,6 +8,10 @@ export interface IPokeConstructorCardState {
 }
 
 export interface IPokeConstructorCardProps {
+    data: IPokeConstructorCardData;
+}
+
+export interface IPokeConstructorCardData {
     title: string;
     number: number;
     image: any;
@@ -23,11 +27,11 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
 
     constructor(props: IPokeConstructorCardProps) {
         super(props);
-        this.state = {checked: new Array(props.choices.length).fill(false)};
+        this.state = {checked: new Array(props.data.choices.length).fill(false)};
     }
 
     render() {
-        const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props;
+        const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props.data;
         const halfWidth = (this.screenWidth - 2 * stylesheet.container.paddingHorizontal) / 2;
 
         return (
@@ -151,7 +155,6 @@ export const stylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 23,
-        //lineHeight: 50,
         marginBottom: 8,
         color: globalColors.mainTextColor,
         marginLeft: 12,

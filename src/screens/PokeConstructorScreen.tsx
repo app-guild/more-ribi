@@ -1,10 +1,9 @@
 import React, {Component} from "react";
-import {ImageBackground, Text, View, ScrollView, Dimensions, StyleSheet, TouchableOpacity} from "react-native";
+import {ImageBackground, Text, View, ScrollView, Dimensions, StyleSheet} from "react-native";
 import {globalColors} from "../../resources/styles";
-
 import {getStatusBarHeight} from "react-native-status-bar-height";
-import PokeConstructorCard from "../components/PokeConstructorCard";
-// import {stylesheet} from "./MainScreen";
+import PokeConstructorCard, {IPokeConstructorCardData} from "../components/PokeConstructorCard";
+import CheckBoxSelect from "../components/СheckBoxSelect";
 
 export interface IPokeConstructorScreenState {
     checked: boolean;
@@ -15,6 +14,7 @@ export interface IPokeConstructorScreenState {
 class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConstructorScreenState>> {
     private readonly screenWidth = Dimensions.get("window").width;
     private readonly screenHeight = Dimensions.get("window").height - getStatusBarHeight();
+    private data: IPokeConstructorCardData[];
 
     constructor(props: any) {
         super(props);
@@ -23,9 +23,104 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             addIngredientOpen: false,
             toppingSwitch: 1,
         };
+        this.data = [
+            {
+                title: "Основа",
+                choices: ["рис", "киноа", "удон", "киноа+рис", "айсберг"],
+                number: 1,
+                image: require("../../resources/assets/drawable/poke-constructor/1-image.webp"),
+                smallImage: require("../../resources/assets/drawable/poke-constructor/1.webp"),
+                choiceType: "radioButton",
+                choicesLocation: "left",
+            },
+            {
+                title: "Протеин",
+                choices: ["тунец", "лосось", "курица", "свинина", "креветки", "тофу", "краб"],
+                number: 2,
+                image: require("../../resources/assets/drawable/poke-constructor/2-image.webp"),
+                smallImage: require("../../resources/assets/drawable/poke-constructor/2.webp"),
+                choiceType: "radioButton",
+                choicesLocation: "left",
+            },
+            {
+                title: "Наполнитель",
+                choices: [
+                    "морковь",
+                    "битые огурцы",
+                    "красная капуста",
+                    "болгарский перец",
+                    "cалат айсберг",
+                    "корн салат",
+                    "красный лук",
+                    "томаты черри",
+                    "редис",
+                    "такуан",
+                    "грибы",
+                    "чука",
+                    "кимчи",
+                    "соевые ростки",
+                    "баклажаны",
+                ],
+                number: 3,
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                smallImage: require("../../resources/assets/drawable/poke-constructor/3.webp"),
+                choiceType: "checkBox",
+                choicesLocation: "bottom",
+                choiceLimit: this.state.toppingSwitch === 1 ? 5 : 3,
+            },
+            {
+                title: "Топпинг",
+                choices: ["авокадо", "манго", "ананас", "масаго", "бобы эдамамэ"],
+                number: 4,
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                smallImage: require("../../resources/assets/drawable/poke-constructor/4.webp"),
+                choiceType: "checkBox",
+                choicesLocation: "left",
+                choiceLimit: this.state.toppingSwitch,
+            },
+            {
+                title: "Соус",
+                choices: ["терияки", "васаби", "японский", "гавайский", "спайс"],
+                number: 5,
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                smallImage: require("../../resources/assets/drawable/poke-constructor/5.webp"),
+                choiceType: "radioButton",
+                choicesLocation: "left",
+            },
+            {
+                title: "Хруст",
+                choices: [
+                    "кешью",
+                    "кунжут",
+                    "ким нори",
+                    "жареный лук",
+                    "миндальные лепестки",
+                    "начос",
+                    "тыквенные семечки",
+                ],
+                number: 6,
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                smallImage: require("../../resources/assets/drawable/poke-constructor/6.webp"),
+                choiceType: "radioButton",
+                choicesLocation: "left",
+            },
+        ];
     }
 
     render() {
+        const cards1_2 = this.data.slice(0, 2).map((value, index) => <PokeConstructorCard key={index} data={value} />);
+        const cards3_6 = this.data.slice(2, 6).map((value, index) => <PokeConstructorCard key={index} data={value} />);
+        const additionalIngredients = this.data.slice(1, 6).map((value, index) => (
+            <View key={index}>
+                <Text style={stylesheet.subTitleText}>{value.title}</Text>
+                <CheckBoxSelect
+                    choices={value.choices}
+                    width={228}
+                    choicesLocation={value.choicesLocation}
+                    choiceType={value.choiceType}
+                />
+            </View>
+        ));
         return (
             <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
                 <View style={{...stylesheet.backgroundOverlay, height: this.screenHeight}}>
@@ -44,24 +139,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                 капустой. Вы выбираете, а мы готовим для вас из самых свежих и качественных продуктов.
                             </Text>
                         </View>
-                        <PokeConstructorCard
-                            title={"Основа"}
-                            number={1}
-                            image={require("../../resources/assets/drawable/poke-constructor/1-image.webp")}
-                            smallImage={require("../../resources/assets/drawable/poke-constructor/1.webp")}
-                            choices={["рис", "киноа", "удон", "киноа+рис", "айсберг"]}
-                            choiceType={"radioButton"}
-                            choicesLocation={"left"}
-                        />
-                        <PokeConstructorCard
-                            title={"Протеин"}
-                            number={2}
-                            image={require("../../resources/assets/drawable/poke-constructor/2-image.webp")}
-                            smallImage={require("../../resources/assets/drawable/poke-constructor/2.webp")}
-                            choices={["тунец", "лосось", "курица", "свинина", "креветки", "тофу", "краб"]}
-                            choiceType={"radioButton"}
-                            choicesLocation={"left"}
-                        />
+                        {cards1_2}
                         <View
                             style={{
                                 alignItems: "center",
@@ -103,71 +181,10 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                 </View>
                             </View>
                         </View>
-                        <PokeConstructorCard
-                            title={"Наполнитель"}
-                            number={3}
-                            image={require("../../resources/assets/drawable/poke-constructor/3-image.webp")}
-                            smallImage={require("../../resources/assets/drawable/poke-constructor/3.webp")}
-                            choices={[
-                                "морковь",
-                                "битые огурцы",
-                                "красная капуста",
-                                "болгарский перец",
-                                "cалат айсберг",
-                                "корн салат",
-                                "красный лук",
-                                "томаты черри",
-                                "редис",
-                                "такуан",
-                                "грибы",
-                                "чука",
-                                "кимчи",
-                                "соевые ростки",
-                                "баклажаны",
-                            ]}
-                            choiceType={"checkBox"}
-                            choicesLocation={"bottom"}
-                            choiceLimit={this.state.toppingSwitch === 1 ? 5 : 3}
-                        />
-                        <PokeConstructorCard
-                            title={"Топпинг"}
-                            number={4}
-                            image={require("../../resources/assets/drawable/poke-constructor/3-image.webp")}
-                            smallImage={require("../../resources/assets/drawable/poke-constructor/4.webp")}
-                            choices={["авокадо", "манго", "ананас", "масаго", "бобы эдамамэ"]}
-                            choiceType={"checkBox"}
-                            choicesLocation={"left"}
-                            choiceLimit={this.state.toppingSwitch}
-                        />
-                        <PokeConstructorCard
-                            title={"Соус"}
-                            number={5}
-                            image={require("../../resources/assets/drawable/poke-constructor/3-image.webp")}
-                            smallImage={require("../../resources/assets/drawable/poke-constructor/5.webp")}
-                            choices={["терияки", "васаби", "японский", "гавайский", "спайс"]}
-                            choiceType={"radioButton"}
-                            choicesLocation={"left"}
-                        />
-                        <PokeConstructorCard
-                            title={"Хруст"}
-                            number={6}
-                            image={require("../../resources/assets/drawable/poke-constructor/3-image.webp")}
-                            smallImage={require("../../resources/assets/drawable/poke-constructor/6.webp")}
-                            choices={[
-                                "кешью",
-                                "кунжут",
-                                "ким нори",
-                                "жареный лук",
-                                "миндальные лепестки",
-                                "начос",
-                                "тыквенные семечки",
-                            ]}
-                            choiceType={"radioButton"}
-                            choicesLocation={"left"}
-                        />
+                        {cards3_6}
                         <View style={stylesheet.done}>
                             <Text style={stylesheet.doneText}>ГОТОВО!</Text>
-                            <Text style={stylesheet.subTitleText}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
+                            <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
                             <Text style={stylesheet.price}>1235 руб</Text>
                             <View style={stylesheet.buyButton}>
                                 <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
@@ -181,8 +198,9 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             </Text>
                         </View>
                         {this.state.addIngredientOpen ? (
-                            <View>
-                                <Text>Дополнительно</Text>
+                            <View style={{alignItems: "center", paddingBottom: 20}}>
+                                <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
+                                {additionalIngredients}
                             </View>
                         ) : null}
                     </ScrollView>
@@ -236,7 +254,7 @@ export const stylesheet = StyleSheet.create({
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "bold",
-        fontSize: 18,
+        fontSize: 23,
         color: globalColors.mainTextColor,
     },
     radioButtonText: {
