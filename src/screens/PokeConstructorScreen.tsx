@@ -26,9 +26,9 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         this.data = [
             {
                 title: "Основа",
-                choices: ["рис", "киноа", "удон", "киноа+рис", "айсберг"],
+                choices: ["рис111рис2рис3рис4рис5 рис6 рис7 рис8", "киноа", "удон", "киноа+рис", "айсберг"],
                 number: 1,
-                image: require("../../resources/assets/drawable/poke-constructor/1-image.webp"),
+                image: require("../../resources/assets/drawable/poke-constructor/1-image.jpg"),
                 smallImage: require("../../resources/assets/drawable/poke-constructor/1.webp"),
                 choiceType: "radioButton",
                 choicesLocation: "left",
@@ -37,7 +37,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 title: "Протеин",
                 choices: ["тунец", "лосось", "курица", "свинина", "креветки", "тофу", "краб"],
                 number: 2,
-                image: require("../../resources/assets/drawable/poke-constructor/2-image.webp"),
+                image: require("../../resources/assets/drawable/poke-constructor/2-image.jpg"),
                 smallImage: require("../../resources/assets/drawable/poke-constructor/2.webp"),
                 choiceType: "radioButton",
                 choicesLocation: "left",
@@ -62,7 +62,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                     "баклажаны",
                 ],
                 number: 3,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
                 smallImage: require("../../resources/assets/drawable/poke-constructor/3.webp"),
                 choiceType: "checkBox",
                 choicesLocation: "bottom",
@@ -72,7 +72,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 title: "Топпинг",
                 choices: ["авокадо", "манго", "ананас", "масаго", "бобы эдамамэ"],
                 number: 4,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
                 smallImage: require("../../resources/assets/drawable/poke-constructor/4.webp"),
                 choiceType: "checkBox",
                 choicesLocation: "left",
@@ -82,7 +82,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 title: "Соус",
                 choices: ["терияки", "васаби", "японский", "гавайский", "спайс"],
                 number: 5,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
                 smallImage: require("../../resources/assets/drawable/poke-constructor/5.webp"),
                 choiceType: "radioButton",
                 choicesLocation: "left",
@@ -99,7 +99,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                     "тыквенные семечки",
                 ],
                 number: 6,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.webp"),
+                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
                 smallImage: require("../../resources/assets/drawable/poke-constructor/6.webp"),
                 choiceType: "radioButton",
                 choicesLocation: "left",
@@ -115,7 +115,6 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 <Text style={stylesheet.subTitleText}>{value.title}</Text>
                 <CheckBoxSelect
                     choices={value.choices}
-                    width={228}
                     choicesLocation={value.choicesLocation}
                     choiceType={value.choiceType}
                 />
@@ -198,7 +197,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             </Text>
                         </View>
                         {this.state.addIngredientOpen ? (
-                            <View style={{alignItems: "center", paddingBottom: 20}}>
+                            <View style={{alignItems: "center", alignSelf: "center", paddingBottom: 20, width: "70%"}}>
                                 <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
                                 {additionalIngredients}
                             </View>

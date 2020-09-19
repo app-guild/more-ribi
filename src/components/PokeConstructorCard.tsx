@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Text, View, Dimensions, StyleSheet, Image} from "react-native";
+import {Text, View, StyleSheet, Image} from "react-native";
 import {globalColors} from "../../resources/styles";
 import CheckBoxSelect from "./СheckBoxSelect";
 
@@ -23,8 +23,6 @@ export interface IPokeConstructorCardData {
 }
 
 class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>, Readonly<IPokeConstructorCardState>> {
-    private readonly screenWidth = Dimensions.get("window").width;
-
     constructor(props: IPokeConstructorCardProps) {
         super(props);
         this.state = {checked: new Array(props.data.choices.length).fill(false)};
@@ -32,7 +30,6 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
 
     render() {
         const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props.data;
-        const halfWidth = (this.screenWidth - 2 * stylesheet.container.paddingHorizontal) / 2;
 
         return (
             <View
@@ -49,7 +46,7 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
                               alignItems: "flex-start",
                           }
                 }>
-                <View style={{width: halfWidth}}>
+                <View style={{flex: 1, width: "50%"}}>
                     <View
                         style={{
                             flexDirection: "row",
@@ -83,8 +80,8 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
                     <Image
                         source={image}
                         style={{
-                            borderRadius: halfWidth / 4,
-                            width: halfWidth,
+                            borderRadius: 1000,
+                            width: "100%",
                             height: "auto",
                             aspectRatio: 1.5,
                         }}
@@ -94,12 +91,13 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
                     style={{
                         marginTop: 20,
                         marginLeft: choicesLocation === "bottom" ? 0 : stylesheet.spaceBetweenColumns.marginLeft,
+                        flex: 1,
+                        width: choicesLocation === "bottom" ? "70%" : undefined,
                     }}>
                     <CheckBoxSelect
                         choices={choices}
                         choiceType={choiceType}
                         choicesLocation={choicesLocation}
-                        width={halfWidth}
                         choiceLimit={choiceLimit}
                     />
                 </View>
@@ -166,7 +164,9 @@ export const stylesheet = StyleSheet.create({
         color: globalColors.orangeColor,
     },
     spaceBetweenColumns: {
-        marginLeft: 20,
+        margin: 20,
+        marginLeft: 10,
+        marginRight: 10,
     },
 });
 

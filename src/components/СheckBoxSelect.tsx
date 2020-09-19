@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Dimensions, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {CheckBox} from "react-native-elements";
 import {globalColors} from "../../resources/styles";
 
@@ -10,13 +10,9 @@ export interface ICheckBoxSelectState {
 export interface ICheckBoxSelectProps {
     choices: string[];
     choiceType: "radioButton" | "checkBox";
-    width: number;
     choicesLocation: "bottom" | "left";
     choiceLimit?: number;
 }
-
-const checkBoxWidth = 44;
-const screenWidth = Dimensions.get("window").width;
 
 class CheckBoxSelect extends Component<Readonly<ICheckBoxSelectProps>, Readonly<ICheckBoxSelectState>> {
     constructor(props: ICheckBoxSelectProps) {
@@ -38,14 +34,14 @@ class CheckBoxSelect extends Component<Readonly<ICheckBoxSelectProps>, Readonly<
     }
 
     render() {
-        const {choices, choiceType, width, choiceLimit, choicesLocation} = this.props;
+        const {choices, choiceType, choiceLimit} = this.props;
         return choices.map((val: any, index: any) => (
             <View
                 key={index}
                 style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    width: width,
+                    width: "100%",
                 }}>
                 <CheckBox
                     checked={this.state.checked[index]}
@@ -71,16 +67,7 @@ class CheckBoxSelect extends Component<Readonly<ICheckBoxSelectProps>, Readonly<
                     checkedIcon={choiceType === "radioButton" ? "dot-circle-o" : undefined}
                     uncheckedIcon={choiceType === "radioButton" ? "circle-o" : undefined}
                 />
-                <Text
-                    style={{
-                        ...stylesheet.radioButtonText,
-                        width:
-                            choicesLocation === "bottom"
-                                ? width + (screenWidth - width) / 2 - checkBoxWidth
-                                : width - checkBoxWidth,
-                    }}>
-                    {val}
-                </Text>
+                <Text style={stylesheet.radioButtonText}>{val}</Text>
             </View>
         ));
     }
@@ -88,6 +75,7 @@ class CheckBoxSelect extends Component<Readonly<ICheckBoxSelectProps>, Readonly<
 
 export const stylesheet = StyleSheet.create({
     radioButtonText: {
+        flex: 1,
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "300",
