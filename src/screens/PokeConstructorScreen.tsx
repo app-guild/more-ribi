@@ -12,7 +12,6 @@ export interface IPokeConstructorScreenState {
 }
 
 class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConstructorScreenState>> {
-    private readonly screenWidth = Dimensions.get("window").width;
     private readonly screenHeight = Dimensions.get("window").height - getStatusBarHeight();
     private data: IPokeConstructorCardData[];
 
@@ -26,7 +25,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         this.data = [
             {
                 title: "Основа",
-                choices: ["рис111рис2рис3рис4рис5 рис6 рис7 рис8", "киноа", "удон", "киноа+рис", "айсберг"],
+                choices: ["рис", "киноа", "удон", "киноа+рис", "айсберг"],
                 number: 1,
                 image: require("../../resources/assets/drawable/poke-constructor/1-image.jpg"),
                 smallImage: require("../../resources/assets/drawable/poke-constructor/1.webp"),
@@ -66,7 +65,6 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 smallImage: require("../../resources/assets/drawable/poke-constructor/3.webp"),
                 choiceType: "checkBox",
                 choicesLocation: "bottom",
-                choiceLimit: this.state.toppingSwitch === 1 ? 5 : 3,
             },
             {
                 title: "Топпинг",
@@ -76,7 +74,6 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 smallImage: require("../../resources/assets/drawable/poke-constructor/4.webp"),
                 choiceType: "checkBox",
                 choicesLocation: "left",
-                choiceLimit: this.state.toppingSwitch,
             },
             {
                 title: "Соус",
@@ -109,7 +106,11 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
 
     render() {
         const cards1_2 = this.data.slice(0, 2).map((value, index) => <PokeConstructorCard key={index} data={value} />);
-        const cards3_6 = this.data.slice(2, 6).map((value, index) => <PokeConstructorCard key={index} data={value} />);
+        const cards3_6 = this.data.slice(2, 6).map((value, index) => {
+            if (index === 0) value.choiceLimit = this.state.toppingSwitch === 1 ? 5 : 3;
+            if (index === 1) value.choiceLimit = this.state.toppingSwitch;
+            return <PokeConstructorCard key={index} data={value} />;
+        });
         const additionalIngredients = this.data.slice(1, 6).map((value, index) => (
             <View key={index}>
                 <Text style={stylesheet.subTitleText}>{value.title}</Text>
@@ -154,25 +155,21 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                     width: "100%",
                                 }}>
                                 <View
-                                    onTouchEnd={(event) => this.setState({toppingSwitch: 1})}
+                                    onTouchEnd={() => this.setState({toppingSwitch: 1})}
                                     style={{
                                         ...stylesheet.toggleButton,
-                                        width:
-                                            (this.screenWidth - stylesheet.container.paddingHorizontal) / 2 -
-                                            stylesheet.orText.paddingHorizontal,
+                                        flex: 1,
                                         backgroundColor:
                                             this.state.toppingSwitch === 1 ? globalColors.primaryColor : "transparent",
                                     }}>
                                     <Text style={{textAlign: "center"}}>5 наполнителей, 1 топпинг</Text>
                                 </View>
-                                <Text>или</Text>
+                                <Text style={stylesheet.orText}>или</Text>
                                 <View
-                                    onTouchEnd={(event) => this.setState({toppingSwitch: 2})}
+                                    onTouchEnd={() => this.setState({toppingSwitch: 2})}
                                     style={{
                                         ...stylesheet.toggleButton,
-                                        width:
-                                            (this.screenWidth - stylesheet.container.paddingHorizontal) / 2 -
-                                            stylesheet.orText.paddingHorizontal,
+                                        flex: 1,
                                         backgroundColor:
                                             this.state.toppingSwitch === 2 ? globalColors.primaryColor : "transparent",
                                     }}>
@@ -312,13 +309,13 @@ export const stylesheet = StyleSheet.create({
     },
     toggleButton: {
         paddingVertical: 5,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         borderRadius: 50,
         borderWidth: 2,
         borderColor: globalColors.orangeColor,
     },
     orText: {
-        paddingHorizontal: 35,
+        paddingHorizontal: 10,
     },
 });
 
