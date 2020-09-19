@@ -14,6 +14,7 @@ const globalColors = {
     backgroundOverlay: "#FFFFFF",
     headerUnderlineColor: "#FFC11E",
     categoriesScreenCardTitleContainerBGColor: "rgba(0,0,0,0.35)",
+    orangeColor: "#ffc11e",
 };
 
 const globalStylesheet = StyleSheet.create({

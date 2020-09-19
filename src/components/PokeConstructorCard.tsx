@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Text, View, Dimensions, StyleSheet, Image} from "react-native";
 import {globalColors} from "../../resources/styles";
 import {CheckBox} from "react-native-elements";
+import CheckBoxSelect from "./СheckBoxSelect";
 
 export interface IPokeConstructorCardState {
     checked: boolean[];
@@ -9,16 +10,18 @@ export interface IPokeConstructorCardState {
 
 export interface IPokeConstructorCardProps {
     title: string;
-    image: string;
-    smallImage: string;
+    number: number;
+    image: any;
+    smallImage: any;
     choices: string[];
     choiceType: "radioButton" | "checkBox";
     choicesLocation: "bottom" | "left";
+    choiceLimit?: number;
 }
 
 const checkBoxWidth = 44;
 
-class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstructorCardState>> {
+class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>, Readonly<IPokeConstructorCardState>> {
     private readonly screenWidth = Dimensions.get("window").width;
 
     constructor(props: IPokeConstructorCardProps) {
@@ -26,48 +29,12 @@ class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstru
         this.state = {checked: new Array(props.choices.length).fill(false)};
     }
 
+
+
     render() {
-        const {title, number, image, smallImage, choices, choiceType, choicesLocation} = this.props;
+        const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props;
         const halfWidth = (this.screenWidth - 2 * stylesheet.container.paddingHorizontal) / 2;
-        const choicesList = choices.map((val: any, index: any) => (
-            <View
-                key={index}
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    width: halfWidth,
-                }}>
-                <CheckBox
-                    checked={this.state.checked[index]}
-                    onPress={() => {
-                        if (choiceType === "radioButton") {
-                            this.state.checked.fill(false).splice(index, 1, !this.state.checked[index]);
-                            this.setState({checked: this.state.checked});
-                        } else {
-                            this.state.checked.splice(index, 1, !this.state.checked[index]);
-                            this.setState({checked: this.state.checked});
-                        }
-                    }}
-                    wrapperStyle={{paddingVertical: 4}}
-                    containerStyle={{
-                        padding: 0,
-                        margin: 0,
-                    }}
-                    checkedIcon={choiceType === "radioButton" ? "dot-circle-o" : undefined}
-                    uncheckedIcon={choiceType === "radioButton" ? "circle-o" : undefined}
-                />
-                <Text
-                    style={{
-                        ...stylesheet.radioButtonText,
-                        width:
-                            choicesLocation === "bottom"
-                                ? halfWidth + (this.screenWidth - halfWidth) / 2 - checkBoxWidth
-                                : halfWidth - checkBoxWidth,
-                    }}>
-                    {val}
-                </Text>
-            </View>
-        ));
+
         return (
             <View
                 style={
@@ -83,8 +50,7 @@ class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstru
                               alignItems: "flex-start",
                           }
                 }>
-                <View
-                    style={{width: halfWidth}}>
+                <View style={{width: halfWidth}}>
                     <View
                         style={{
                             flexDirection: "row",
@@ -104,16 +70,14 @@ class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstru
                                 source={smallImage}
                                 style={{
                                     position: "absolute",
-                                    width: 30,
-                                    height: 30,
+                                    width: 25,
+                                    height: 25,
                                     left: 17,
                                     top: 32,
                                 }}
                             />
                         </View>
-                        <Text
-                            numberOfLines={2}
-                            style={stylesheet.subTitleText}>
+                        <Text numberOfLines={2} style={stylesheet.subTitleText}>
                             {title}
                         </Text>
                     </View>
@@ -132,7 +96,12 @@ class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstru
                         marginTop: 20,
                         marginLeft: choicesLocation === "bottom" ? 0 : stylesheet.spaceBetweenColumns.marginLeft,
                     }}>
-                    {choicesList}
+                    <CheckBoxSelect
+                        choices={choices}
+                        choiceType={choiceType}
+                        width={halfWidth}
+                        choiceLimit={choiceLimit}
+                    />
                 </View>
             </View>
         );
@@ -142,7 +111,7 @@ class PokeConstructorCard extends Component<Readonly<any>, Readonly<IPokeConstru
 export const stylesheet = StyleSheet.create({
     container: {
         flexDirection: "row",
-        marginBottom: 40,
+        marginTop: 40,
         paddingHorizontal: 20,
     },
     topText: {
@@ -200,10 +169,10 @@ export const stylesheet = StyleSheet.create({
         color: globalColors.mainTextColor,
     },
     odd: {
-        color: "#779db9",
+        color: globalColors.primaryColor,
     },
     even: {
-        color: "#ffc11e",
+        color: globalColors.orangeColor,
     },
     spaceBetweenColumns: {
         marginLeft: 20,
