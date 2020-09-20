@@ -44,8 +44,7 @@ export default class DatabaseApi {
     static getProducts(): Promise<Product[]> {
         const sql = `
             SELECT 
-                id as product_id,
-                name, price, discountPrice, imageUrl, type, composition, available
+                *, id as product_id
             FROM Products
         `;
         return this.executeQuery(sql).then((results) => {
