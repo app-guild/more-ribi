@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Text, View, StyleSheet, Image} from "react-native";
 import {globalColors} from "../../resources/styles";
-import CheckBoxSelect from "./СheckBoxSelect";
+import CheckBoxGroup from "./СheckBoxGroup";
 
 export interface IPokeConstructorCardState {
     checked: boolean[];
@@ -20,6 +20,7 @@ export interface IPokeConstructorCardData {
     choiceType: "radioButton" | "checkBox";
     choicesLocation: "bottom" | "left";
     choiceLimit?: number;
+    additionalText?: string[];
 }
 
 class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>, Readonly<IPokeConstructorCardState>> {
@@ -94,7 +95,7 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
                         flex: 1,
                         width: choicesLocation === "bottom" ? "70%" : undefined,
                     }}>
-                    <CheckBoxSelect
+                    <CheckBoxGroup
                         choices={choices}
                         choiceType={choiceType}
                         choicesLocation={choicesLocation}

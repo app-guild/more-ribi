@@ -1,26 +1,28 @@
 import React, {Component} from "react";
-import {ImageBackground, Text, View, ScrollView, Dimensions, StyleSheet} from "react-native";
+import {ImageBackground, Text, View, ScrollView, StyleSheet} from "react-native";
 import {globalColors} from "../../resources/styles";
-import {getStatusBarHeight} from "react-native-status-bar-height";
 import PokeConstructorCard, {IPokeConstructorCardData} from "../components/PokeConstructorCard";
-import CheckBoxSelect from "../components/СheckBoxSelect";
+import CheckBoxGroup from "../components/СheckBoxGroup";
 
 export interface IPokeConstructorScreenState {
-    checked: boolean;
     addIngredientOpen: boolean;
     toppingSwitch: 1 | 2;
+    totalPrice: number;
 }
 
+const standardPrice = 270;
+
 class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConstructorScreenState>> {
-    private readonly screenHeight = Dimensions.get("window").height - getStatusBarHeight();
     private data: IPokeConstructorCardData[];
+    private additionalTitleText: string[] = ["", " (+30Р)", " (+30Р)", " (+15Р)", " (+30Р)"];
+    private additionalSumByCategories: number[] = new Array(this.additionalTitleText.length).fill(0);
 
     constructor(props: any) {
         super(props);
         this.state = {
-            checked: false,
             addIngredientOpen: false,
             toppingSwitch: 1,
+            totalPrice: standardPrice,
         };
         this.data = [
             {
@@ -40,6 +42,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 smallImage: require("../../resources/assets/drawable/poke-constructor/2.webp"),
                 choiceType: "radioButton",
                 choicesLocation: "left",
+                additionalText: ["(+100р)", "(+100р)", "(+60р)", "(+60р)", "(+120р)", "(+60р)", "(+60р)"],
             },
             {
                 title: "Наполнитель",
@@ -102,28 +105,69 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 choicesLocation: "left",
             },
         ];
+        this.onAdditionalClick = this.onAdditionalClick.bind(this);
+    }
+
+    private onAdditionalClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
+        if (changed) {
+            let sum = 0;
+            if (this.additionalTitleText[id] === "") {
+                this.data[id + 1].additionalText?.forEach((val, index) => {
+                    if (values[index]) {
+                        sum += parseInt(val.slice(2, -2));
+                    }
+                });
+                this.additionalSumByCategories[id] = sum;
+            } else {
+                values.forEach((val, index) => {
+                    if (val) {
+                        sum += parseInt(this.additionalTitleText[id].slice(2, -2));
+                    }
+                });
+                this.additionalSumByCategories[id] = sum;
+            }
+            this.setState({
+                totalPrice:
+                    standardPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
+            });
+        }
     }
 
     render() {
         const cards1_2 = this.data.slice(0, 2).map((value, index) => <PokeConstructorCard key={index} data={value} />);
         const cards3_6 = this.data.slice(2, 6).map((value, index) => {
-            if (index === 0) value.choiceLimit = this.state.toppingSwitch === 1 ? 5 : 3;
-            if (index === 1) value.choiceLimit = this.state.toppingSwitch;
+            if (index === 0) {
+                value.choiceLimit = this.state.toppingSwitch === 1 ? 5 : 3;
+            }
+            if (index === 1) {
+                value.choiceLimit = this.state.toppingSwitch;
+            }
             return <PokeConstructorCard key={index} data={value} />;
         });
         const additionalIngredients = this.data.slice(1, 6).map((value, index) => (
             <View key={index}>
-                <Text style={stylesheet.subTitleText}>{value.title}</Text>
-                <CheckBoxSelect
+                <View style={{flexDirection: "row"}}>
+                    <Text style={{...stylesheet.subTitleText, marginTop: 30, marginLeft: 10}}>{value.title}</Text>
+                    {this.additionalTitleText[index] ? (
+                        <Text style={{...stylesheet.additionalText, marginTop: 30}}>
+                            {this.additionalTitleText[index]}
+                        </Text>
+                    ) : null}
+                </View>
+                <CheckBoxGroup
                     choices={value.choices}
                     choicesLocation={value.choicesLocation}
                     choiceType={value.choiceType}
+                    additionalText={value.additionalText}
+                    onClick={this.onAdditionalClick}
+                    canUncheck={true}
+                    id={index}
                 />
             </View>
         ));
         return (
             <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
-                <View style={{...stylesheet.backgroundOverlay, height: this.screenHeight}}>
+                <View style={stylesheet.backgroundOverlay}>
                     <ScrollView>
                         <ImageBackground
                             style={{width: "auto"}}
@@ -181,7 +225,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         <View style={stylesheet.done}>
                             <Text style={stylesheet.doneText}>ГОТОВО!</Text>
                             <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
-                            <Text style={stylesheet.price}>1235 руб</Text>
+                            <Text style={stylesheet.price}>{this.state.totalPrice + " руб"}</Text>
                             <View style={stylesheet.buyButton}>
                                 <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
                             </View>
@@ -194,7 +238,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             </Text>
                         </View>
                         {this.state.addIngredientOpen ? (
-                            <View style={{alignItems: "center", alignSelf: "center", paddingBottom: 20, width: "70%"}}>
+                            <View style={{alignItems: "center", alignSelf: "center", paddingBottom: 20, width: "65%"}}>
                                 <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
                                 {additionalIngredients}
                             </View>
@@ -316,6 +360,14 @@ export const stylesheet = StyleSheet.create({
     },
     orText: {
         paddingHorizontal: 10,
+    },
+    additionalText: {
+        fontFamily: "Montserrat",
+        fontStyle: "normal",
+        fontWeight: "300",
+        fontSize: 20,
+        lineHeight: 28,
+        color: globalColors.additionalTextColor,
     },
 });
 
