@@ -1,8 +1,8 @@
 import SQLite from "react-native-sqlite-storage";
-import Product from "../entities/Product";
-import Cart from "../entities/Cart";
-import Order from "../entities/Order";
-import Restaurant from "../entities/Restaurant";
+import Product from "../../entities/Product";
+import Cart from "../../entities/Cart";
+import Order from "../../entities/Order";
+import Restaurant from "../../entities/Restaurant";
 
 SQLite.DEBUG = true;
 
@@ -37,6 +37,27 @@ const selectCartPriceSql = `
 `;
 
 export default class DatabaseApi {
+    private static onCartChangeListeners: Array<(cart: Cart) => void> = [];
+
+    public static addOnCartChangeListener(listener: (cart: Cart) => void) {
+        this.onCartChangeListeners.push(listener);
+    }
+
+    public static removeOnCartChangeListener(listener: (cart: Cart) => void) {
+        const index = this.onCartChangeListeners.indexOf(listener);
+        if (index !== undefined) {
+            this.onCartChangeListeners.splice(index, 1);
+        }
+    }
+
+    private static async callOnCartChangeListeners(): Promise<void> {
+        return DatabaseApi.getCart().then((cart) => {
+            this.onCartChangeListeners.forEach((listener) => {
+                listener(cart);
+            });
+        });
+    }
+
     /**
      * Get array of products
      * @return {Promise<Product[]>} Promise contains array of products
@@ -94,11 +115,11 @@ export default class DatabaseApi {
      * @return {Promise<Cart>} Promise contains cart
      */
     static getCart(): Promise<Cart> {
-        const sql = `
+        let sql = `
             SELECT 
                 Orders.id as cart_id,
                 Products.id as product_id,
-                name, price, imageUrl, type
+                name, price, discountPrice, imageUrl, type
             FROM Orders
             INNER JOIN OrderProducts ON Orders.id = OrderProducts.order_id
             INNER JOIN Products ON OrderProducts.product_id = Products.id  
@@ -129,12 +150,15 @@ export default class DatabaseApi {
             count = count ? count : 1;
 
             const sql = `
-                INSERT INTO OrderProducts (order_id, product_id, count) VALUES (${cartId}, ${productId}, ${count})
-                ${selectCartPriceSql}
-            `;
-            return this.executeQuery(sql).then((results) => {
-                return results.rows.raw()[0]?.cart_sum || 0;
-            });
+                INSERT INTO OrderProducts (order_id, product_id, count) VALUES (${cartId}, ${productId}, ${count})`;
+
+            return this.executeQuery(sql)
+                .then(() => this.executeQuery(selectCartPriceSql))
+                .then((results) => {
+                    return this.callOnCartChangeListeners().then(() => {
+                        return results.rows.raw()[0]?.cart_sum || 0;
+                    });
+                });
         });
     }
 
@@ -151,7 +175,9 @@ export default class DatabaseApi {
                 ${selectCartPriceSql}
             `;
             return this.executeQuery(sql).then((results) => {
-                return results.rows.raw()[0]?.cart_sum || 0;
+                return this.callOnCartChangeListeners().then(() => {
+                    return results.rows.raw()[0]?.cart_sum || 0;
+                });
             });
         });
     }
@@ -168,7 +194,9 @@ export default class DatabaseApi {
                 ${selectCartPriceSql}
             `;
             return this.executeQuery(sql).then((results) => {
-                return results.rows.raw()[0]?.cart_sum || 0;
+                return this.callOnCartChangeListeners().then(() => {
+                    return results.rows.raw()[0]?.cart_sum || 0;
+                });
             });
         });
     }
@@ -181,7 +209,11 @@ export default class DatabaseApi {
     static clearCart(): Promise<number> {
         return this.getCartId().then((cartId) => {
             const sql = `DELETE FROM OrderProducts WHERE order_id = ${cartId}`;
-            return this.executeQuery(sql).then(() => 0);
+            return this.executeQuery(sql).then(() => {
+                return this.callOnCartChangeListeners().then(() => {
+                    return 0;
+                });
+            });
         });
     }
 

@@ -1,4 +1,4 @@
-import {TKey} from "../database/DatabaseApi";
+import {TKey} from "../utils/database/DatabaseApi";
 import {ProductType} from "./ProductType";
 
 export default class Product {

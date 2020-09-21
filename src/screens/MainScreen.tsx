@@ -1,19 +1,17 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, ImageBackground, StyleSheet, Text, View} from "react-native";
-import Header from "../components/Header";
+import {Dimensions, StyleSheet, Text, View} from "react-native";
 import ProductCard from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import OpenDish from "../components/OpenDish";
 import {globalColors} from "../../resources/styles";
-import DatabaseApi from "../database/DatabaseApi";
+import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Modal from "react-native-modal";
+import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
 
 export interface IMainScreenState {
-    mainContainerWidth: number;
-    screenHeight: number;
     productCardSize: Dimension;
     currentCategory: string;
     modalVisible: boolean;
@@ -27,7 +25,7 @@ interface IProductGroup {
     items: Product[];
 }
 
-const headerHeight = 86;
+const windowSize = Dimensions.get("window");
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
@@ -39,29 +37,22 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.onCategoryCross = this.onCategoryCross.bind(this);
         this._rowRenderer = this._rowRenderer.bind(this);
         this.onCardClick = this.onCardClick.bind(this);
-        const windowSize = Dimensions.get("window");
-        const containerWidth = windowSize.width - 2 * stylesheet.paddings.paddingHorizontal;
-        const containerHeight = windowSize.height - 2 * stylesheet.paddings.paddingVertical;
-        const productCardSize = ProductCard.countCardSize({width: containerWidth, height: containerHeight});
         const cardLayoutSize = {
-            width: windowSize.width / 2 - 0.001,
-            height: productCardSize.height + stylesheet.paddings.paddingVertical,
+            width: windowSize.width,
+            height: windowSize.height * 0.15,
         };
         this.layoutSize = [
             {
-                width: containerWidth,
+                width: windowSize.width,
                 height: stylesheet.categoryHeight.height,
             },
-            cardLayoutSize,
             cardLayoutSize,
         ];
 
         const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, []);
 
         this.state = {
-            mainContainerWidth: containerWidth,
-            screenHeight: containerHeight,
-            productCardSize,
+            productCardSize: cardLayoutSize,
             currentCategory: "",
             dataProvider: providers.dataProvider,
             layoutProvider: providers.layoutProvider,
@@ -84,11 +75,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         });
     }
 
-    componentDidUpdate(
-        prevProps: Readonly<Readonly<any>>,
-        prevState: Readonly<Readonly<IMainScreenState>>,
-        snapshot?: any,
-    ) {
+    componentDidUpdate(prevProps: Readonly<Readonly<any>>) {
         if (this.props.route.params?.category !== prevProps.route.params?.category) {
             this.list.current?.scrollToCategory(this.props.route.params.category);
         }
@@ -117,29 +104,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                     </View>
                 );
             case "column0":
-            case "column1":
-                return (
-                    <View
-                        style={
-                            type === "column0"
-                                ? {
-                                      marginTop: stylesheet.productCardContainer.paddingVertical,
-                                      marginLeft: stylesheet.productCardContainer.paddingHorizontal,
-                                  }
-                                : {
-                                      marginTop: stylesheet.productCardContainer.paddingVertical,
-                                      marginRight: stylesheet.productCardContainer.paddingHorizontal,
-                                      alignItems: "flex-end",
-                                  }
-                        }>
-                        <ProductCard
-                            width={this.state.productCardSize.width}
-                            height={this.state.productCardSize.height}
-                            product={data.item}
-                            onClick={this.onCardClick}
-                        />
-                    </View>
-                );
+                return <ProductCard product={data.item} onClick={this.onCardClick} />;
             default:
                 return null;
         }
@@ -147,52 +112,47 @@ class MainScreen extends Component<any, IMainScreenState> {
 
     render() {
         return (
-            <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
-                <View style={stylesheet.backgroundOverlay}>
-                    <Header
-                        navigation={this.props.navigation}
-                        category={this.state.currentCategory}
-                        onFishButton={() => {
+            <View style={{flex: 1}}>
+                <View style={{alignSelf: "flex-start"}} onTouchEnd={() => this.props.navigation.navigate("Categories")}>
+                    <View style={stylesheet.categoryButton}>
+                        <Text style={stylesheet.subTitle}>{this.state.currentCategory}</Text>
+                        <FishIcon width={15} height={25} />
+                    </View>
+                    <View style={stylesheet.categoryUnderline} />
+                </View>
+                <View style={{flex: 1, marginTop: 10}}>
+                    <CategorizedRecyclerListView
+                        rowRenderer={this._rowRenderer}
+                        onCrossCategory={this.onCategoryCross}
+                        ref={this.list}
+                        layoutProvider={this.state.layoutProvider}
+                        dataProvider={this.state.dataProvider}
+                        initialRenderIndex={1}
+                    />
+                    <Modal
+                        isVisible={this.state.modalVisible}
+                        animationIn={"zoomInUp"}
+                        animationOut={"zoomOutUp"}
+                        style={{margin: 0}}
+                        onBackdropPress={() => {
                             this.setState({modalVisible: false});
                         }}
-                    />
-                    <View style={{flex: 1}}>
-                        <CategorizedRecyclerListView
-                            rowRenderer={this._rowRenderer}
-                            onCrossCategory={this.onCategoryCross}
-                            ref={this.list}
-                            layoutProvider={this.state.layoutProvider}
-                            dataProvider={this.state.dataProvider}
-                            initialRenderIndex={1}
-                        />
-                        <Modal
-                            isVisible={this.state.modalVisible}
-                            animationIn={"zoomInUp"}
-                            animationOut={"zoomOutUp"}
-                            style={{margin: 0}}
-                            onBackdropPress={() => {
-                                this.setState({modalVisible: false});
-                            }}
-                            onBackButtonPress={() => {
-                                this.setState({modalVisible: false});
+                        onBackButtonPress={() => {
+                            this.setState({modalVisible: false});
+                        }}>
+                        <View
+                            style={{
+                                ...stylesheet.openDishModal,
                             }}>
-                            <View
-                                style={{
-                                    ...stylesheet.openDishModal,
-                                    paddingTop: headerHeight,
-                                }}>
-                                <OpenDish
-                                    width={
-                                        this.state.mainContainerWidth -
-                                        1.5 * stylesheet.productCardContainer.paddingHorizontal
-                                    }
-                                    product={this.state.currentProduct}
-                                />
-                            </View>
-                        </Modal>
-                    </View>
+                            <OpenDish
+                                width={windowSize.width - 2 * stylesheet.openDishModal.paddingHorizontal}
+                                height={windowSize.height - 2 * stylesheet.openDishModal.paddingVertical}
+                                product={this.state.currentProduct}
+                            />
+                        </View>
+                    </Modal>
                 </View>
-            </ImageBackground>
+            </View>
         );
     }
 }
@@ -234,10 +194,6 @@ export const stylesheet = StyleSheet.create({
     container: {
         width: "100%",
     },
-    paddings: {
-        paddingHorizontal: 27,
-        paddingVertical: 17,
-    },
     category: {
         paddingLeft: 25,
         marginTop: 15,
@@ -251,17 +207,36 @@ export const stylesheet = StyleSheet.create({
         color: globalColors.primaryColor,
     },
     categoryHeight: {
-        height: 30,
-    },
-    backgroundOverlay: {
-        backgroundColor: globalColors.backgroundOverlay,
-        flex: 1,
-        opacity: 0.95,
+        height: 50,
     },
     openDishModal: {
         flex: 1,
         alignItems: "center",
-        paddingBottom: 30,
+        paddingVertical: 30,
+        paddingHorizontal: 20,
+        width: "100%",
+        height: "100%",
+    },
+    categoryButton: {
+        flexDirection: "row",
+        marginLeft: 40,
+        marginTop: 10,
+    },
+    subTitle: {
+        fontFamily: "Muli",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 16,
+        lineHeight: 20,
+        color: globalColors.primaryColor,
+        marginRight: 7,
+    },
+    categoryUnderline: {
+        backgroundColor: globalColors.headerUnderlineColor,
+        width: "auto",
+        height: 2,
+        marginLeft: 38,
+        marginTop: 3,
     },
 });
 

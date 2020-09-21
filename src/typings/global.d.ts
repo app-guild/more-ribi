@@ -8,8 +8,10 @@ declare module "*";
 declare namespace NodeJS {
     export interface Global {
         db: any;
+        googlePayService: any;
     }
 }
 
+declare var cart: {products: any[], totalPrice: number, id: number};
 declare var googlePayService: any;
 declare var db: any;
