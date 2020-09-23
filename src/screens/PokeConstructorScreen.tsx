@@ -196,7 +196,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         </ImageBackground>
                         <View>
                             <Text style={stylesheet.titleText}>СОБРАТЬ ПОКÉ</Text>
-                            <Text style={stylesheet.descriptionText}>
+                            <Text style={stylesheet.mainText}>
                                 В поке-руме "Много Рыбы" вы сможете собрать своё блюдо сами, выбрав из нескольких основ,
                                 протеинов и более 20-ти наполнителей и топингов. Сочетайте свинину в соусе терияки с
                                 ананасом, острого тунца с манго или соберите вегетарианский боул с тофу и красной
@@ -206,18 +206,13 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         {cards1_2}
                         <View
                             style={{
-                                alignItems: "center",
+                                ...stylesheet.toggleButtonBlockContainer,
                                 paddingHorizontal: stylesheet.container.paddingHorizontal,
-                                marginTop: 40,
                             }}>
-                            <Text style={{marginBottom: 20}}>Выполняем наполнители и топпинг</Text>
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    width: "100%",
-                                }}>
+                            <Text style={{...stylesheet.mainText, marginBottom: 20}}>
+                                Выполняем наполнители и топпинг
+                            </Text>
+                            <View style={stylesheet.toggleButtonContainer}>
                                 <View
                                     onTouchEnd={() => {
                                         if (this.state.toppingSwitch === 2) {
@@ -232,9 +227,11 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                         backgroundColor:
                                             this.state.toppingSwitch === 1 ? globalColors.primaryColor : "transparent",
                                     }}>
-                                    <Text style={{textAlign: "center"}}>5 наполнителей, 1 топпинг</Text>
+                                    <Text style={{...stylesheet.text, textAlign: "center"}}>
+                                        5 наполнителей, 1 топпинг
+                                    </Text>
                                 </View>
-                                <Text style={stylesheet.orText}>или</Text>
+                                <Text style={{...stylesheet.text, ...stylesheet.orText}}>или</Text>
                                 <View
                                     onTouchEnd={() => {
                                         if (this.state.toppingSwitch === 1) {
@@ -249,7 +246,9 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                         backgroundColor:
                                             this.state.toppingSwitch === 2 ? globalColors.primaryColor : "transparent",
                                     }}>
-                                    <Text style={{textAlign: "center"}}>3 наполнителя, 2 топпинга</Text>
+                                    <Text style={{...stylesheet.text, textAlign: "center"}}>
+                                        3 наполнителя, 2 топпинга
+                                    </Text>
                                 </View>
                             </View>
                         </View>
@@ -270,7 +269,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             </Text>
                         </View>
                         {this.state.addIngredientOpen ? (
-                            <View style={{alignItems: "center", alignSelf: "center", paddingBottom: 20, width: "65%"}}>
+                            <View style={stylesheet.addIngredientsContainer}>
                                 <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
                                 {additionalIngredients}
                             </View>
@@ -305,21 +304,20 @@ export const stylesheet = StyleSheet.create({
         paddingVertical: 14,
         textAlign: "center",
     },
-    descriptionText: {
+    mainText: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "300",
-        fontSize: 13,
+        fontSize: 18,
         color: globalColors.mainTextColor,
         paddingHorizontal: 20,
         textAlign: "center",
     },
-    number: {
+    text: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
-        fontWeight: "bold",
-        fontSize: 60,
-        lineHeight: 60,
+        fontWeight: "300",
+        fontSize: 14,
         color: globalColors.mainTextColor,
     },
     subTitleText: {
@@ -327,13 +325,6 @@ export const stylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 23,
-        color: globalColors.mainTextColor,
-    },
-    radioButtonText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
-        fontSize: 13,
         color: globalColors.mainTextColor,
     },
     backgroundOverlay: {
@@ -390,6 +381,16 @@ export const stylesheet = StyleSheet.create({
         borderWidth: 2,
         borderColor: globalColors.orangeColor,
     },
+    toggleButtonBlockContainer: {
+        alignItems: "center",
+        marginTop: 40,
+    },
+    toggleButtonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%",
+    },
     orText: {
         paddingHorizontal: 10,
     },
@@ -400,6 +401,12 @@ export const stylesheet = StyleSheet.create({
         fontSize: 20,
         lineHeight: 28,
         color: globalColors.additionalTextColor,
+    },
+    addIngredientsContainer: {
+        alignItems: "center",
+        alignSelf: "center",
+        paddingBottom: 20,
+        width: "65%",
     },
 });
 
