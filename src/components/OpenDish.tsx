@@ -45,7 +45,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     componentDidMount() {
-        DatabaseApi.getCart().then((cart) => {
+        DatabaseApi.getLastCart().then((cart) => {
             const count = cart.products.filter((prod) => prod.id === this.props.product?.id).length;
             this.setState({productCount: count});
         });
@@ -135,7 +135,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                             opacity: this.buttonFadeAnimValue,
                         }}>
                         <TouchableOpacity
-                            style={{...stylesheet.addToCartButton, maxWidth: widthWithoutPadding}}
+                            style={{...stylesheet.addToCartButton, maxWidth: "100%"}}
                             onPress={async () => this.addToCartFromButton(product.id)}
                             activeOpacity={0.5}>
                             <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
@@ -194,6 +194,11 @@ export const stylesheet = StyleSheet.create({
         fontSize: 24,
         lineHeight: 30,
         marginTop: 10,
+    },
+    image: {
+        width: "100%",
+        aspectRatio: 1,
+        borderRadius: 10,
     },
     composition: {
         ...globalStylesheet.secondaryText,

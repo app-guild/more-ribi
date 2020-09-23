@@ -38,6 +38,14 @@ const selectCartPriceSql = `
 
 export default class DatabaseApi {
     private static onCartChangeListeners: Array<(cart: Cart) => void> = [];
+    private static lastCart?: Cart;
+
+    public static async getLastCart(): Promise<Cart> {
+        if (!this.lastCart) {
+            return this.getCart();
+        }
+        return this.lastCart;
+    }
 
     public static addOnCartChangeListener(listener: (cart: Cart) => void) {
         this.onCartChangeListeners.push(listener);
@@ -126,17 +134,22 @@ export default class DatabaseApi {
             WHERE Orders.date IS NULL
         `;
 
-        return this.executeQuery(sql).then((results) => {
-            const products = this.parseProducts(results);
-            if (products.length) {
-                const cartId = results.rows.raw()[0].cart_id;
-                return new Cart(cartId, products);
-            } else {
-                return this.getCartId().then((cartId) => {
-                    return new Cart(cartId, []);
-                });
-            }
-        });
+        return this.executeQuery(sql)
+            .then((results) => {
+                const products = this.parseProducts(results);
+                if (products.length) {
+                    const cartId = results.rows.raw()[0].cart_id;
+                    return new Cart(cartId, products);
+                } else {
+                    return this.getCartId().then((cartId) => {
+                        return new Cart(cartId, []);
+                    });
+                }
+            })
+            .then((cart) => {
+                this.lastCart = cart;
+                return cart;
+            });
     }
 
     /**

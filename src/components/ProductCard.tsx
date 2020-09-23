@@ -12,6 +12,7 @@ export interface IProductCardState {
 
 export interface IProductCardProps {
     product: Product;
+    countInCart: number;
     onClick: (product: Product) => any;
 }
 
@@ -20,7 +21,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         super(props);
         this.state = {
             product: props.product,
-            countInCart: 0,
+            countInCart: props.countInCart,
         };
         this.addToCart = this.addToCart.bind(this);
         this.getCountInCart = this.getCountInCart.bind(this);
@@ -28,7 +29,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     componentDidMount() {
         DatabaseApi.addOnCartChangeListener(this.getCountInCart);
-        return DatabaseApi.getCart().then(this.getCountInCart);
+        return DatabaseApi.getLastCart().then(this.getCountInCart);
     }
 
     componentWillUnmount() {
@@ -37,7 +38,9 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     private getCountInCart(cart: Cart) {
         const thisProducts = cart.products.filter((prod) => prod.id === this.state.product.id);
-        this.setState({countInCart: thisProducts.length});
+        if (this.state.countInCart !== thisProducts.length) {
+            this.setState({countInCart: thisProducts.length});
+        }
     }
 
     private async addToCart() {
@@ -109,7 +112,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                     onTouchEnd={() => {
                         onClick(product);
                     }}>
-                    <View style={stylesheet.shoppingCartImageContainer} >
+                    <View style={stylesheet.shoppingCartImageContainer}>
                         <Image source={image} style={stylesheet.shoppingCartImage} />
                     </View>
                     <View style={stylesheet.shoppingCardTextContainer}>
