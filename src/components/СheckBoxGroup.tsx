@@ -87,7 +87,6 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxSelectProps>, Readon
     }
 
     render() {
-        //console.log("RENDER: CheckGroup", this.props.id ? this.props.id : this.props.choices[0]);
         const {choices, choiceType, additionalText} = this.props;
 
         return choices.map((val: any, index: any) => (

@@ -39,7 +39,6 @@ class PokeConstructorCard extends PureComponent<
     }
 
     render() {
-        //console.log("RENDER: Card", this.props.data.title);
         const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props.data;
 
         return (

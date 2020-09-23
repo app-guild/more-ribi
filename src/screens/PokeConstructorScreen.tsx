@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import {ImageBackground, Text, View, ScrollView, StyleSheet} from "react-native";
 import {globalColors} from "../../resources/styles";
 import PokeConstructorCard, {IPokeConstructorCardData} from "../components/PokeConstructorCard";
@@ -17,6 +17,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     private additionalTitleText: string[] = ["", " (+30Р)", " (+30Р)", " (+15Р)", " (+30Р)"];
     private additionalSumByCategories: number[] = new Array(this.additionalTitleText.length).fill(0);
     private cardRefs: (PokeConstructorCard | null)[] = [];
+    private ref = createRef<ScrollView>();
 
     constructor(props: any) {
         super(props);
@@ -135,7 +136,6 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     }
 
     render() {
-        //console.log("RENDER: Screen");
         const cards1_2 = this.data.slice(0, 2).map((value, index) => (
             <PokeConstructorCard
                 ref={(ref) => {
@@ -188,7 +188,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         return (
             <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
                 <View style={stylesheet.backgroundOverlay}>
-                    <ScrollView>
+                    <ScrollView ref={this.ref}>
                         <ImageBackground
                             style={{width: "auto"}}
                             source={require("../../resources/assets/drawable/food.jpg")}>
@@ -261,7 +261,9 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                 <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
                             </View>
                             <Text
-                                onPress={() => this.setState({addIngredientOpen: !this.state.addIngredientOpen})}
+                                onPress={() => {
+                                    this.setState({addIngredientOpen: !this.state.addIngredientOpen});
+                                }}
                                 style={stylesheet.addIngredientText}>
                                 {this.state.addIngredientOpen
                                     ? "*Цена основного поке зависит от максимальной стоимости протеина"
@@ -269,7 +271,11 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             </Text>
                         </View>
                         {this.state.addIngredientOpen ? (
-                            <View style={stylesheet.addIngredientsContainer}>
+                            <View
+                                style={stylesheet.addIngredientsContainer}
+                                onLayout={(event) =>
+                                    this.ref.current?.scrollTo({x: 0, y: event.nativeEvent.layout.y, animated: true})
+                                }>
                                 <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
                                 {additionalIngredients}
                             </View>
