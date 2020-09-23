@@ -16,7 +16,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     private data: IPokeConstructorCardData[];
     private additionalTitleText: string[] = ["", " (+30Р)", " (+30Р)", " (+15Р)", " (+30Р)"];
     private additionalSumByCategories: number[] = new Array(this.additionalTitleText.length).fill(0);
-    private cardRefs: (PokeConstructorCard | null)[] = []; //React.RefObject<PokeConstructorCard>[];
+    private cardRefs: (PokeConstructorCard | null)[] = [];
 
     constructor(props: any) {
         super(props);
@@ -135,7 +135,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     }
 
     render() {
-        console.log("RENDER: Screen");
+        //console.log("RENDER: Screen");
         const cards1_2 = this.data.slice(0, 2).map((value, index) => (
             <PokeConstructorCard
                 ref={(ref) => {
