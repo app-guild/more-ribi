@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {createRef, PureComponent} from "react";
 import {Text, View, StyleSheet, Image} from "react-native";
 import {globalColors} from "../../resources/styles";
 import CheckBoxGroup from "./СheckBoxGroup";
@@ -23,13 +23,23 @@ export interface IPokeConstructorCardData {
     additionalText?: string[];
 }
 
-class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>, Readonly<IPokeConstructorCardState>> {
+class PokeConstructorCard extends PureComponent<
+    Readonly<IPokeConstructorCardProps>,
+    Readonly<IPokeConstructorCardState>
+> {
+    private checkBoxGroup = createRef<CheckBoxGroup>();
+
     constructor(props: IPokeConstructorCardProps) {
         super(props);
         this.state = {checked: new Array(props.data.choices.length).fill(false)};
     }
 
+    public setLimit(limit: number | undefined) {
+        this.checkBoxGroup.current?.setLimit(limit);
+    }
+
     render() {
+        console.log("RENDER: Card", this.props.data.title);
         const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props.data;
 
         return (
@@ -96,6 +106,7 @@ class PokeConstructorCard extends Component<Readonly<IPokeConstructorCardProps>,
                         width: choicesLocation === "bottom" ? "70%" : undefined,
                     }}>
                     <CheckBoxGroup
+                        ref={this.checkBoxGroup}
                         choices={choices}
                         choiceType={choiceType}
                         choicesLocation={choicesLocation}

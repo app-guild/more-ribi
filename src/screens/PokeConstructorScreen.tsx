@@ -16,6 +16,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     private data: IPokeConstructorCardData[];
     private additionalTitleText: string[] = ["", " (+30Р)", " (+30Р)", " (+15Р)", " (+30Р)"];
     private additionalSumByCategories: number[] = new Array(this.additionalTitleText.length).fill(0);
+    private cardRefs: (PokeConstructorCard | null)[] = []; //React.RefObject<PokeConstructorCard>[];
 
     constructor(props: any) {
         super(props);
@@ -119,7 +120,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 });
                 this.additionalSumByCategories[id] = sum;
             } else {
-                values.forEach((val, index) => {
+                values.forEach((val) => {
                     if (val) {
                         sum += parseInt(this.additionalTitleText[id].slice(2, -2));
                     }
@@ -134,7 +135,17 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     }
 
     render() {
-        const cards1_2 = this.data.slice(0, 2).map((value, index) => <PokeConstructorCard key={index} data={value} />);
+        console.log("RENDER: Screen");
+        const cards1_2 = this.data.slice(0, 2).map((value, index) => (
+            <PokeConstructorCard
+                ref={(ref) => {
+                    this.cardRefs[index] = ref;
+                    return true;
+                }}
+                key={index}
+                data={value}
+            />
+        ));
         const cards3_6 = this.data.slice(2, 6).map((value, index) => {
             if (index === 0) {
                 value.choiceLimit = this.state.toppingSwitch === 1 ? 5 : 3;
@@ -142,7 +153,16 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             if (index === 1) {
                 value.choiceLimit = this.state.toppingSwitch;
             }
-            return <PokeConstructorCard key={index} data={value} />;
+            return (
+                <PokeConstructorCard
+                    ref={(ref) => {
+                        this.cardRefs[index + 2] = ref;
+                        return true;
+                    }}
+                    key={index}
+                    data={value}
+                />
+            );
         });
         const additionalIngredients = this.data.slice(1, 6).map((value, index) => (
             <View key={index}>
@@ -199,7 +219,13 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                     width: "100%",
                                 }}>
                                 <View
-                                    onTouchEnd={() => this.setState({toppingSwitch: 1})}
+                                    onTouchEnd={() => {
+                                        if (this.state.toppingSwitch === 2) {
+                                            this.cardRefs[2]?.setLimit(5);
+                                            this.cardRefs[3]?.setLimit(1);
+                                            this.setState({toppingSwitch: 1});
+                                        }
+                                    }}
                                     style={{
                                         ...stylesheet.toggleButton,
                                         flex: 1,
@@ -210,7 +236,13 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                 </View>
                                 <Text style={stylesheet.orText}>или</Text>
                                 <View
-                                    onTouchEnd={() => this.setState({toppingSwitch: 2})}
+                                    onTouchEnd={() => {
+                                        if (this.state.toppingSwitch === 1) {
+                                            this.cardRefs[2]?.setLimit(3);
+                                            this.cardRefs[3]?.setLimit(2);
+                                            this.setState({toppingSwitch: 2});
+                                        }
+                                    }}
                                     style={{
                                         ...stylesheet.toggleButton,
                                         flex: 1,

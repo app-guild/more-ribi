@@ -1,10 +1,11 @@
-import React, {Component} from "react";
+import React, {PureComponent} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {CheckBox} from "react-native-elements";
 import {globalColors} from "../../resources/styles";
 
 export interface ICheckBoxSelectState {
     checked: boolean[];
+    choiceLimit?: number;
 }
 
 export interface ICheckBoxSelectProps {
@@ -19,15 +20,18 @@ export interface ICheckBoxSelectProps {
     id?: number;
 }
 
-class CheckBoxGroup extends Component<Readonly<ICheckBoxSelectProps>, Readonly<ICheckBoxSelectState>> {
+class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxSelectProps>, Readonly<ICheckBoxSelectState>> {
     constructor(props: ICheckBoxSelectProps) {
         super(props);
         this.state = {
             checked: props.initialChoices ? props.initialChoices : new Array(props.choices.length).fill(false),
+            choiceLimit: this.props.choiceLimit,
         };
         if (!props.initialChoices && props.choiceType === "radioButton" && !props.canUncheck) {
             this.state.checked[0] = true;
         }
+        this.clearContent = this.clearContent.bind(this);
+        this.setLimit = this.setLimit.bind(this);
     }
 
     getCheckCount() {
@@ -36,15 +40,55 @@ class CheckBoxGroup extends Component<Readonly<ICheckBoxSelectProps>, Readonly<I
         return count;
     }
 
-    componentDidUpdate(prevProps: Readonly<Readonly<ICheckBoxSelectProps>>) {
-        if (this.props.choiceLimit && prevProps.choiceLimit && prevProps.choiceLimit > this.props.choiceLimit) {
-            this.state.checked.fill(false);
-            this.setState({});
+    onCheckBoxPress(index: number) {
+        const oldValue = this.state.checked[index];
+        let checked = this.state.checked.slice();
+
+        if (this.state.choiceLimit && this.getCheckCount() >= this.state.choiceLimit) {
+            if (checked[index]) {
+                checked[index] = false;
+            }
+        } else if (this.props.choiceType === "radioButton") {
+            if (this.props.canUncheck) {
+                if (checked[index]) {
+                    checked[index] = false;
+                } else {
+                    checked.fill(false);
+                    checked[index] = true;
+                }
+            } else {
+                checked.fill(false);
+                checked[index] = !checked[index];
+            }
+        } else {
+            checked[index] = !checked[index];
         }
+        this.setState({checked: checked}, () => {
+            if (this.props.onClick) {
+                this.props.onClick(
+                    this.state.checked,
+                    oldValue !== this.state.checked[index],
+                    index,
+                    this.props.id ? this.props.id : 0,
+                );
+            }
+        });
+    }
+
+    public setLimit(limit: number | undefined) {
+        if (limit && this.getCheckCount() > limit) {
+            this.clearContent();
+        }
+        this.setState({choiceLimit: limit});
+    }
+
+    public clearContent() {
+        this.setState({checked: this.state.checked.fill(false)});
     }
 
     render() {
-        const {choices, choiceType, choiceLimit, additionalText, canUncheck} = this.props;
+        console.log("RENDER: CheckGroup", this.props.id ? this.props.id : this.props.choices[0]);
+        const {choices, choiceType, additionalText} = this.props;
 
         return choices.map((val: any, index: any) => (
             <View
@@ -56,37 +100,7 @@ class CheckBoxGroup extends Component<Readonly<ICheckBoxSelectProps>, Readonly<I
                 }}>
                 <CheckBox
                     checked={this.state.checked[index]}
-                    onPress={() => {
-                        const oldValue = this.state.checked[index];
-                        if (choiceLimit && this.getCheckCount() >= choiceLimit) {
-                            if (this.state.checked[index]) {
-                                this.state.checked[index] = false;
-                            }
-                        } else if (choiceType === "radioButton") {
-                            if (canUncheck) {
-                                if (this.state.checked[index]) {
-                                    this.state.checked[index] = false;
-                                } else {
-                                    this.state.checked.fill(false);
-                                    this.state.checked[index] = true;
-                                }
-                            } else {
-                                this.state.checked.fill(false);
-                                this.state.checked[index] = !this.state.checked[index];
-                            }
-                        } else {
-                            this.state.checked[index] = !this.state.checked[index];
-                        }
-                        this.setState({});
-                        if (this.props.onClick) {
-                            this.props.onClick(
-                                this.state.checked,
-                                oldValue !== this.state.checked[index],
-                                index,
-                                this.props.id ? this.props.id : 0,
-                            );
-                        }
-                    }}
+                    onPress={() => this.onCheckBoxPress(index)}
                     wrapperStyle={{paddingVertical: 4}}
                     containerStyle={{
                         padding: 0,
