@@ -8,8 +8,6 @@ import Cart from "../entities/Cart";
 export interface IProductCardState {
     product: Product;
     countInCart: number;
-    width: number;
-    height: number;
 }
 
 export interface IProductCardProps {
@@ -22,11 +20,8 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         super(props);
         this.state = {
             product: props.product,
-            width: 0,
-            height: 0,
             countInCart: 0,
         };
-        this.onLayout = this.onLayout.bind(this);
         this.addToCart = this.addToCart.bind(this);
         this.getCountInCart = this.getCountInCart.bind(this);
     }
@@ -38,11 +33,6 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     componentWillUnmount() {
         DatabaseApi.removeOnCartChangeListener(this.getCountInCart);
-    }
-
-    private onLayout(event: any) {
-        const {width, height} = event.nativeEvent.layout;
-        this.setState({width, height});
     }
 
     private getCountInCart(cart: Cart) {
@@ -119,15 +109,8 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                     onTouchEnd={() => {
                         onClick(product);
                     }}>
-                    <View style={stylesheet.shoppingCartImageContainer} onLayout={this.onLayout}>
-                        <Image
-                            source={image}
-                            style={{
-                                width: this.state.height,
-                                height: this.state.height,
-                                borderRadius: 20,
-                            }}
-                        />
+                    <View style={stylesheet.shoppingCartImageContainer} >
+                        <Image source={image} style={stylesheet.shoppingCartImage} />
                     </View>
                     <View style={stylesheet.shoppingCardTextContainer}>
                         <Text numberOfLines={2} style={globalStylesheet.primaryText}>
@@ -175,6 +158,11 @@ export const stylesheet = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         height: "100%",
+    },
+    shoppingCartImage: {
+        height: "100%",
+        aspectRatio: 1,
+        borderRadius: 20,
     },
     shoppingCartPriceContainer: {
         marginRight: 10,

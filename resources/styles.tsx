@@ -1,7 +1,7 @@
 import {StyleSheet} from "react-native";
 
 const globalColors = {
-    transparent: "rgba(0,0,0,0)",
+    transparent: "transparent",
     primaryColor: "#779DB9",
     accentColor: "#E5E5E5",
     mainBackgroundColor: "#E5E5E5",
