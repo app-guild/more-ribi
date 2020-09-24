@@ -10,21 +10,23 @@ export interface IPokeConstructorScreenState {
     totalPrice: number;
 }
 
-const standardPrice = 270;
+const standardProteinPrice = [270, 270, 210, 210, 290, 180, 200];
 
 class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConstructorScreenState>> {
     private data: IPokeConstructorCardData[];
     private additionalTitleText: string[] = ["", " (+30Р)", " (+30Р)", " (+15Р)", " (+30Р)"];
     private additionalSumByCategories: number[] = new Array(this.additionalTitleText.length).fill(0);
     private cardRefs: (PokeConstructorCard | null)[] = [];
-    private ref = createRef<ScrollView>();
+    private additionalIngredientsRefs: (CheckBoxGroup | null)[] = [];
+    private scrollViewRef = createRef<ScrollView>();
+    private needToScroll: boolean = true;
 
     constructor(props: any) {
         super(props);
         this.state = {
             addIngredientOpen: false,
             toppingSwitch: 1,
-            totalPrice: standardPrice,
+            totalPrice: standardProteinPrice[0],
         };
         this.data = [
             {
@@ -108,15 +110,58 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             },
         ];
         this.onAdditionalClick = this.onAdditionalClick.bind(this);
+        this.onCardClick = this.onCardClick.bind(this);
+    }
+
+    private onCardClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
+        if (id === 1 && changed) {
+            const proteinPrice = standardProteinPrice[changedIndex];
+            const additionalProteinIndex = this.additionalIngredientsRefs[0]?.getCheckedIndexes()[0];
+            const additionalProteinPrice = parseInt(
+                this.data[1].additionalText ? this.data[1].additionalText[changedIndex].slice(2, -2) : "100",
+            );
+
+            if (additionalProteinIndex && standardProteinPrice[additionalProteinIndex] > proteinPrice) {
+                this.setState({
+                    totalPrice:
+                        standardProteinPrice[additionalProteinIndex] +
+                        this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
+                        this.additionalSumByCategories[0] +
+                        additionalProteinPrice,
+                });
+            } else {
+                this.setState({
+                    totalPrice:
+                        proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
+                });
+            }
+        } else {
+            this.setState({});
+        }
     }
 
     private onAdditionalClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
         if (changed) {
             let sum = 0;
+            const proteinIndex = this.cardRefs[1] ? this.cardRefs[1].getCheckedIndexes()[0] : 0;
+            const proteinPrice = standardProteinPrice[proteinIndex];
+
             if (this.additionalTitleText[id] === "") {
-                this.data[id + 1].additionalText?.forEach((val, index) => {
+                this.data[id + 1].additionalText?.forEach((val, index, array) => {
                     if (values[index]) {
                         sum += parseInt(val.slice(2, -2));
+                        if (proteinPrice < sum) {
+                            this.additionalSumByCategories[id] = sum;
+
+                            this.setState({
+                                totalPrice:
+                                    standardProteinPrice[index] +
+                                    this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
+                                    sum +
+                                    parseInt(array[proteinIndex].slice(2, -2)),
+                            });
+                            return;
+                        }
                     }
                 });
                 this.additionalSumByCategories[id] = sum;
@@ -130,22 +175,26 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             }
             this.setState({
                 totalPrice:
-                    standardPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
+                    proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
             });
         }
     }
 
     render() {
-        const cards1_2 = this.data.slice(0, 2).map((value, index) => (
-            <PokeConstructorCard
-                ref={(ref) => {
-                    this.cardRefs[index] = ref;
-                    return true;
-                }}
-                key={index}
-                data={value}
-            />
-        ));
+        const cards1_2 = this.data.slice(0, 2).map((value, index) => {
+            value.onClick = this.onCardClick;
+            value.id = index;
+            return (
+                <PokeConstructorCard
+                    ref={(ref) => {
+                        this.cardRefs[index] = ref;
+                        return true;
+                    }}
+                    key={index}
+                    data={value}
+                />
+            );
+        });
         const cards3_6 = this.data.slice(2, 6).map((value, index) => {
             if (index === 0) {
                 value.choiceLimit = this.state.toppingSwitch === 1 ? 5 : 3;
@@ -153,6 +202,8 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             if (index === 1) {
                 value.choiceLimit = this.state.toppingSwitch;
             }
+            value.onClick = this.onCardClick;
+            value.id = index;
             return (
                 <PokeConstructorCard
                     ref={(ref) => {
@@ -175,6 +226,10 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                     ) : null}
                 </View>
                 <CheckBoxGroup
+                    ref={(ref) => {
+                        this.additionalIngredientsRefs[index] = ref;
+                        return true;
+                    }}
                     choices={value.choices}
                     choicesLocation={value.choicesLocation}
                     choiceType={value.choiceType}
@@ -185,24 +240,70 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 />
             </View>
         ));
+
+        const ingredients = (() => {
+            let currentIngredients: string[] = [];
+            this.cardRefs.forEach((value, index) => {
+                value?.getCheckedIndexes().forEach((value1) => {
+                    currentIngredients.push(this.data[index].choices[value1] + ", ");
+                });
+            });
+            if (currentIngredients.length) {
+                currentIngredients[currentIngredients.length - 1] = currentIngredients[
+                    currentIngredients.length - 1
+                ].slice(0, -2);
+            } else {
+                currentIngredients.push("рис, тунец, терияки, кешью");
+            }
+            return currentIngredients;
+        }).call(this);
+
+        const addIngredients = (() => {
+            let currentIngredients: string[] = [];
+            this.additionalIngredientsRefs.forEach((value, index) => {
+                value?.getCheckedIndexes().forEach((value1) => {
+                    if (currentIngredients.length === 0) {
+                        currentIngredients.push("\nДополнительно: ");
+                    }
+
+                    currentIngredients.push(this.data[index + 1].choices[value1] + ", ");
+                });
+            });
+            if (currentIngredients.length) {
+                currentIngredients[currentIngredients.length - 1] = currentIngredients[
+                    currentIngredients.length - 1
+                ].slice(0, -2);
+            }
+            return currentIngredients;
+        }).call(this);
+
+        this.data.map((value, index) => {
+            let currentIngredients: string[] = [];
+
+            this.cardRefs[index]?.getCheckedIndexes().forEach((value2) => {
+                currentIngredients.push(value.choices[value2] + ", ");
+            });
+            this.additionalIngredientsRefs[index - 1]?.getCheckedIndexes().forEach((value3) => {
+                currentIngredients.push(value.choices[value3] + ", ");
+            });
+            if (currentIngredients.length) {
+                currentIngredients[currentIngredients.length - 1] = currentIngredients[
+                    currentIngredients.length - 1
+                ].slice(0, -2);
+            }
+            return <Text key={index}>{currentIngredients}</Text>;
+        });
+
         return (
             <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
                 <View style={stylesheet.backgroundOverlay}>
-                    <ScrollView ref={this.ref}>
+                    <ScrollView ref={this.scrollViewRef}>
                         <ImageBackground
                             style={{width: "auto"}}
                             source={require("../../resources/assets/drawable/food.jpg")}>
                             <Text style={stylesheet.topText}>Собери свой идеальный ПОКÉ БОУЛ</Text>
                         </ImageBackground>
-                        <View>
-                            <Text style={stylesheet.titleText}>СОБРАТЬ ПОКÉ</Text>
-                            <Text style={stylesheet.mainText}>
-                                В поке-руме "Много Рыбы" вы сможете собрать своё блюдо сами, выбрав из нескольких основ,
-                                протеинов и более 20-ти наполнителей и топингов. Сочетайте свинину в соусе терияки с
-                                ананасом, острого тунца с манго или соберите вегетарианский боул с тофу и красной
-                                капустой. Вы выбираете, а мы готовим для вас из самых свежих и качественных продуктов.
-                            </Text>
-                        </View>
+                        <Text style={stylesheet.titleText}>СОБРАТЬ ПОКÉ</Text>
                         {cards1_2}
                         <View
                             style={{
@@ -256,12 +357,23 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         <View style={stylesheet.done}>
                             <Text style={stylesheet.doneText}>ГОТОВО!</Text>
                             <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
+                            <View style={stylesheet.compositionContainer}>
+                                <Text style={stylesheet.compositionText}>
+                                    <Text>Состав: </Text>
+                                    {ingredients}
+                                    {addIngredients}
+                                </Text>
+                            </View>
+
                             <Text style={stylesheet.price}>{this.state.totalPrice + " руб"}</Text>
                             <View style={stylesheet.buyButton}>
                                 <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
                             </View>
                             <Text
                                 onPress={() => {
+                                    if (this.state.addIngredientOpen) {
+                                        this.needToScroll = true;
+                                    }
                                     this.setState({addIngredientOpen: !this.state.addIngredientOpen});
                                 }}
                                 style={stylesheet.addIngredientText}>
@@ -273,9 +385,16 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         {this.state.addIngredientOpen ? (
                             <View
                                 style={stylesheet.addIngredientsContainer}
-                                onLayout={(event) =>
-                                    this.ref.current?.scrollTo({x: 0, y: event.nativeEvent.layout.y, animated: true})
-                                }>
+                                onLayout={(event) => {
+                                    if (this.needToScroll) {
+                                        this.needToScroll = false;
+                                        this.scrollViewRef.current?.scrollTo({
+                                            x: 0,
+                                            y: event.nativeEvent.layout.y,
+                                            animated: true,
+                                        });
+                                    }
+                                }}>
                                 <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
                                 {additionalIngredients}
                             </View>
@@ -307,7 +426,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 24,
         color: globalColors.mainTextColor,
-        paddingVertical: 14,
+        paddingTop: 20,
         textAlign: "center",
     },
     mainText: {
@@ -368,7 +487,6 @@ export const stylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 20,
-        marginTop: 30,
     },
     addIngredientText: {
         fontFamily: "Montserrat",
@@ -413,6 +531,17 @@ export const stylesheet = StyleSheet.create({
         alignSelf: "center",
         paddingBottom: 20,
         width: "65%",
+    },
+    compositionContainer: {
+        paddingHorizontal: "10%",
+        height: 168,
+        justifyContent: "center",
+    },
+    compositionText: {
+        fontFamily: "Montserrat",
+        fontStyle: "normal",
+        fontSize: 14,
+        textAlign: "center",
     },
 });
 

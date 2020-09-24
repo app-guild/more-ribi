@@ -86,6 +86,16 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxSelectProps>, Readon
         this.setState({checked: this.state.checked.fill(false)});
     }
 
+    public getCheckedIndexes(): number[] {
+        let result: number[] = [];
+        this.state.checked.forEach((val, index) => {
+            if (val) {
+                result.push(index);
+            }
+        });
+        return result;
+    }
+
     render() {
         const {choices, choiceType, additionalText} = this.props;
 

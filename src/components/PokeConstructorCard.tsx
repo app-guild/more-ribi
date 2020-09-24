@@ -21,6 +21,8 @@ export interface IPokeConstructorCardData {
     choicesLocation: "bottom" | "left";
     choiceLimit?: number;
     additionalText?: string[];
+    onClick?: (values: boolean[], changed: boolean, changedIndex: number, id: number) => void;
+    id?: number;
 }
 
 class PokeConstructorCard extends PureComponent<
@@ -38,8 +40,31 @@ class PokeConstructorCard extends PureComponent<
         this.checkBoxGroup.current?.setLimit(limit);
     }
 
+    public getCheckedIndexes(): number[] {
+        return this.checkBoxGroup.current ? this.checkBoxGroup.current?.getCheckedIndexes() : [];
+    }
+
+    // private initialChoicesTransform(): boolean[] {
+    //     let result: boolean[] = new Array(this.props.data.selectedIngredients.length).fill(false);
+    //     this.props.data.selectedIngredients.forEach((value, index) => {
+    //         result[value] = true;
+    //     });
+    //     return result;
+    // }
+
     render() {
-        const {title, number, image, smallImage, choices, choiceType, choicesLocation, choiceLimit} = this.props.data;
+        const {
+            title,
+            number,
+            image,
+            smallImage,
+            choices,
+            choiceType,
+            choicesLocation,
+            choiceLimit,
+            onClick,
+            id,
+        } = this.props.data;
 
         return (
             <View
@@ -110,6 +135,8 @@ class PokeConstructorCard extends PureComponent<
                         choiceType={choiceType}
                         choicesLocation={choicesLocation}
                         choiceLimit={choiceLimit}
+                        onClick={onClick}
+                        id={id}
                     />
                 </View>
             </View>
