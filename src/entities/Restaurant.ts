@@ -1,11 +1,7 @@
-import {Json, TKey} from "../database/DatabaseApi";
+import {Json, TKey} from "../utils/database/DatabaseApi";
 
 export default class Restaurant {
-    constructor(
-        private _id: TKey,
-        private _address: string,
-        private _phone: string,
-    ) {}
+    constructor(private _id: TKey, private _address: string, private _phone: string) {}
 
     get id(): TKey {
         return this._id;
@@ -20,10 +16,6 @@ export default class Restaurant {
     }
 
     static parseDatabaseJson(json: Json): Restaurant {
-        return new Restaurant(
-            json.id,
-            json.address,
-            json.phone,
-        );
+        return new Restaurant(json.id, json.address, json.phone);
     }
 }

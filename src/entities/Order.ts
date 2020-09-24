@@ -1,5 +1,5 @@
 import Cart from "./Cart";
-import {Json, TKey} from "../database/DatabaseApi";
+import {Json, TKey} from "../utils/database/DatabaseApi";
 import Product from "./Product";
 
 export default class Order extends Cart {

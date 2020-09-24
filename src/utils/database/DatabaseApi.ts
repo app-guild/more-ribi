@@ -1,8 +1,8 @@
 import SQLite from "react-native-sqlite-storage";
-import Product from "../entities/Product";
-import Cart from "../entities/Cart";
-import Order from "../entities/Order";
-import Restaurant from "../entities/Restaurant";
+import Product from "../../entities/Product";
+import Cart from "../../entities/Cart";
+import Order from "../../entities/Order";
+import Restaurant from "../../entities/Restaurant";
 
 SQLite.DEBUG = true;
 
@@ -37,6 +37,35 @@ const selectCartPriceSql = `
 `;
 
 export default class DatabaseApi {
+    private static onCartChangeListeners: Array<(cart: Cart) => void> = [];
+    private static lastCart?: Cart;
+
+    public static async getLastCart(): Promise<Cart> {
+        if (!this.lastCart) {
+            return this.getCart();
+        }
+        return this.lastCart;
+    }
+
+    public static addOnCartChangeListener(listener: (cart: Cart) => void) {
+        this.onCartChangeListeners.push(listener);
+    }
+
+    public static removeOnCartChangeListener(listener: (cart: Cart) => void) {
+        const index = this.onCartChangeListeners.indexOf(listener);
+        if (index !== undefined) {
+            this.onCartChangeListeners.splice(index, 1);
+        }
+    }
+
+    private static async callOnCartChangeListeners(): Promise<void> {
+        return DatabaseApi.getCart().then((cart) => {
+            this.onCartChangeListeners.forEach((listener) => {
+                listener(cart);
+            });
+        });
+    }
+
     /**
      * Get user orders with products
      * @return {Promise<Order>} Promise contains order
@@ -78,28 +107,34 @@ export default class DatabaseApi {
      * @return {Promise<Cart>} Promise contains cart
      */
     static getCart(): Promise<Cart> {
-        const sql = `
+        let sql = `
             SELECT 
                 Orders.id as cart_id,
                 Products.id as product_id,
-                name, price, imageUrl, type
+                name, price, discountPrice, imageUrl, type,
+                OrderProducts.count as count
             FROM Orders
             INNER JOIN OrderProducts ON Orders.id = OrderProducts.order_id
             INNER JOIN Products ON OrderProducts.product_id = Products.id  
             WHERE Orders.date IS NULL
         `;
 
-        return this.executeQuery(sql).then((results) => {
-            const products = this.parseProducts(results);
-            if (products.length) {
-                const cartId = results.rows.raw()[0].cart_id;
-                return new Cart(cartId, products);
-            } else {
-                return this.getCartId().then((cartId) => {
-                    return new Cart(cartId, []);
-                });
-            }
-        });
+        return this.executeQuery(sql)
+            .then((results) => {
+                const products = this.parseProducts(results);
+                if (products.length) {
+                    const cartId = results.rows.raw()[0].cart_id;
+                    return new Cart(cartId, products);
+                } else {
+                    return this.getCartId().then((cartId) => {
+                        return new Cart(cartId, []);
+                    });
+                }
+            })
+            .then((cart) => {
+                this.lastCart = cart;
+                return cart;
+            });
     }
 
     /**
@@ -112,13 +147,15 @@ export default class DatabaseApi {
         return this.getCartId().then((cartId) => {
             count = count ? count : 1;
 
-            const sql = `
-                INSERT INTO OrderProducts (order_id, product_id, count) VALUES (${cartId}, ${productId}, ${count})
-                ${selectCartPriceSql}
-            `;
-            return this.executeQuery(sql).then((results) => {
-                return results.rows.raw()[0]?.cart_sum || 0;
-            });
+            const sql = `INSERT INTO OrderProducts (order_id, product_id, count) VALUES (${cartId}, ${productId}, ${count})`;
+
+            return this.executeQuery(sql)
+                .then(() => this.executeQuery(selectCartPriceSql))
+                .then((results) => {
+                    return this.callOnCartChangeListeners().then(() => {
+                        return results.rows.raw()[0]?.cart_sum || 0;
+                    });
+                });
         });
     }
 
@@ -130,13 +167,14 @@ export default class DatabaseApi {
      */
     static updateProductCount(productId: TKey, count: number): Promise<number> {
         return this.getCartId().then((cartId) => {
-            const sql = `
-                UPDATE OrderProducts SET count=${count} WHERE order_id = ${cartId} & product_id = ${productId}
-                ${selectCartPriceSql}
-            `;
-            return this.executeQuery(sql).then((results) => {
-                return results.rows.raw()[0]?.cart_sum || 0;
-            });
+            const sql = `UPDATE OrderProducts SET count=${count} WHERE order_id = ${cartId} AND product_id = ${productId}`;
+            return this.executeQuery(sql)
+                .then(() => this.executeQuery(selectCartPriceSql))
+                .then((results) => {
+                    return this.callOnCartChangeListeners().then(() => {
+                        return results.rows.raw()[0]?.cart_sum || 0;
+                    });
+                });
         });
     }
 
@@ -147,13 +185,14 @@ export default class DatabaseApi {
      */
     static removeProductFromCart(productId: TKey): Promise<number> {
         return this.getCartId().then((cartId) => {
-            const sql = `
-                DELETE FROM OrderProducts WHERE order_id = ${cartId} & product_id = ${productId}
-                ${selectCartPriceSql}
-            `;
-            return this.executeQuery(sql).then((results) => {
-                return results.rows.raw()[0]?.cart_sum || 0;
-            });
+            const sql = `DELETE FROM OrderProducts WHERE order_id = ${cartId} AND product_id = ${productId}`;
+            return this.executeQuery(sql)
+                .then(() => this.executeQuery(selectCartPriceSql))
+                .then((results) => {
+                    return this.callOnCartChangeListeners().then(() => {
+                        return results.rows.raw()[0]?.cart_sum || 0;
+                    });
+                });
         });
     }
 
@@ -165,7 +204,11 @@ export default class DatabaseApi {
     static clearCart(): Promise<number> {
         return this.getCartId().then((cartId) => {
             const sql = `DELETE FROM OrderProducts WHERE order_id = ${cartId}`;
-            return this.executeQuery(sql).then(() => 0);
+            return this.executeQuery(sql).then(() => {
+                return this.callOnCartChangeListeners().then(() => {
+                    return 0;
+                });
+            });
         });
     }
 
@@ -203,7 +246,17 @@ export default class DatabaseApi {
 
     private static parseProducts(results: IResults): Product[] {
         const raw = results.rows.raw();
-        return raw.map((json) => Product.parseDatabaseJson(json));
+        const products: Product[] = [];
+        raw.forEach((json) => {
+            if (json.count) {
+                for (let i = 0; i < json.count; i++) {
+                    products.push(Product.parseDatabaseJson(json));
+                }
+            } else {
+                products.push(Product.parseDatabaseJson(json));
+            }
+        });
+        return products;
     }
 
     /**

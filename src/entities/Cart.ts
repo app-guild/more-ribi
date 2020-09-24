@@ -1,13 +1,10 @@
 import Product from "./Product";
-import {TKey} from "../database/DatabaseApi";
+import {TKey} from "../utils/database/DatabaseApi";
 
 export default class Cart {
-    private _totalPrice: number;
+    private _totalPrice: number = 0;
 
-    constructor(
-        protected _id: TKey,
-        protected _products: Product[],
-    ) {
+    constructor(protected _id: TKey, protected _products: Product[]) {
         this._totalPrice = this.countTotalPrice(this._products);
     }
 
@@ -15,7 +12,7 @@ export default class Cart {
         let totalPrice = 0;
         products.forEach((product) => {
             const discountPrice = product.discountPrice;
-            totalPrice += discountPrice !== null ? discountPrice : product.price;
+            totalPrice += discountPrice || discountPrice === 0 ? discountPrice : product.price;
         });
         return totalPrice;
     }

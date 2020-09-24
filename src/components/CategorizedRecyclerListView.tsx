@@ -27,7 +27,6 @@ export class CategorizedRecyclerListView extends Component<
 > {
     private list = createRef<RecyclerListView<any, any>>();
     private categories: ICategory[];
-    private currentCategoryIndex: number = 0;
 
     constructor(props: ICategorizedRecyclerListViewProps) {
         super(props);
@@ -54,18 +53,19 @@ export class CategorizedRecyclerListView extends Component<
         if (this.categories.length === 0) {
             this.collectCategories();
         }
-        if (
-            this.categories[this.currentCategoryIndex + 1] &&
-            rawEvent.nativeEvent.contentOffset.y > this.categories[this.currentCategoryIndex + 1].offset
-        ) {
-            this.props.onCrossCategory(this.categories[this.currentCategoryIndex++ + 1].name);
-        }
-        if (
-            this.currentCategoryIndex > 0 &&
-            rawEvent.nativeEvent.contentOffset.y < this.categories[this.currentCategoryIndex].offset
-        ) {
-            this.props.onCrossCategory(this.categories[this.currentCategoryIndex-- - 1].name);
-        }
+        const currentCategory = this.categories.find((val, i, array) => {
+            if (i === 0 && rawEvent.nativeEvent.contentOffset.y < array[0].offset) {
+                return true;
+            }
+            if (i === array.length - 1 && rawEvent.nativeEvent.contentOffset.y > val.offset) {
+                return true;
+            }
+            return (
+                rawEvent.nativeEvent.contentOffset.y > val.offset &&
+                rawEvent.nativeEvent.contentOffset.y < array[i + 1]?.offset
+            );
+        });
+        this.props.onCrossCategory(currentCategory ? currentCategory.name : this.categories[0].name);
     }
 
     private static transformData(data: ICategorizedData, columns: number): any[] {
@@ -75,7 +75,7 @@ export class CategorizedRecyclerListView extends Component<
             transformedData.push({type: "category", name: type});
             products.forEach((item: object, index: number) => {
                 transformedData.push({
-                    type: index % columns,
+                    type: "column" + (index % columns),
                     item,
                 });
             });
@@ -96,7 +96,7 @@ export class CategorizedRecyclerListView extends Component<
         } else {
             itemIndex = this.categories[category].index;
         }
-        this.list.current?.scrollToIndex(itemIndex, true);
+        this.list.current?.scrollToIndex(itemIndex + 1, true);
     }
 
     static buildProviders(layouts: LayoutProvider | Dimension[], data: DataProvider | ICategorizedData) {
@@ -123,8 +123,15 @@ export class CategorizedRecyclerListView extends Component<
                         dim.width = layouts[0].width;
                         dim.height = layouts[0].height;
                     } else {
-                        dim.width = layouts[typeof type === "number" ? type + 1 : 0].width;
-                        dim.height = layouts[typeof type === "number" ? type + 1 : 0].height;
+                        let columnIndex = 0;
+                        if (typeof type === "string") {
+                            columnIndex = parseInt(type.slice(-1));
+                        } else {
+                            columnIndex = type;
+                        }
+
+                        dim.width = layouts[columnIndex + 1].width;
+                        dim.height = layouts[columnIndex + 1].height;
                     }
                 },
             );
@@ -140,13 +147,7 @@ export class CategorizedRecyclerListView extends Component<
         let resultRender = null;
 
         if (this.props.dataProvider.getSize()) {
-            resultRender = (
-                <RecyclerListView
-                    {...this.props}
-                    ref={this.list}
-                    onScroll={this.onScroll}
-                />
-            );
+            resultRender = <RecyclerListView {...this.props} ref={this.list} onScroll={this.onScroll} />;
         }
 
         return resultRender;
