@@ -37,14 +37,17 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
     }
 
     private getCountInCart(cart: Cart) {
+        console.log("Products count: " + cart.products.length);
         const thisProducts = cart.products.filter((prod) => prod.id === this.state.product.id);
-        if (this.state.countInCart !== thisProducts.length) {
-            this.setState({countInCart: thisProducts.length});
-        }
+        this.setState({countInCart: thisProducts.length});
     }
 
     private async addToCart() {
-        return DatabaseApi.addProductToCart(this.state.product.id);
+        if (this.state.countInCart === 0) {
+            return DatabaseApi.addProductToCart(this.props.product.id);
+        } else {
+            return DatabaseApi.updateProductCount(this.props.product.id, this.state.countInCart + 1);
+        }
     }
 
     private renderPrice(price: number, discountPrice?: number | null) {

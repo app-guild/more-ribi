@@ -52,19 +52,33 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     private async addToCartFromButton(productId: TKey) {
-        this.setState({productCount: this.state.productCount + 1});
         this.replaceButtonWithCounter();
-        return DatabaseApi.addProductToCart(productId);
+        this.setState({productCount: this.state.productCount + 1});
+        if (this.state.productCount - 1 > 0) {
+            return DatabaseApi.updateProductCount(productId, this.state.productCount);
+        } else {
+            return DatabaseApi.addProductToCart(productId);
+        }
     }
 
     private async addToCartFromCounter(productId: TKey) {
         this.refreshFadeOutTimer();
-        return DatabaseApi.addProductToCart(productId);
+        this.setState({productCount: this.state.productCount + 1});
+        if (this.state.productCount - 1 > 0) {
+            return DatabaseApi.updateProductCount(productId, this.state.productCount);
+        } else {
+            return DatabaseApi.addProductToCart(productId);
+        }
     }
 
     private async removeFromCartFromCounter(productId: TKey) {
         this.refreshFadeOutTimer();
-        return DatabaseApi.removeProductFromCart(productId);
+        this.setState({productCount: this.state.productCount - 1});
+        if (this.state.productCount > 0) {
+            return DatabaseApi.updateProductCount(productId, this.state.productCount);
+        } else {
+            return DatabaseApi.removeProductFromCart(productId);
+        }
     }
 
     private replaceButtonWithCounter() {
@@ -104,6 +118,17 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
         );
     }
 
+    private renderPrice(price: number, discountPrice?: number | null) {
+        const crossOutPrice = discountPrice ? price + " ₽" : "";
+        const mainPrice = discountPrice ? discountPrice + " ₽" : price + " ₽";
+        return (
+            <View style={stylesheet.priceContainer}>
+                <Text style={stylesheet.crossOutPrice}>{crossOutPrice}</Text>
+                <Text style={stylesheet.price}>{mainPrice}</Text>
+            </View>
+        );
+    }
+
     render() {
         const {width, product} = this.props;
         const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
@@ -122,12 +147,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                 />
                 <Text style={stylesheet.title}>{product.name}</Text>
                 <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>{product.composition}</Text>
-                <View style={stylesheet.priceContainer}>
-                    <Text style={stylesheet.crossOutPrice}>
-                        {product.discountPrice ? product.discountPrice + " руб" : ""}
-                    </Text>
-                    <Text style={stylesheet.price}>{product.price + " руб"}</Text>
-                </View>
+                {this.renderPrice(product.price, product.discountPrice)}
                 <View style={stylesheet.addToCartContainer}>
                     <Animated.View
                         style={{

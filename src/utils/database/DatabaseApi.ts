@@ -127,7 +127,8 @@ export default class DatabaseApi {
             SELECT 
                 Orders.id as cart_id,
                 Products.id as product_id,
-                name, price, discountPrice, imageUrl, type
+                name, price, discountPrice, imageUrl, type,
+                OrderProducts.count as count
             FROM Orders
             INNER JOIN OrderProducts ON Orders.id = OrderProducts.order_id
             INNER JOIN Products ON OrderProducts.product_id = Products.id  
@@ -162,8 +163,7 @@ export default class DatabaseApi {
         return this.getCartId().then((cartId) => {
             count = count ? count : 1;
 
-            const sql = `
-                INSERT INTO OrderProducts (order_id, product_id, count) VALUES (${cartId}, ${productId}, ${count})`;
+            const sql = `INSERT INTO OrderProducts (order_id, product_id, count) VALUES (${cartId}, ${productId}, ${count})`;
 
             return this.executeQuery(sql)
                 .then(() => this.executeQuery(selectCartPriceSql))
@@ -183,15 +183,14 @@ export default class DatabaseApi {
      */
     static updateProductCount(productId: TKey, count: number): Promise<number> {
         return this.getCartId().then((cartId) => {
-            const sql = `
-                UPDATE OrderProducts SET count=${count} WHERE order_id = ${cartId} & product_id = ${productId}
-                ${selectCartPriceSql}
-            `;
-            return this.executeQuery(sql).then((results) => {
-                return this.callOnCartChangeListeners().then(() => {
-                    return results.rows.raw()[0]?.cart_sum || 0;
+            const sql = `UPDATE OrderProducts SET count=${count} WHERE order_id = ${cartId} AND product_id = ${productId}`;
+            return this.executeQuery(sql)
+                .then(() => this.executeQuery(selectCartPriceSql))
+                .then((results) => {
+                    return this.callOnCartChangeListeners().then(() => {
+                        return results.rows.raw()[0]?.cart_sum || 0;
+                    });
                 });
-            });
         });
     }
 
@@ -202,15 +201,14 @@ export default class DatabaseApi {
      */
     static removeProductFromCart(productId: TKey): Promise<number> {
         return this.getCartId().then((cartId) => {
-            const sql = `
-                DELETE FROM OrderProducts WHERE order_id = ${cartId} & product_id = ${productId}
-                ${selectCartPriceSql}
-            `;
-            return this.executeQuery(sql).then((results) => {
-                return this.callOnCartChangeListeners().then(() => {
-                    return results.rows.raw()[0]?.cart_sum || 0;
+            const sql = `DELETE FROM OrderProducts WHERE order_id = ${cartId} AND product_id = ${productId}`;
+            return this.executeQuery(sql)
+                .then(() => this.executeQuery(selectCartPriceSql))
+                .then((results) => {
+                    return this.callOnCartChangeListeners().then(() => {
+                        return results.rows.raw()[0]?.cart_sum || 0;
+                    });
                 });
-            });
         });
     }
 
@@ -264,7 +262,17 @@ export default class DatabaseApi {
 
     private static parseProducts(results: IResults): Product[] {
         const raw = results.rows.raw();
-        return raw.map((json) => Product.parseDatabaseJson(json));
+        const products: Product[] = [];
+        raw.forEach((json) => {
+            if (json.count) {
+                for (let i = 0; i < json.count; i++) {
+                    products.push(Product.parseDatabaseJson(json));
+                }
+            } else {
+                products.push(Product.parseDatabaseJson(json));
+            }
+        });
+        return products;
     }
 
     /**
