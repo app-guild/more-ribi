@@ -123,8 +123,15 @@ export class CategorizedRecyclerListView extends Component<
                         dim.width = layouts[0].width;
                         dim.height = layouts[0].height;
                     } else {
-                        dim.width = layouts[typeof type === "string" ? parseInt(type.slice(-1)) + 1 : 0].width;
-                        dim.height = layouts[typeof type === "string" ? parseInt(type.slice(-1)) + 1 : 0].height;
+                        let columnIndex = 0;
+                        if (typeof type === "string") {
+                            columnIndex = parseInt(type.slice(-1));
+                        } else {
+                            columnIndex = type;
+                        }
+
+                        dim.width = layouts[columnIndex + 1].width;
+                        dim.height = layouts[columnIndex + 1].height;
                     }
                 },
             );

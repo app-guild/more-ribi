@@ -8,7 +8,8 @@ import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import {StackNavigationProp} from "@react-navigation/stack";
 
-const ICON_SIZE = 40;
+const MENU_ICON_SIZE = 40;
+const CART_ICON_SIZE = 20;
 
 export interface IHeaderState {
     cartPrise: number;
@@ -48,7 +49,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                 <View
                     style={stylesheet.topContainer}
                     onTouchEnd={() => this.props.stackNavigation.navigate("CartScreen")}>
-                    <CartIcon width={ICON_SIZE * 0.5} height={ICON_SIZE * 0.5} fill={globalColors.primaryColor} />
+                    <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
                     <Text numberOfLines={1} style={stylesheet.priceText}>
                         {Math.round(this.state.cartPrise)}
                     </Text>
@@ -60,8 +61,8 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
             <View style={stylesheet.container}>
                 <View style={stylesheet.topContainer}>
                     <MenuIcon
-                        width={ICON_SIZE}
-                        height={ICON_SIZE}
+                        width={MENU_ICON_SIZE}
+                        height={MENU_ICON_SIZE}
                         onTouchEnd={this.props.drawerNavigation.openDrawer}
                     />
                     <Text style={stylesheet.title}>{this.props.screenTitle}</Text>

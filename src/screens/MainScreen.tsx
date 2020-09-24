@@ -26,6 +26,7 @@ interface IProductGroup {
 }
 
 const windowSize = Dimensions.get("window");
+const FISH_ICON_SIZE = {width: 47, height: 17};
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
@@ -116,7 +117,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                 <View style={{alignSelf: "flex-start"}} onTouchEnd={() => this.props.navigation.navigate("Categories")}>
                     <View style={stylesheet.categoryButton}>
                         <Text style={stylesheet.subTitle}>{this.state.currentCategory}</Text>
-                        <FishIcon width={15} height={25} />
+                        <FishIcon width={FISH_ICON_SIZE.width} height={FISH_ICON_SIZE.height} />
                     </View>
                     <View style={stylesheet.categoryUnderline} />
                 </View>

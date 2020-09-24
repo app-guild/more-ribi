@@ -52,6 +52,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     private async addToCartFromButton(productId: TKey) {
+        this.setState({productCount: this.state.productCount + 1});
         this.replaceButtonWithCounter();
         return DatabaseApi.addProductToCart(productId);
     }
@@ -135,7 +136,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                             opacity: this.buttonFadeAnimValue,
                         }}>
                         <TouchableOpacity
-                            style={{...stylesheet.addToCartButton, maxWidth: "100%"}}
+                            style={stylesheet.addToCartButton}
                             onPress={async () => this.addToCartFromButton(product.id)}
                             activeOpacity={0.5}>
                             <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>

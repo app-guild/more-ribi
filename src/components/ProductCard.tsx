@@ -47,13 +47,8 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         return DatabaseApi.addProductToCart(this.state.product.id);
     }
 
-    render() {
-        const {product, onClick} = this.props;
-        const image =
-            product.imageUrl?.length > 0
-                ? {uri: product.imageUrl}
-                : require("../../resources/assets/drawable/food.jpg");
-        let price: any;
+    private renderPrice(price: number, discountPrice?: number | null) {
+        let result: any;
         let styleForMainPrice = stylesheet.shoppingCartMainPrice;
         if (this.state.countInCart > 0) {
             styleForMainPrice = stylesheet.shoppingCartMainPriceSelected;
@@ -63,12 +58,12 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
             displayCountOfSelected = `  X ${this.state.countInCart}`;
         }
 
-        if (product.discountPrice) {
+        if (discountPrice || discountPrice === 0) {
             let mainPriceTextColor = globalColors.headerUnderlineColor;
             if (this.state.countInCart > 0) {
                 mainPriceTextColor = globalColors.backgroundOverlay;
             }
-            price = (
+            result = (
                 <View style={stylesheet.shoppingCartPriceContainer}>
                     <Text
                         numberOfLines={1}
@@ -76,12 +71,12 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                             ...globalStylesheet.crossedOutPrice,
                             marginLeft: stylesheet.shoppingCartMainPrice.padding,
                         }}>
-                        {product.price + " ₽"}
+                        {price + " ₽"}
                     </Text>
                     <View style={{display: "flex", flexDirection: "row"}}>
                         <View style={styleForMainPrice}>
                             <Text numberOfLines={1} style={{...globalStylesheet.price, color: mainPriceTextColor}}>
-                                {product.discountPrice + " ₽" + displayCountOfSelected}
+                                {discountPrice + " ₽" + displayCountOfSelected}
                             </Text>
                         </View>
                     </View>
@@ -92,18 +87,24 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
             if (this.state.countInCart > 0) {
                 mainPriceTextColor = globalColors.backgroundOverlay;
             }
-            price = (
+            result = (
                 <View style={stylesheet.shoppingCartPriceContainer}>
                     <View style={{display: "flex", flexDirection: "row"}}>
                         <View style={styleForMainPrice}>
                             <Text numberOfLines={1} style={{...globalStylesheet.price, color: mainPriceTextColor}}>
-                                {product.price + " ₽" + displayCountOfSelected}
+                                {price + " ₽" + displayCountOfSelected}
                             </Text>
                         </View>
                     </View>
                 </View>
             );
         }
+        return result;
+    }
+
+    render() {
+        const {product, onClick} = this.props;
+        const image = product.imageUrl ? {uri: product.imageUrl} : require("../../resources/assets/drawable/food.jpg");
 
         return (
             <View style={stylesheet.container}>
@@ -126,7 +127,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                 </View>
                 <View style={stylesheet.shoppingCartButtonContainer}>
                     <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
-                        {price}
+                        {this.renderPrice(product.price, product.discountPrice)}
                     </TouchableOpacity>
                 </View>
             </View>
