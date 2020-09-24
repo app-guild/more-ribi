@@ -2,11 +2,10 @@ import {DataProvider, Dimension, LayoutProvider, RecyclerListView} from "recycle
 import React, {Component, createRef} from "react";
 import {RecyclerListViewProps} from "recyclerlistview/dist/reactnative/core/RecyclerListView";
 import {ScrollEvent} from "recyclerlistview/src/core/scrollcomponent/BaseScrollView";
+import {ProductType} from "../entities/ProductType";
+import Product from "../entities/Product";
 
-export interface ICategorizedData {
-    category: string;
-    items: object[];
-}
+export type ICategorizedData = Map<ProductType, Product[]>;
 
 interface ICategory {
     name: string;
@@ -69,18 +68,19 @@ export class CategorizedRecyclerListView extends Component<
         }
     }
 
-    private static transformData(data: ICategorizedData[], columns: number): any[] {
+    private static transformData(data: ICategorizedData, columns: number): any[] {
         let transformedData: any[] = [];
-        data.forEach((value) => {
-            // TODO наверное не нужно добавлять категорию если items пуст
-            transformedData.push({type: "category", name: value.category});
-            value.items.forEach((item: object, index: number) => {
+
+        for (const [type, products] of data.entries()) {
+            transformedData.push({type: "category", name: type});
+            products.forEach((item: object, index: number) => {
                 transformedData.push({
                     type: index % columns,
                     item,
                 });
             });
-        });
+        }
+
         return transformedData;
     }
 
@@ -99,7 +99,7 @@ export class CategorizedRecyclerListView extends Component<
         this.list.current?.scrollToIndex(itemIndex, true);
     }
 
-    static buildProviders(layouts: LayoutProvider | Dimension[], data: DataProvider | ICategorizedData[]) {
+    static buildProviders(layouts: LayoutProvider | Dimension[], data: DataProvider | ICategorizedData) {
         let dataProvider: DataProvider;
         let layoutProvider: LayoutProvider;
 

@@ -38,22 +38,6 @@ const selectCartPriceSql = `
 
 export default class DatabaseApi {
     /**
-     * Get array of products
-     * @return {Promise<Product[]>} Promise contains array of products
-     */
-    static getProducts(): Promise<Product[]> {
-        const sql = `
-            SELECT 
-                id as product_id,
-                name, price, discountPrice, imageUrl, type, composition, available
-            FROM Products
-        `;
-        return this.executeQuery(sql).then((results) => {
-            return this.parseProducts(results);
-        });
-    }
-
-    /**
      * Get user orders with products
      * @return {Promise<Order>} Promise contains order
      */

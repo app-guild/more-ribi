@@ -38,7 +38,7 @@ export default class MoySkladAPI {
      * @private
      */
     private static parseProducts(json: any): Product[] {
-        return json.rows.map((productJson: any) => Product.parseMoySkladJson(productJson));
+        return json.rows.map((productJson: any) => Product.parseRealtimeDatabaseJson(productJson));
     }
 
     private static fetchUrl(url: string, method: string): Promise<any> {

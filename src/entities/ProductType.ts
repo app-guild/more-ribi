@@ -1,3 +1,5 @@
+import Product from "./Product";
+
 export enum ProductType {
     Wok = "wok",
     Deserts = "deserts",
@@ -28,7 +30,7 @@ export namespace ProductType {
         }
     }
 
-    export function translateCategoryName(category: string) {
+    export function translateCategoryName(category: string): string {
         switch (category) {
             case ProductType.Wok:
                 return "Вок";
@@ -46,5 +48,16 @@ export namespace ProductType {
                 return "";
         }
     }
-}
 
+    export function map(): Map<ProductType, Product[]> {
+        return new Map([
+            [ProductType.Wok, []],
+            [ProductType.Rolls, []],
+            [ProductType.Soups, []],
+            [ProductType.Beverages, []],
+            [ProductType.Poke, []],
+            [ProductType.Deserts, []],
+            [ProductType.None, []],
+        ]);
+    }
+}

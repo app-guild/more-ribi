@@ -6,8 +6,7 @@ import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import {globalColors} from "../../resources/styles";
-import DatabaseApi from "../database/DatabaseApi";
-import Product from "../entities/Product";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 export interface IMainScreenState {
     mainContainerWidth: number;
@@ -15,11 +14,6 @@ export interface IMainScreenState {
     currentCategory: string;
     dataProvider: DataProvider;
     layoutProvider: LayoutProvider;
-}
-
-interface IProductGroup {
-    category: ProductType;
-    items: Product[];
 }
 
 const imageSidesRatio = 1.2;
@@ -65,13 +59,12 @@ class MainScreen extends Component<any, IMainScreenState> {
     }
 
     componentDidMount() {
-        return DatabaseApi.getProducts().then((products) => {
-            const productsData = splitProductsByType(products);
-            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, productsData);
+        return RealtimeDatabaseApi.getProducts().then((splitProducts) => {
+            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, splitProducts);
 
             this.setState({
                 ...this.state,
-                currentCategory: ProductType.translateCategoryName(productsData[0]?.category),
+                currentCategory: ProductType.translateCategoryName(splitProducts.keys()[0]),
                 dataProvider: providers.dataProvider,
                 layoutProvider: providers.layoutProvider,
             });
@@ -163,35 +156,6 @@ class MainScreen extends Component<any, IMainScreenState> {
             </ImageBackground>
         );
     }
-}
-
-function splitProductsByType(products: Product[]): IProductGroup[] {
-    return [
-        {
-            category: ProductType.Wok,
-            items: products.filter((product) => product.type === ProductType.Wok),
-        },
-        {
-            category: ProductType.Deserts,
-            items: products.filter((product) => product.type === ProductType.Deserts),
-        },
-        {
-            category: ProductType.Poke,
-            items: products.filter((product) => product.type === ProductType.Poke),
-        },
-        {
-            category: ProductType.Beverages,
-            items: products.filter((product) => product.type === ProductType.Beverages),
-        },
-        {
-            category: ProductType.Rolls,
-            items: products.filter((product) => product.type === ProductType.Rolls),
-        },
-        {
-            category: ProductType.Soups,
-            items: products.filter((product) => product.type === ProductType.Soups),
-        },
-    ];
 }
 
 export const stylesheet = StyleSheet.create({
