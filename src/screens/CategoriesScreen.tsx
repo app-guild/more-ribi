@@ -21,16 +21,16 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
             dataProvider: new DataProvider((r1, r2) => {
                 return r1.text !== r2.text;
             }).cloneWithRows([
+                {
+                    text: "Конструктор поке",
+                    additionalText: "Собери свой идеальный поке!",
+                },
                 {text: ProductType.Rolls},
                 {text: ProductType.Poke},
                 {text: ProductType.Wok},
                 {text: ProductType.Beverages},
                 {text: ProductType.Deserts},
                 {text: ProductType.Soups},
-                {
-                    text: "Конструктор поке",
-                    additionalText: "Собери свой идеальный поке!",
-                },
             ]),
         };
         this._rowRenderer = this._rowRenderer.bind(this);
@@ -38,7 +38,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
 
     private layoutProvider = new LayoutProvider(
         (index) => {
-            return index === this.state.dataProvider.getSize() - 1 ? "fullRow" : "column" + (index % 2);
+            return index === 0 ? "pokeConstructor" : "column" + ((index + 1) % 2);
         },
         (type, dim) => {
             switch (type) {
@@ -52,7 +52,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                             2 +
                         stylesheet.columnMargin.margin;
                     break;
-                case "fullRow":
+                case "pokeConstructor":
                     dim.width = this.state.mainContainerWidth;
                     dim.height =
                         (this.state.mainContainerWidth -
@@ -96,7 +96,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                         />
                     </View>
                 );
-            case "fullRow":
+            case "pokeConstructor":
                 return (
                     <View style={{marginLeft: stylesheet.containerPadding.padding}}>
                         <CategoryCard
@@ -104,11 +104,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                             height={93}
                             text={data.text}
                             additionalText={data.additionalText}
-                            onTouchEnd={() =>
-                                this.props.navigation.navigate("Main", {
-                                    category: "pokeConstructor",
-                                })
-                            }
+                            onTouchEnd={() => this.props.navigation.navigate("PokeConstructor")}
                         />
                     </View>
                 );

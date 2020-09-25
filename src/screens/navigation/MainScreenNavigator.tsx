@@ -7,6 +7,7 @@ import Header from "../../components/Header";
 import MainBackground from "../../components/MainBackground";
 import {globalColors} from "../../../resources/styles";
 import CartScreen from "../CartScreen";
+import PokeConstructorScreen from "../PokeConstructorScreen";
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,7 @@ export default function MainScreenNavigator(props: any) {
                 <Stack.Screen name="Main" component={MainScreen} />
                 <Stack.Screen name="Categories" component={CategoriesScreen} />
                 <Stack.Screen name="CartScreen" component={CartScreen} />
+                <Stack.Screen name="PokeConstructor" component={PokeConstructorScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
