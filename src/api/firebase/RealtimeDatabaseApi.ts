@@ -45,6 +45,13 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => this.parseConstructorIngredients(snapshot.val()));
     }
 
+    static async getWokConstructorIngredients(): Promise<Map<string, Ingredient>> {
+        return database()
+            .ref("/constructor/wok")
+            .once("value")
+            .then((snapshot) => this.parseConstructorIngredients(snapshot.val()));
+    }
+
     private static parseProducts(productsJson: ProductsJson): Map<ProductType, Product[]> {
         const map = ProductType.map();
         for (const [type, products] of Object.entries(productsJson)) {
