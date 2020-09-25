@@ -45,39 +45,41 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     componentDidMount() {
-        DatabaseApi.getLastCart().then((cart) => {
+        DatabaseApi.getCart().then((cart) => {
             const count = cart.products.filter((prod) => prod.id === this.props.product?.id).length;
             this.setState({productCount: count});
         });
     }
 
-    private async addToCartFromButton(productId: TKey) {
+    private async addToCartFromButton(product: Product) {
         this.replaceButtonWithCounter();
+        // TODO кол-во изменять после выполнения запроса
         this.setState({productCount: this.state.productCount + 1});
         if (this.state.productCount - 1 > 0) {
-            return DatabaseApi.updateProductCount(productId, this.state.productCount);
+            return DatabaseApi.updateProductCount(product, this.state.productCount);
         } else {
-            return DatabaseApi.addProductToCart(productId);
+            return DatabaseApi.addProductToCart(product);
         }
     }
 
-    private async addToCartFromCounter(productId: TKey) {
+    private async addToCartFromCounter(product: Product) {
         this.refreshFadeOutTimer();
+        // TODO кол-во изменять после выполнения запроса
         this.setState({productCount: this.state.productCount + 1});
         if (this.state.productCount - 1 > 0) {
-            return DatabaseApi.updateProductCount(productId, this.state.productCount);
+            return DatabaseApi.updateProductCount(product, this.state.productCount);
         } else {
-            return DatabaseApi.addProductToCart(productId);
+            return DatabaseApi.addProductToCart(product);
         }
     }
 
-    private async removeFromCartFromCounter(productId: TKey) {
+    private async removeFromCartFromCounter(product: Product) {
         this.refreshFadeOutTimer();
         this.setState({productCount: this.state.productCount - 1});
         if (this.state.productCount > 0) {
-            return DatabaseApi.updateProductCount(productId, this.state.productCount);
+            return DatabaseApi.updateProductCount(product, this.state.productCount);
         } else {
-            return DatabaseApi.removeProductFromCart(productId);
+            return DatabaseApi.removeProductFromCart(product);
         }
     }
 
@@ -157,7 +159,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                         }}>
                         <TouchableOpacity
                             style={stylesheet.addToCartButton}
-                            onPress={async () => this.addToCartFromButton(product.id)}
+                            onPress={async () => this.addToCartFromButton(product)}
                             activeOpacity={0.5}>
                             <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
                         </TouchableOpacity>
@@ -186,9 +188,9 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                             initValue={this.state.productCount}
                             onChange={async (value) => {
                                 if (value > this.state.productCount) {
-                                    return this.addToCartFromCounter(product?.id);
+                                    return this.addToCartFromCounter(product);
                                 } else if (value < this.state.productCount) {
-                                    return this.removeFromCartFromCounter(product?.id);
+                                    return this.removeFromCartFromCounter(product);
                                 }
                                 return;
                             }}

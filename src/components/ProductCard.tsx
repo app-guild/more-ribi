@@ -24,29 +24,27 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
             countInCart: props.countInCart,
         };
         this.addToCart = this.addToCart.bind(this);
-        this.getCountInCart = this.getCountInCart.bind(this);
+        this.setCountInCart = this.setCountInCart.bind(this);
     }
 
     componentDidMount() {
-        DatabaseApi.addOnCartChangeListener(this.getCountInCart);
-        return DatabaseApi.getLastCart().then(this.getCountInCart);
+        DatabaseApi.addOnCartChangeListener(this.setCountInCart);
+        return DatabaseApi.getCart().then(this.setCountInCart);
     }
 
     componentWillUnmount() {
-        DatabaseApi.removeOnCartChangeListener(this.getCountInCart);
+        DatabaseApi.removeOnCartChangeListener(this.setCountInCart);
     }
 
-    private getCountInCart(cart: Cart) {
-        console.log("Products count: " + cart.products.length);
-        const thisProducts = cart.products.filter((prod) => prod.id === this.state.product.id);
-        this.setState({countInCart: thisProducts.length});
+    private setCountInCart(cart: Cart) {
+        this.setState({countInCart: cart.getProductCount(this.props.product)});
     }
 
     private async addToCart() {
         if (this.state.countInCart === 0) {
-            return DatabaseApi.addProductToCart(this.props.product.id);
+            return DatabaseApi.addProductToCart(this.props.product);
         } else {
-            return DatabaseApi.updateProductCount(this.props.product.id, this.state.countInCart + 1);
+            return DatabaseApi.updateProductCount(this.props.product, this.state.countInCart + 1);
         }
     }
 
@@ -107,7 +105,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     render() {
         const {product, onClick} = this.props;
-        const image = product.imageUrl ? {uri: product.imageUrl} : require("../../resources/assets/drawable/food.jpg");
+        const image = product.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return (
             <View style={stylesheet.container}>

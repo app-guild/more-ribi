@@ -6,7 +6,6 @@ import {ProductType} from "../entities/ProductType";
 import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import OpenDish from "../components/OpenDish";
 import {globalColors} from "../../resources/styles";
-import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Modal from "react-native-modal";
 import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
