@@ -2,7 +2,7 @@ import "react-native-gesture-handler";
 import * as React from "react";
 import {useEffect} from "react";
 import SplashScreen from "react-native-splash-screen";
-import Navigation from "./components/Navigation";
+import Navigation from "./screens/navigation/Navigation";
 import SQLite from "react-native-sqlite-storage";
 import {GooglePayService} from "./utils/payment/GooglePayService";
 

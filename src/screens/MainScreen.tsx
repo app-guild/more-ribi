@@ -1,18 +1,21 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, ImageBackground, StyleSheet, Text, View} from "react-native";
-import Header from "../components/Header";
-import ProductCard, {stylesheet as productCardStylesheet} from "../components/ProductCard";
+import {Dimensions, StyleSheet, Text, View} from "react-native";
+import ProductCard from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
+import OpenDish from "../components/OpenDish";
 import {globalColors} from "../../resources/styles";
-import DatabaseApi from "../database/DatabaseApi";
+import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
+import Modal from "react-native-modal";
+import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
 
 export interface IMainScreenState {
-    mainContainerWidth: number;
-    productCardWidth: number;
+    productCardSize: Dimension;
     currentCategory: string;
+    modalVisible: boolean;
+    currentProduct: Product | null;
     dataProvider: DataProvider;
     layoutProvider: LayoutProvider;
 }
@@ -22,8 +25,8 @@ interface IProductGroup {
     items: Product[];
 }
 
-const imageSidesRatio = 1.2;
-const productCardHeight = 72;
+const windowSize = Dimensions.get("window");
+const FISH_ICON_SIZE = {width: 47, height: 17};
 
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
@@ -34,43 +37,38 @@ class MainScreen extends Component<any, IMainScreenState> {
 
         this.onCategoryCross = this.onCategoryCross.bind(this);
         this._rowRenderer = this._rowRenderer.bind(this);
-
-        const containerWidth = Dimensions.get("window").width;
-        const productCardWidth =
-            (containerWidth - 2 * stylesheet.paddings.paddingHorizontal - stylesheet.paddings.paddingVertical) / 2;
+        this.onCardClick = this.onCardClick.bind(this);
+        const cardLayoutSize = {
+            width: windowSize.width,
+            height: windowSize.height * 0.15,
+        };
         this.layoutSize = [
             {
-                width: containerWidth,
+                width: windowSize.width,
                 height: stylesheet.categoryHeight.height,
             },
-            {
-                width: containerWidth / 2 - 0.0001,
-                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
-            },
-            {
-                width: containerWidth / 2 - 0.0001,
-                height: this._countProductCardHeight(productCardWidth) + stylesheet.productCardContainer.paddingVertical,
-            },
+            cardLayoutSize,
         ];
 
         const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, []);
 
         this.state = {
-            mainContainerWidth: containerWidth,
-            productCardWidth,
+            productCardSize: cardLayoutSize,
             currentCategory: "",
             dataProvider: providers.dataProvider,
             layoutProvider: providers.layoutProvider,
+            modalVisible: false,
+            currentProduct: null,
         };
     }
 
     componentDidMount() {
         return DatabaseApi.getProducts().then((products) => {
-            const productsData = splitProductsByType(products);
+            let productsData = splitProductsByType(products);
+            productsData.push({category: ProductType.None, items: []});
             const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, productsData);
 
             this.setState({
-                ...this.state,
                 currentCategory: ProductType.translateCategoryName(productsData[0]?.category),
                 dataProvider: providers.dataProvider,
                 layoutProvider: providers.layoutProvider,
@@ -78,11 +76,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         });
     }
 
-    componentDidUpdate(
-        prevProps: Readonly<Readonly<any>>,
-        prevState: Readonly<Readonly<IMainScreenState>>,
-        snapshot?: any,
-    ) {
+    componentDidUpdate(prevProps: Readonly<Readonly<any>>) {
         if (this.props.route.params?.category !== prevProps.route.params?.category) {
             this.list.current?.scrollToCategory(this.props.route.params.category);
         }
@@ -92,11 +86,10 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.setState({currentCategory: ProductType.translateCategoryName(category)});
     }
 
-    private _countProductCardHeight(productCardWidth: number) {
-        return productCardHeight + (productCardWidth - 2 * productCardStylesheet.container.padding) / imageSidesRatio;
+    private onCardClick(product: Product) {
+        this.setState({modalVisible: true, currentProduct: product});
     }
 
-    // TODO нужно явно указать типы, хуй поймешь что это такое
     private _rowRenderer(type: any, data: any) {
         switch (type) {
             case "category":
@@ -111,36 +104,8 @@ class MainScreen extends Component<any, IMainScreenState> {
                         </Text>
                     </View>
                 );
-            case 0:
-                // TODO в case 1 дублирование кода, отличается одним стилем
-                return (
-                    <View
-                        style={{
-                            marginTop: stylesheet.productCardContainer.paddingVertical,
-                            marginLeft: stylesheet.productCardContainer.paddingHorizontal,
-                        }}>
-                        <ProductCard
-                            width={this.state.productCardWidth}
-                            height={this._countProductCardHeight(this.state.productCardWidth)}
-                            product={data.item}
-                        />
-                    </View>
-                );
-            case 1:
-                return (
-                    <View
-                        style={{
-                            marginTop: stylesheet.productCardContainer.paddingVertical,
-                            marginRight: stylesheet.productCardContainer.paddingHorizontal,
-                            alignItems: "flex-end",
-                        }}>
-                        <ProductCard
-                            width={this.state.productCardWidth}
-                            height={this._countProductCardHeight(this.state.productCardWidth)}
-                            product={data.item}
-                        />
-                    </View>
-                );
+            case "column0":
+                return <ProductCard product={data.item} onClick={this.onCardClick} />;
             default:
                 return null;
         }
@@ -148,19 +113,47 @@ class MainScreen extends Component<any, IMainScreenState> {
 
     render() {
         return (
-            <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
-                <View style={stylesheet.backgroundOverlay}>
-                    <Header navigation={this.props.navigation} category={this.state.currentCategory} />
+            <View style={{flex: 1}}>
+                <View style={{alignSelf: "flex-start"}} onTouchEnd={() => this.props.navigation.navigate("Categories")}>
+                    <View style={stylesheet.categoryButton}>
+                        <Text style={stylesheet.subTitle}>{this.state.currentCategory}</Text>
+                        <FishIcon width={FISH_ICON_SIZE.width} height={FISH_ICON_SIZE.height} />
+                    </View>
+                    <View style={stylesheet.categoryUnderline} />
+                </View>
+                <View style={{flex: 1, marginTop: 10}}>
                     <CategorizedRecyclerListView
                         rowRenderer={this._rowRenderer}
                         onCrossCategory={this.onCategoryCross}
                         ref={this.list}
                         layoutProvider={this.state.layoutProvider}
                         dataProvider={this.state.dataProvider}
-                        initialRenderIndex={0}
+                        initialRenderIndex={1}
                     />
+                    <Modal
+                        isVisible={this.state.modalVisible}
+                        animationIn={"zoomInUp"}
+                        animationOut={"zoomOutUp"}
+                        style={{margin: 0}}
+                        onBackdropPress={() => {
+                            this.setState({modalVisible: false});
+                        }}
+                        onBackButtonPress={() => {
+                            this.setState({modalVisible: false});
+                        }}>
+                        <View
+                            style={{
+                                ...stylesheet.openDishModal,
+                            }}>
+                            <OpenDish
+                                width={windowSize.width - 2 * stylesheet.openDishModal.paddingHorizontal}
+                                height={windowSize.height - 2 * stylesheet.openDishModal.paddingVertical}
+                                product={this.state.currentProduct}
+                            />
+                        </View>
+                    </Modal>
                 </View>
-            </ImageBackground>
+            </View>
         );
     }
 }
@@ -202,10 +195,6 @@ export const stylesheet = StyleSheet.create({
     container: {
         width: "100%",
     },
-    paddings: {
-        paddingHorizontal: 27,
-        paddingVertical: 17,
-    },
     category: {
         paddingLeft: 25,
         marginTop: 15,
@@ -219,12 +208,36 @@ export const stylesheet = StyleSheet.create({
         color: globalColors.primaryColor,
     },
     categoryHeight: {
-        height: 30,
+        height: 50,
     },
-    backgroundOverlay: {
-        backgroundColor: globalColors.backgroundOverlay,
+    openDishModal: {
         flex: 1,
-        opacity: 0.95,
+        alignItems: "center",
+        paddingVertical: 30,
+        paddingHorizontal: 20,
+        width: "100%",
+        height: "100%",
+    },
+    categoryButton: {
+        flexDirection: "row",
+        marginLeft: 40,
+        marginTop: 10,
+    },
+    subTitle: {
+        fontFamily: "Muli",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 16,
+        lineHeight: 20,
+        color: globalColors.primaryColor,
+        marginRight: 7,
+    },
+    categoryUnderline: {
+        backgroundColor: globalColors.headerUnderlineColor,
+        width: "auto",
+        height: 2,
+        marginLeft: 38,
+        marginTop: 3,
     },
 });
 

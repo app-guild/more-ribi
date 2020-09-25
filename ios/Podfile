@@ -14,6 +14,8 @@ target 'SeaOfFish' do
 
   pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'SeaOfFishTests' do
     inherit! :complete
     # Pods for testing
