@@ -133,12 +133,13 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                         </View>
                     </View>
 
-                <RecyclerListView
-                    layoutProvider={this.layoutProvider}
-                    dataProvider={this.state.dataProvider}
-                    rowRenderer={this._rowRenderer}
-                />
-            </View>
+                    <RecyclerListView
+                        layoutProvider={this.layoutProvider}
+                        dataProvider={this.state.dataProvider}
+                        rowRenderer={this._rowRenderer}
+                    />
+                </View>
+            </ImageBackground>
         );
     }
 }

@@ -9,7 +9,7 @@ import DeliveryConditionsScreen from "../DeliveryConditionsScreen";
 import FeedbackScreen from "../FeedbackScreen";
 import AboutUsScreen from "../AboutUsScreen";
 import MainScreenNavigator from "./MainScreenNavigator";
-import PokeConstructorScreen from "../screens/PokeConstructorScreen";
+import PokeConstructorScreen from "../PokeConstructorScreen";
 import {globalColors} from "../../../resources/styles";
 
 const Drawer = createDrawerNavigator();
