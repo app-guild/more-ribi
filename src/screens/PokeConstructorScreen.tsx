@@ -14,7 +14,7 @@ const standardProteinPrice = [270, 270, 210, 210, 290, 180, 200];
 
 class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConstructorScreenState>> {
     private data: IPokeConstructorCardData[];
-    private additionalTitleText: string[] = ["", " (+30Р)", " (+30Р)", " (+15Р)", " (+30Р)"];
+    private additionalTitleText: string[] = ["", " (+30₽)", " (+30₽)", " (+15₽)", " (+30₽)"];
     private additionalSumByCategories: number[] = new Array(this.additionalTitleText.length).fill(0);
     private cardRefs: (PokeConstructorCard | null)[] = [];
     private additionalIngredientsRefs: (CheckBoxGroup | null)[] = [];
@@ -46,7 +46,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 smallImage: require("../../resources/assets/drawable/poke-constructor/2.webp"),
                 choiceType: "radioButton",
                 choicesLocation: "left",
-                additionalText: ["(+100р)", "(+100р)", "(+60р)", "(+60р)", "(+120р)", "(+60р)", "(+60р)"],
+                additionalText: ["(+100₽)", "(+100₽)", "(+60₽)", "(+60₽)", "(+120₽)", "(+60₽)", "(+60₽)"],
             },
             {
                 title: "Наполнитель",
@@ -365,7 +365,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                 </Text>
                             </View>
 
-                            <Text style={stylesheet.price}>{this.state.totalPrice + " руб"}</Text>
+                            <Text style={stylesheet.price}>{this.state.totalPrice + " ₽"}</Text>
                             <View style={stylesheet.buyButton}>
                                 <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
                             </View>
