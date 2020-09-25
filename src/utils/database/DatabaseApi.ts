@@ -26,24 +26,15 @@ export default class DatabaseApi {
     private static cart: Cart | null = null;
     private static getCartPromise: Promise<Cart> | null = null;
 
-    public static addOnCartChangeListener(listener: (cart: Cart) => void) {
+    static addOnCartChangeListener(listener: (cart: Cart) => void) {
         this.onCartChangeListeners.push(listener);
     }
 
-    public static removeOnCartChangeListener(listener: (cart: Cart) => void) {
+    static removeOnCartChangeListener(listener: (cart: Cart) => void) {
         const index = this.onCartChangeListeners.indexOf(listener);
         if (index !== undefined) {
             this.onCartChangeListeners.splice(index, 1);
         }
-    }
-
-    // TODO передавать корзину параметром
-    private static async callOnCartChangeListeners(): Promise<void> {
-        return this.getCart().then((cart) => {
-            this.onCartChangeListeners.forEach((listener) => {
-                listener(cart);
-            });
-        });
     }
 
     /**
@@ -110,7 +101,7 @@ export default class DatabaseApi {
     static addProductToCart(product: Product): Promise<void> {
         return this.getCart().then((cart) => {
             cart.addProduct(product);
-            return this.updateProducts(cart.id, cart.getJsonProducts());
+            return this.updateProducts(cart);
         });
     }
 
@@ -123,7 +114,7 @@ export default class DatabaseApi {
     static updateProductCount(product: Product, count: number): Promise<void> {
         return this.getCart().then((cart) => {
             cart.updateCount(product, count);
-            return this.updateProducts(cart.id, cart.getJsonProducts());
+            return this.updateProducts(cart);
         });
     }
 
@@ -135,7 +126,7 @@ export default class DatabaseApi {
     static removeProductFromCart(product: Product): Promise<void> {
         return this.getCart().then((cart) => {
             cart.removeProduct(product);
-            return this.updateProducts(cart.id, cart.getJsonProducts());
+            return this.updateProducts(cart);
         });
     }
 
@@ -147,7 +138,7 @@ export default class DatabaseApi {
     static clearCart(): Promise<void> {
         return this.getCart().then((cart) => {
             cart.clear();
-            return this.updateProducts(cart.id, cart.getJsonProducts());
+            return this.updateProducts(cart);
         });
     }
 
@@ -155,7 +146,7 @@ export default class DatabaseApi {
      * Create order from cart and create new cart
      * @void
      */
-    static createOrderFromCart(address: string, comment: string): Promise<void> {
+    static createOrderFromCart(address: string, comment: string): Promise<Cart> {
         return this.getCart().then((cart) => {
             const sql = `
                 UPDATE Orders SET 
@@ -164,17 +155,15 @@ export default class DatabaseApi {
                     comment=${comment} 
                 WHERE id=${cart.id};
             `;
-            return this.executeQuery(sql)
-                .then(() => this.createCart())
-                .then(() => this.callOnCartChangeListeners());
+            return this.executeQuery(sql).then(() => this.createCart());
         });
     }
 
     // endregion
 
-    private static updateProducts(cartId: TKey, productsJson: string): Promise<void> {
-        const sql = `UPDATE Orders SET products='${productsJson}' WHERE id = ${cartId}`;
-        return this.executeQuery(sql).then(() => this.callOnCartChangeListeners());
+    private static updateProducts(cart: Cart): Promise<void> {
+        const sql = `UPDATE Orders SET products='${cart.getJsonProducts()}' WHERE id = ${cart.id}`;
+        return this.executeQuery(sql).then(() => this.callOnCartChangeListeners(cart));
     }
 
     /**
@@ -202,7 +191,18 @@ export default class DatabaseApi {
             SELECT * FROM Orders WHERE date IS NULL       
         `;
 
-        return this.executeQuery(sql).then((key) => new Cart(key.rows.raw()[0], new Map()));
+        return this.executeQuery(sql)
+            .then((key) => new Cart(key.rows.raw()[0]?.id, new Map()))
+            .then((cart) => {
+                this.callOnCartChangeListeners(cart);
+                return cart;
+            });
+    }
+
+    private static callOnCartChangeListeners(cart: Cart): void {
+        this.onCartChangeListeners.forEach((listener) => {
+            listener(cart);
+        });
     }
 
     /**
