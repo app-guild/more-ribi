@@ -2,27 +2,14 @@ import Product from "./Product";
 import {TKey} from "../utils/database/DatabaseApi";
 
 export default class Cart {
-    private _totalPrice: number = 0;
-
-    constructor(protected _id: TKey, protected _products: Map<Product, number>) {
-        this._totalPrice = this.countTotalPrice(this._products);
-    }
-
-    private countTotalPrice(products: Map<Product, number>): number {
-        let totalPrice = 0;
-        products.forEach((count, product) => {
-            const discountPrice = product.discountPrice;
-            totalPrice += discountPrice !== undefined ? discountPrice * count : product.price * count;
-        });
-        return totalPrice;
-    }
+    constructor(protected _id: TKey, protected _products: Map<Product, number>) { }
 
     get products(): Product[] {
         return Array.from(this._products.keys());
     }
 
     get totalPrice() {
-        return this._totalPrice;
+        return this.countTotalPrice(this._products);
     }
 
     get id(): TKey {
@@ -71,6 +58,15 @@ export default class Cart {
             };
         });
         return JSON.stringify(objects);
+    }
+
+    private countTotalPrice(products: Map<Product, number>): number {
+        let totalPrice = 0;
+        products.forEach((count, product) => {
+            const discountPrice = product.discountPrice;
+            totalPrice += discountPrice !== undefined ? discountPrice * count : product.price * count;
+        });
+        return totalPrice;
     }
 
     private getProductById(productId: TKey): Product | undefined {

@@ -6,7 +6,6 @@ import Product from "../entities/Product";
 import Cart from "../entities/Cart";
 
 export interface IProductCardState {
-    product: Product;
     countInCart: number;
 }
 
@@ -20,7 +19,6 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
     constructor(props: IProductCardProps) {
         super(props);
         this.state = {
-            product: props.product,
             countInCart: props.countInCart,
         };
         this.addToCart = this.addToCart.bind(this);
@@ -34,6 +32,12 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     componentWillUnmount() {
         DatabaseApi.removeOnCartChangeListener(this.setCountInCart);
+    }
+
+    componentDidUpdate(prevProps: Readonly<Readonly<IProductCardProps>>) {
+        if (prevProps.product !== this.props.product) {
+            DatabaseApi.getCart().then(this.setCountInCart);
+        }
     }
 
     private setCountInCart(cart: Cart) {

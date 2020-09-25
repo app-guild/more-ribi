@@ -37,8 +37,9 @@ export default class DatabaseApi {
         }
     }
 
+    // TODO передавать корзину параметром
     private static async callOnCartChangeListeners(): Promise<void> {
-        return DatabaseApi.getCart().then((cart) => {
+        return this.getCart().then((cart) => {
             this.onCartChangeListeners.forEach((listener) => {
                 listener(cart);
             });
@@ -152,22 +153,20 @@ export default class DatabaseApi {
 
     /**
      * Create order from cart and create new cart
-     * @return {Promise<Cart>} Promise contains new cart
+     * @void
      */
-    static createOrderFromCart(address: string, comment: string): Promise<Cart> {
-        const sql = `
-            UPDATE Orders SET 
-                date=datetime('now','localtime'), 
-                address=${address}, 
-                comment=${comment} 
-            WHERE id=${this.cart?.id};
-            INSERT INTO Orders DEFAULT VALUES;
-            SELECT max(id) as id FROM Orders WHERE date IS NULL
-        `;
-        return this.executeQuery(sql).then((results) => {
-            const id = results.rows.raw()[0]?.id;
-            this.cart = new Cart(id, new Map());
-            return this.cart;
+    static createOrderFromCart(address: string, comment: string): Promise<void> {
+        return this.getCart().then((cart) => {
+            const sql = `
+                UPDATE Orders SET 
+                    date=datetime('now','localtime'), 
+                    address=${address}, 
+                    comment=${comment} 
+                WHERE id=${cart.id};
+            `;
+            return this.executeQuery(sql)
+                .then(() => this.createCart())
+                .then(() => this.callOnCartChangeListeners());
         });
     }
 
@@ -175,7 +174,7 @@ export default class DatabaseApi {
 
     private static updateProducts(cartId: TKey, productsJson: string): Promise<void> {
         const sql = `UPDATE Orders SET products='${productsJson}' WHERE id = ${cartId}`;
-        return this.executeQuery(sql).then(this.callOnCartChangeListeners);
+        return this.executeQuery(sql).then(() => this.callOnCartChangeListeners());
     }
 
     /**
@@ -191,7 +190,9 @@ export default class DatabaseApi {
 
         const jsonProducts = Array.of(json);
         const result = new Map();
-        jsonProducts.forEach((it) => result.set(Product.parseDatabaseJson(it), Number(it)));
+        jsonProducts
+            .filter((it) => it.count && !isNaN(Number(it.count)))
+            .forEach((it) => result.set(Product.parseDatabaseJson(it), Number(it.count)));
         return result;
     }
 

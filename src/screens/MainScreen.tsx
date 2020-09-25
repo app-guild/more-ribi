@@ -62,8 +62,7 @@ class MainScreen extends Component<any, IMainScreenState> {
             const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, splitProducts);
 
             this.setState({
-                ...this.state,
-                currentCategory: ProductType.translateCategoryName(splitProducts.keys()[0]),
+                currentCategory: ProductType.translateCategoryName(Array.from(splitProducts.keys())[0]),
                 dataProvider: providers.dataProvider,
                 layoutProvider: providers.layoutProvider,
             });

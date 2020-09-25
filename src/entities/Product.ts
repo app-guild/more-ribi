@@ -76,10 +76,10 @@ export default class Product {
             json.name,
             productType,
             json.price,
-            json.discountPrice, // TODO уточнить чему равно
+            json.discountPrice,
             json.available !== false,
             json.image,
-            json.composition, // TODO уточнить чему равно
+            json.composition,
         );
     }
 }
