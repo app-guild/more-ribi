@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Dimensions, ImageBackground, StyleSheet, Text, View} from "react-native";
+import {Dimensions, StyleSheet, Text, View} from "react-native";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
@@ -119,27 +119,25 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
 
     render() {
         return (
-            <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
-                <View style={stylesheet.container}>
-                    <View style={stylesheet.headerContainer}>
-                        <View style={stylesheet.header}>
-                            <FishIcon
-                                width={FISH_ICON_SIZE.width}
-                                height={FISH_ICON_SIZE.height}
-                                style={stylesheet.headerFishBackButton}
-                                onTouchEnd={() => this.props.navigation.goBack()}
-                            />
-                            <Text style={stylesheet.headerText}>Разделы</Text>
-                        </View>
+            <View style={stylesheet.container}>
+                <View style={stylesheet.headerContainer}>
+                    <View style={stylesheet.header}>
+                        <FishIcon
+                            width={FISH_ICON_SIZE.width}
+                            height={FISH_ICON_SIZE.height}
+                            style={stylesheet.headerFishBackButton}
+                            onTouchEnd={() => this.props.navigation.goBack()}
+                        />
+                        <Text style={stylesheet.headerText}>Разделы</Text>
                     </View>
-
-                    <RecyclerListView
-                        layoutProvider={this.layoutProvider}
-                        dataProvider={this.state.dataProvider}
-                        rowRenderer={this._rowRenderer}
-                    />
                 </View>
-            </ImageBackground>
+
+                <RecyclerListView
+                    layoutProvider={this.layoutProvider}
+                    dataProvider={this.state.dataProvider}
+                    rowRenderer={this._rowRenderer}
+                />
+            </View>
         );
     }
 }
