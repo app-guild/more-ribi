@@ -5,7 +5,7 @@ import Product from "./Product";
 export default class Order extends Cart {
     constructor(
         id: TKey,
-        products: Product[],
+        products: Map<Product, number>,
         private _date: Date,
         private _address: string,
         private _comment: string,
@@ -25,9 +25,9 @@ export default class Order extends Cart {
         return this._comment;
     }
 
-    static parseDatabaseResponse(response: Json, products: Product[]): Order {
+    static parseDatabaseResponse(response: Json, products: Map<Product, number>): Order {
         return new Order(
-            response.order_id,
+            response.id,
             products,
             new Date(response.date * 1000),
             response.address,

@@ -6,10 +6,10 @@ import {ProductType} from "../entities/ProductType";
 import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerListView";
 import OpenDish from "../components/OpenDish";
 import {globalColors} from "../../resources/styles";
-import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Modal from "react-native-modal";
 import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 export interface IMainScreenState {
     productCardSize: Dimension;
@@ -18,11 +18,6 @@ export interface IMainScreenState {
     currentProduct: Product | null;
     dataProvider: DataProvider;
     layoutProvider: LayoutProvider;
-}
-
-interface IProductGroup {
-    category: ProductType;
-    items: Product[];
 }
 
 const windowSize = Dimensions.get("window");
@@ -63,13 +58,11 @@ class MainScreen extends Component<any, IMainScreenState> {
     }
 
     componentDidMount() {
-        return DatabaseApi.getProducts().then((products) => {
-            let productsData = splitProductsByType(products);
-            productsData.push({category: ProductType.None, items: []});
-            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, productsData);
+        return RealtimeDatabaseApi.getProducts().then((splitProducts) => {
+            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, splitProducts);
 
             this.setState({
-                currentCategory: ProductType.translateCategoryName(productsData[0]?.category),
+                currentCategory: ProductType.translateCategoryName(Array.from(splitProducts.keys())[0]),
                 dataProvider: providers.dataProvider,
                 layoutProvider: providers.layoutProvider,
             });
@@ -156,35 +149,6 @@ class MainScreen extends Component<any, IMainScreenState> {
             </View>
         );
     }
-}
-
-function splitProductsByType(products: Product[]): IProductGroup[] {
-    return [
-        {
-            category: ProductType.Wok,
-            items: products.filter((product) => product.type === ProductType.Wok),
-        },
-        {
-            category: ProductType.Deserts,
-            items: products.filter((product) => product.type === ProductType.Deserts),
-        },
-        {
-            category: ProductType.Poke,
-            items: products.filter((product) => product.type === ProductType.Poke),
-        },
-        {
-            category: ProductType.Beverages,
-            items: products.filter((product) => product.type === ProductType.Beverages),
-        },
-        {
-            category: ProductType.Rolls,
-            items: products.filter((product) => product.type === ProductType.Rolls),
-        },
-        {
-            category: ProductType.Soups,
-            items: products.filter((product) => product.type === ProductType.Soups),
-        },
-    ];
 }
 
 export const stylesheet = StyleSheet.create({
