@@ -13,6 +13,16 @@ export interface ICategoriesScreenState {
     dataProvider: DataProvider;
 }
 
+const imageSources = {
+    Wok: require("../../resources/assets/drawable/categories/wok-category.jpg"),
+    Desserts: require("../../resources/assets/drawable/categories/desserts-category.jpg"),
+    Beverages: require("../../resources/assets/drawable/categories/beverages-category.jpg"),
+    Poke: require("../../resources/assets/drawable/categories/poke-category.jpg"),
+    CustomPoke: require("../../resources/assets/drawable/categories/poke-constructor-category.jpg"),
+    Rolls: require("../../resources/assets/drawable/categories/rolls-category.jpg"),
+    Soups: require("../../resources/assets/drawable/categories/soups-category.jpg"),
+};
+
 class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScreenState>> {
     constructor(props: any) {
         super(props);
@@ -24,13 +34,14 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                 {
                     text: "Конструктор поке",
                     additionalText: "Собери свой идеальный поке!",
+                    imageSource: imageSources.CustomPoke,
                 },
-                {text: ProductType.Rolls},
-                {text: ProductType.Poke},
-                {text: ProductType.Wok},
-                {text: ProductType.Beverages},
-                {text: ProductType.Deserts},
-                {text: ProductType.Soups},
+                {text: ProductType.Rolls, imageSource: imageSources.Rolls},
+                {text: ProductType.Poke, imageSource: imageSources.Poke},
+                {text: ProductType.Wok, imageSource: imageSources.Wok},
+                {text: ProductType.Beverages, imageSource: imageSources.Beverages},
+                {text: ProductType.Deserts, imageSource: imageSources.Desserts},
+                {text: ProductType.Soups, imageSource: imageSources.Soups},
             ]),
         };
         this._rowRenderer = this._rowRenderer.bind(this);
@@ -62,6 +73,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                     <View style={type === "column0" ? stylesheet.leftCard : stylesheet.rightCard}>
                         <CategoryCard
                             width={"100%"}
+                            imageSource={data.imageSource}
                             text={ProductType.translateCategoryName(data.text)}
                             onTouchEnd={() =>
                                 this.props.navigation.navigate("Main", {
@@ -75,8 +87,9 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                 return (
                     <View style={stylesheet.fullWidthCard}>
                         <CategoryCard
-                            width={"100%"} //this.state.mainContainerWidth - 2 * stylesheet.containerPadding.padding
+                            width={"100%"}
                             height={"100%"}
+                            imageSource={data.imageSource}
                             text={data.text}
                             additionalText={data.additionalText}
                             onTouchEnd={() => this.props.navigation.navigate("PokeConstructor")}
@@ -145,15 +158,15 @@ export const stylesheet = StyleSheet.create({
     },
     leftCard: {
         padding: 5,
-        paddingLeft: 10,
+        paddingLeft: 26,
     },
     rightCard: {
         padding: 5,
-        paddingRight: 10,
+        paddingRight: 26,
     },
     fullWidthCard: {
         padding: 5,
-        paddingHorizontal: 10,
+        paddingHorizontal: 26,
     },
 });
 

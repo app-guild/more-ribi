@@ -10,7 +10,7 @@ export interface ICategoryCardProps {
     text: string;
     additionalText?: string;
     onTouchEnd: any;
-    image?: any;
+    imageSource: any;
     style?: any;
 }
 
@@ -33,7 +33,7 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
                 }}
                 onTouchEnd={onTouchEnd}>
                 <Image
-                    source={require("../../resources/assets/drawable/food.jpg")}
+                    source={this.props.imageSource}
                     style={{
                         width: width,
                         height: height,
