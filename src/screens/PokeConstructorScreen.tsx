@@ -1,9 +1,13 @@
 import React, {Component, createRef} from "react";
 import {ImageBackground, Text, View, ScrollView, StyleSheet, Dimensions} from "react-native";
 import {globalColors} from "../../resources/styles";
-import PokeConstructorCard, {IPokeConstructorCardData} from "../components/PokeConstructorCard";
+import PokeConstructorCard from "../components/PokeConstructorCard";
 import CheckBoxGroup from "../components/СheckBoxGroup";
 import {Tooltip} from "react-native-elements";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
+import Ingredient from "../entities/Ingredient";
+import {PokeIngredients} from "../entities/PokeIngredients";
+import RadioButtonGroup from "../components/RadioButtonGroup";
 
 export interface IPokeConstructorScreenState {
     addIngredientOpen: boolean;
@@ -11,16 +15,77 @@ export interface IPokeConstructorScreenState {
     totalPrice: number;
     canDeployIngredientsPopover: boolean;
     isIngredientsPopoverDeployed: boolean;
+    data: Map<string, Ingredient[]>;
 }
 
-const standardProteinPrice = [270, 270, 210, 210, 290, 180, 200];
+export enum ChoiceType {
+    RadioButton = "radioButton",
+    CheckBox = "checkBox",
+}
+
+export enum ChoicesLocation {
+    Right = "right",
+    Bottom = "bottom",
+}
+
+export enum AdditionalTextType {
+    AllChoices = "allChoices",
+    OnlyTitle = "onlyTitle",
+}
+
+const staticData = [
+    {
+        title: PokeIngredients.Base,
+        imageSource: require("../../resources/assets/drawable/poke-constructor/1-image.jpg"),
+        iconSource: require("../../resources/assets/drawable/poke-constructor/1.webp"),
+        choiceType: ChoiceType.RadioButton,
+        choicesLocation: ChoicesLocation.Right,
+    },
+    {
+        title: PokeIngredients.Protein,
+        imageSource: require("../../resources/assets/drawable/poke-constructor/2-image.jpg"),
+        iconSource: require("../../resources/assets/drawable/poke-constructor/2.webp"),
+        choiceType: ChoiceType.RadioButton,
+        choicesLocation: ChoicesLocation.Right,
+        additionalTextType: AdditionalTextType.AllChoices,
+    },
+    {
+        title: PokeIngredients.Filler,
+        imageSource: require("../../resources/assets/drawable/poke-constructor/1-image.jpg"),
+        iconSource: require("../../resources/assets/drawable/poke-constructor/3.webp"),
+        choiceType: ChoiceType.CheckBox,
+        choicesLocation: ChoicesLocation.Bottom,
+        choiceLimit: 5,
+        additionalTextType: AdditionalTextType.OnlyTitle,
+    },
+    {
+        title: PokeIngredients.Topping,
+        imageSource: require("../../resources/assets/drawable/poke-constructor/2-image.jpg"),
+        iconSource: require("../../resources/assets/drawable/poke-constructor/4.webp"),
+        choiceType: ChoiceType.CheckBox,
+        choicesLocation: ChoicesLocation.Right,
+        choiceLimit: 1,
+        additionalTextType: AdditionalTextType.OnlyTitle,
+    },
+    {
+        title: PokeIngredients.Sauce,
+        iconSource: require("../../resources/assets/drawable/poke-constructor/5.webp"),
+        choiceType: ChoiceType.RadioButton,
+        choicesLocation: ChoicesLocation.Bottom,
+        additionalTextType: AdditionalTextType.OnlyTitle,
+    },
+    {
+        title: PokeIngredients.Crunch,
+        iconSource: require("../../resources/assets/drawable/poke-constructor/6.webp"),
+        choiceType: ChoiceType.RadioButton,
+        choicesLocation: ChoicesLocation.Bottom,
+        additionalTextType: AdditionalTextType.OnlyTitle,
+    },
+];
 
 class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConstructorScreenState>> {
-    private data: IPokeConstructorCardData[];
-    private additionalTitleText: string[] = ["", " (+30₽)", " (+30₽)", " (+15₽)", " (+30₽)"];
-    private additionalSumByCategories: number[] = new Array(this.additionalTitleText.length).fill(0);
     private cardRefs: (PokeConstructorCard | null)[] = [];
-    private additionalIngredientsRefs: (CheckBoxGroup | null)[] = [];
+    private additionalIngredientsRefs: (CheckBoxGroup | RadioButtonGroup | null)[] = [];
     private scrollViewRef = createRef<ScrollView>();
     private needToScroll: boolean = true;
 
@@ -29,279 +94,231 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         this.state = {
             addIngredientOpen: false,
             toppingSwitch: 1,
-            totalPrice: standardProteinPrice[0],
+            totalPrice: 0,
             canDeployIngredientsPopover: false,
             isIngredientsPopoverDeployed: false,
+            data: new Map(),
         };
-        this.data = [
-            {
-                title: "Основа",
-                choices: ["рис", "киноа", "удон", "киноа+рис", "айсберг"],
-                number: 1,
-                image: require("../../resources/assets/drawable/poke-constructor/1-image.jpg"),
-                smallImage: require("../../resources/assets/drawable/poke-constructor/1.webp"),
-                choiceType: "radioButton",
-                choicesLocation: "left",
-            },
-            {
-                title: "Протеин",
-                choices: ["тунец", "лосось", "курица", "свинина", "креветки", "тофу", "краб"],
-                number: 2,
-                image: require("../../resources/assets/drawable/poke-constructor/2-image.jpg"),
-                smallImage: require("../../resources/assets/drawable/poke-constructor/2.webp"),
-                choiceType: "radioButton",
-                choicesLocation: "left",
-                additionalText: ["(+100₽)", "(+100₽)", "(+60₽)", "(+60₽)", "(+120₽)", "(+60₽)", "(+60₽)"],
-            },
-            {
-                title: "Наполнитель",
-                choices: [
-                    "морковь",
-                    "битые огурцы",
-                    "красная капуста",
-                    "болгарский перец",
-                    "cалат айсберг",
-                    "корн салат",
-                    "красный лук",
-                    "томаты черри",
-                    "редис",
-                    "такуан",
-                    "грибы",
-                    "чука",
-                    "кимчи",
-                    "соевые ростки",
-                    "баклажаны",
-                ],
-                number: 3,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
-                smallImage: require("../../resources/assets/drawable/poke-constructor/3.webp"),
-                choiceType: "checkBox",
-                choicesLocation: "bottom",
-            },
-            {
-                title: "Топпинг",
-                choices: ["авокадо", "манго", "ананас", "масаго", "бобы эдамамэ"],
-                number: 4,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
-                smallImage: require("../../resources/assets/drawable/poke-constructor/4.webp"),
-                choiceType: "checkBox",
-                choicesLocation: "left",
-            },
-            {
-                title: "Соус",
-                choices: ["терияки", "васаби", "японский", "гавайский", "спайс"],
-                number: 5,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
-                smallImage: require("../../resources/assets/drawable/poke-constructor/5.webp"),
-                choiceType: "radioButton",
-                choicesLocation: "left",
-            },
-            {
-                title: "Хруст",
-                choices: [
-                    "кешью",
-                    "кунжут",
-                    "ким нори",
-                    "жареный лук",
-                    "миндальные лепестки",
-                    "начос",
-                    "тыквенные семечки",
-                ],
-                number: 6,
-                image: require("../../resources/assets/drawable/poke-constructor/3-image.jpg"),
-                smallImage: require("../../resources/assets/drawable/poke-constructor/6.webp"),
-                choiceType: "radioButton",
-                choicesLocation: "left",
-            },
-        ];
-        this.onAdditionalClick = this.onAdditionalClick.bind(this);
-        this.onCardClick = this.onCardClick.bind(this);
+        //this.onAdditionalClick = this.onAdditionalClick.bind(this);
+        //this.onCardClick = this.onCardClick.bind(this);
     }
 
-    private onCardClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
-        if (id === 1 && changed) {
-            const proteinPrice = standardProteinPrice[changedIndex];
-            const additionalProteinIndex = this.additionalIngredientsRefs[0]?.getCheckedIndexes()[0];
-            const additionalProteinPrice = parseInt(
-                this.data[1].additionalText ? this.data[1].additionalText[changedIndex].slice(2, -2) : "100",
+    componentDidMount() {
+        return RealtimeDatabaseApi.getPokeConstructorIngredients().then((ingredients) => {
+            this.setState({data: ingredients});
+        });
+    }
+
+    // private onCardClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
+    //     if (id === 1 && changed) {
+    //         const proteinPrice = standardProteinPrice[changedIndex];
+    //         const additionalProteinIndex = this.additionalIngredientsRefs[0]?.getCheckedIndexes()[0];
+    //         const additionalProteinPrice = parseInt(
+    //             this.data[1].additionalText ? this.data[1].additionalText[changedIndex].slice(2, -2) : "100",
+    //         );
+    //
+    //         if (additionalProteinIndex && standardProteinPrice[additionalProteinIndex] > proteinPrice) {
+    //             this.setState({
+    //                 totalPrice:
+    //                     standardProteinPrice[additionalProteinIndex] +
+    //                     this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
+    //                     this.additionalSumByCategories[0] +
+    //                     additionalProteinPrice,
+    //             });
+    //         } else {
+    //             this.setState({
+    //                 totalPrice:
+    //                     proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
+    //             });
+    //         }
+    //     } else {
+    //         this.setState({});
+    //     }
+    // }
+    //
+    // private onAdditionalClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
+    //     if (changed) {
+    //         let sum = 0;
+    //         const proteinIndex = this.cardRefs[1] ? this.cardRefs[1].getCheckedIndexes()[0] : 0;
+    //         const proteinPrice = standardProteinPrice[proteinIndex];
+    //
+    //         if (this.additionalTitleText[id] === "") {
+    //             this.data[id + 1].additionalText?.forEach((val, index, array) => {
+    //                 if (values[index]) {
+    //                     sum += parseInt(val.slice(2, -2));
+    //                     if (proteinPrice < sum) {
+    //                         this.additionalSumByCategories[id] = sum;
+    //
+    //                         this.setState({
+    //                             totalPrice:
+    //                                 standardProteinPrice[index] +
+    //                                 this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
+    //                                 sum +
+    //                                 parseInt(array[proteinIndex].slice(2, -2)),
+    //                         });
+    //                         return;
+    //                     }
+    //                 }
+    //             });
+    //             this.additionalSumByCategories[id] = sum;
+    //         } else {
+    //             values.forEach((val) => {
+    //                 if (val) {
+    //                     sum += parseInt(this.additionalTitleText[id].slice(2, -2));
+    //                 }
+    //             });
+    //             this.additionalSumByCategories[id] = sum;
+    //         }
+    //         this.setState({
+    //             totalPrice:
+    //                 proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
+    //         });
+    //     }
+    // }
+
+    private initCards(start: number, end: number): JSX.Element[] {
+        let result: JSX.Element[] = [];
+        let ingredients;
+        end = end < 0 ? this.state.data.size + end : end;
+        for (let i = start; i <= end; i++) {
+            ingredients = this.state.data.get(staticData[i].title);
+            result.push(
+                <PokeConstructorCard
+                    ref={(ref) => {
+                        this.cardRefs[i] = ref;
+                        return true;
+                    }}
+                    key={i}
+                    data={{
+                        title: PokeIngredients.translateCategoryName(PokeIngredients.parse(staticData[i].title)),
+                        number: i + 1,
+                        image: staticData[i].imageSource,
+                        smallImage: staticData[i].iconSource,
+                        ingredients: ingredients ? ingredients : [],
+                        choiceType: staticData[i].choiceType,
+                        choicesLocation: staticData[i].choicesLocation,
+                        choiceLimit: staticData[i].choiceLimit,
+                        //onClick: this.onCardClick,
+                    }}
+                />,
             );
-
-            if (additionalProteinIndex && standardProteinPrice[additionalProteinIndex] > proteinPrice) {
-                this.setState({
-                    totalPrice:
-                        standardProteinPrice[additionalProteinIndex] +
-                        this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
-                        this.additionalSumByCategories[0] +
-                        additionalProteinPrice,
-                });
-            } else {
-                this.setState({
-                    totalPrice:
-                        proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
-                });
-            }
-        } else {
-            this.setState({});
         }
+        return result;
     }
 
-    private onAdditionalClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
-        if (changed) {
-            let sum = 0;
-            const proteinIndex = this.cardRefs[1] ? this.cardRefs[1].getCheckedIndexes()[0] : 0;
-            const proteinPrice = standardProteinPrice[proteinIndex];
+    private initAdditionalCards(): JSX.Element[] {
+        let result: JSX.Element[] = [];
+        let ingredients;
+        for (let i = 1; i < this.state.data.size; i++) {
+            ingredients = this.state.data.get(staticData[i].title);
+            result.push(
+                <>
+                    <View style={{flexDirection: "row"}}>
+                        <Text style={{...stylesheet.subTitleText, marginTop: 30, marginLeft: 10}}>
+                            {PokeIngredients.translateCategoryName(PokeIngredients.parse(staticData[i].title))}
+                        </Text>
+                        {staticData[i].additionalTextType === AdditionalTextType.OnlyTitle ? (
+                            <Text style={{...stylesheet.additionalText, marginTop: 30}}>
+                                {ingredients ? " (+" + ingredients[0].additionalPrice + "₽)" : null}
+                            </Text>
+                        ) : null}
+                    </View>
 
-            if (this.additionalTitleText[id] === "") {
-                this.data[id + 1].additionalText?.forEach((val, index, array) => {
-                    if (values[index]) {
-                        sum += parseInt(val.slice(2, -2));
-                        if (proteinPrice < sum) {
-                            this.additionalSumByCategories[id] = sum;
-
-                            this.setState({
-                                totalPrice:
-                                    standardProteinPrice[index] +
-                                    this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
-                                    sum +
-                                    parseInt(array[proteinIndex].slice(2, -2)),
-                            });
-                            return;
-                        }
-                    }
-                });
-                this.additionalSumByCategories[id] = sum;
-            } else {
-                values.forEach((val) => {
-                    if (val) {
-                        sum += parseInt(this.additionalTitleText[id].slice(2, -2));
-                    }
-                });
-                this.additionalSumByCategories[id] = sum;
-            }
-            this.setState({
-                totalPrice:
-                    proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
-            });
+                    {staticData[i].choiceType === ChoiceType.CheckBox ? (
+                        <CheckBoxGroup
+                            ref={(ref) => {
+                                this.additionalIngredientsRefs[i] = ref;
+                                return true;
+                            }}
+                            choices={ingredients ? ingredients : []}
+                            needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
+                            //onClick={onClick}
+                        />
+                    ) : (
+                        <RadioButtonGroup
+                            ref={(ref) => {
+                                this.additionalIngredientsRefs[i] = ref;
+                                return true;
+                            }}
+                            choices={ingredients ? ingredients : []}
+                            needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
+                            canUncheck={true}
+                            //onClick={onClick}
+                        />
+                    )}
+                </>,
+            );
         }
+        return result;
     }
+
+    // private getTotalPrice(): number {
+    //
+    // }
 
     render() {
-        const cards1_2 = this.data.slice(0, 2).map((value, index) => {
-            value.onClick = this.onCardClick;
-            value.id = index;
-            return (
-                <PokeConstructorCard
-                    ref={(ref) => {
-                        this.cardRefs[index] = ref;
-                        return true;
-                    }}
-                    key={index}
-                    data={value}
-                />
-            );
-        });
-        const cards3_6 = this.data.slice(2, 6).map((value, index) => {
-            if (index === 0) {
-                value.choiceLimit = this.state.toppingSwitch === 1 ? 5 : 3;
-            }
-            if (index === 1) {
-                value.choiceLimit = this.state.toppingSwitch;
-            }
-            value.onClick = this.onCardClick;
-            value.id = index;
-            return (
-                <PokeConstructorCard
-                    ref={(ref) => {
-                        this.cardRefs[index + 2] = ref;
-                        return true;
-                    }}
-                    key={index}
-                    data={value}
-                />
-            );
-        });
-        const additionalIngredients = this.data.slice(1, 6).map((value, index) => (
-            <View key={index}>
-                <View style={{flexDirection: "row"}}>
-                    <Text style={{...stylesheet.subTitleText, marginTop: 30, marginLeft: 10}}>{value.title}</Text>
-                    {this.additionalTitleText[index] ? (
-                        <Text style={{...stylesheet.additionalText, marginTop: 30}}>
-                            {this.additionalTitleText[index]}
-                        </Text>
-                    ) : null}
-                </View>
-                <CheckBoxGroup
-                    ref={(ref) => {
-                        this.additionalIngredientsRefs[index] = ref;
-                        return true;
-                    }}
-                    choices={value.choices}
-                    choicesLocation={value.choicesLocation}
-                    choiceType={value.choiceType}
-                    additionalText={value.additionalText}
-                    onClick={this.onAdditionalClick}
-                    canUncheck={true}
-                    id={index}
-                />
-            </View>
-        ));
+        const cards1_2 = this.initCards(0, 1);
+        const RemainingCards = this.initCards(2, -1);
+        const additionalCards = this.initAdditionalCards();
+        const ingredients = <View />;
+        //     (() => {
+        //     let currentIngredients: string[] = [];
+        //     this.cardRefs.forEach((value, index) => {
+        //         value?.getCheckedIndexes().forEach((value1) => {
+        //             currentIngredients.push(this.data[index].choices[value1] + ", ");
+        //         });
+        //     });
+        //     if (currentIngredients.length) {
+        //         currentIngredients[currentIngredients.length - 1] = currentIngredients[
+        //             currentIngredients.length - 1
+        //         ].slice(0, -2);
+        //     } else {
+        //         currentIngredients.push("рис, тунец, терияки, кешью");
+        //     }
+        //     return currentIngredients;
+        // }).call(this);
 
-        const ingredients = (() => {
-            let currentIngredients: string[] = [];
-            this.cardRefs.forEach((value, index) => {
-                value?.getCheckedIndexes().forEach((value1) => {
-                    currentIngredients.push(this.data[index].choices[value1] + ", ");
-                });
-            });
-            if (currentIngredients.length) {
-                currentIngredients[currentIngredients.length - 1] = currentIngredients[
-                    currentIngredients.length - 1
-                ].slice(0, -2);
-            } else {
-                currentIngredients.push("рис, тунец, терияки, кешью");
-            }
-            return currentIngredients;
-        }).call(this);
-
-        const addIngredients = (() => {
-            let currentIngredients: string[] = [];
-            this.additionalIngredientsRefs.forEach((value, index) => {
-                value?.getCheckedIndexes().forEach((value1) => {
-                    if (currentIngredients.length === 0) {
-                        currentIngredients.push("\nДополнительно: ");
-                    }
-
-                    currentIngredients.push(this.data[index + 1].choices[value1] + ", ");
-                });
-            });
-            if (currentIngredients.length) {
-                currentIngredients[currentIngredients.length - 1] = currentIngredients[
-                    currentIngredients.length - 1
-                ].slice(0, -2);
-            }
-            return currentIngredients;
-        }).call(this);
-
-        this.data.map((value, index) => {
-            let currentIngredients: string[] = [];
-
-            this.cardRefs[index]?.getCheckedIndexes().forEach((value2) => {
-                currentIngredients.push(value.choices[value2] + ", ");
-            });
-            this.additionalIngredientsRefs[index - 1]?.getCheckedIndexes().forEach((value3) => {
-                currentIngredients.push(value.choices[value3] + ", ");
-            });
-            if (currentIngredients.length) {
-                currentIngredients[currentIngredients.length - 1] = currentIngredients[
-                    currentIngredients.length - 1
-                ].slice(0, -2);
-            }
-            return <Text key={index}>{currentIngredients}</Text>;
-        });
+        const addIngredients = <View />; //(() => {
+        //     let currentIngredients: string[] = [];
+        //     this.additionalIngredientsRefs.forEach((value, index) => {
+        //         value?.getCheckedIndexes().forEach((value1) => {
+        //             if (currentIngredients.length === 0) {
+        //                 currentIngredients.push("\nДополнительно: ");
+        //             }
+        //
+        //             currentIngredients.push(this.data[index + 1].choices[value1] + ", ");
+        //         });
+        //     });
+        //     if (currentIngredients.length) {
+        //         currentIngredients[currentIngredients.length - 1] = currentIngredients[
+        //             currentIngredients.length - 1
+        //         ].slice(0, -2);
+        //     }
+        //     return currentIngredients;
+        // }).call(this);
+        //
+        // this.data.map((value, index) => {
+        //     let currentIngredients: string[] = [];
+        //
+        //     this.cardRefs[index]?.getCheckedIndexes().forEach((value2) => {
+        //         currentIngredients.push(value.choices[value2] + ", ");
+        //     });
+        //     this.additionalIngredientsRefs[index - 1]?.getCheckedIndexes().forEach((value3) => {
+        //         currentIngredients.push(value.choices[value3] + ", ");
+        //     });
+        //     if (currentIngredients.length) {
+        //         currentIngredients[currentIngredients.length - 1] = currentIngredients[
+        //             currentIngredients.length - 1
+        //         ].slice(0, -2);
+        //     }
+        //     return <Text key={index}>{currentIngredients}</Text>;
+        // });
 
         return (
             <ScrollView ref={this.scrollViewRef}>
-                <ImageBackground style={{width: "auto"}} source={require("../../resources/assets/drawable/food.jpg")}>
+                <ImageBackground
+                    style={{width: "auto"}}
+                    source={require("../../resources/assets/drawable/categories/poke-constructor-category.jpg")}>
                     <Text style={stylesheet.topText}>Собери свой идеальный ПОКÉ БОУЛ</Text>
                 </ImageBackground>
                 <Text style={stylesheet.titleText}>СОБРАТЬ ПОКÉ</Text>
@@ -348,7 +365,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         </View>
                     </View>
                 </View>
-                {cards3_6}
+                {RemainingCards}
                 <View style={stylesheet.done}>
                     <Text style={stylesheet.doneText}>ГОТОВО!</Text>
                     <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
@@ -432,7 +449,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             }
                         }}>
                         <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
-                        {additionalIngredients}
+                        {additionalCards}
                     </View>
                 ) : null}
             </ScrollView>

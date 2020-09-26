@@ -14,13 +14,13 @@ export interface ICategoriesScreenState {
 }
 
 const imageSources = {
-    Wok: require("../../resources/assets/drawable/categories/wok-category.jpg"),
-    Desserts: require("../../resources/assets/drawable/categories/desserts-category.jpg"),
-    Beverages: require("../../resources/assets/drawable/categories/beverages-category.jpg"),
-    Poke: require("../../resources/assets/drawable/categories/poke-category.jpg"),
-    CustomPoke: require("../../resources/assets/drawable/categories/poke-constructor-category.jpg"),
-    Rolls: require("../../resources/assets/drawable/categories/rolls-category.jpg"),
-    Soups: require("../../resources/assets/drawable/categories/soups-category.jpg"),
+    wok: require("../../resources/assets/drawable/categories/wok-category.jpg"),
+    desserts: require("../../resources/assets/drawable/categories/desserts-category.jpg"),
+    beverages: require("../../resources/assets/drawable/categories/beverages-category.jpg"),
+    poke: require("../../resources/assets/drawable/categories/poke-category.jpg"),
+    customPoke: require("../../resources/assets/drawable/categories/poke-constructor-category.jpg"),
+    rolls: require("../../resources/assets/drawable/categories/rolls-category.jpg"),
+    soups: require("../../resources/assets/drawable/categories/soups-category.jpg"),
 };
 
 class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScreenState>> {
@@ -34,14 +34,14 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                 {
                     text: "Конструктор поке",
                     additionalText: "Собери свой идеальный поке!",
-                    imageSource: imageSources.CustomPoke,
+                    imageSource: imageSources.customPoke,
                 },
-                {text: ProductType.Rolls, imageSource: imageSources.Rolls},
-                {text: ProductType.Poke, imageSource: imageSources.Poke},
-                {text: ProductType.Wok, imageSource: imageSources.Wok},
-                {text: ProductType.Beverages, imageSource: imageSources.Beverages},
-                {text: ProductType.Deserts, imageSource: imageSources.Desserts},
-                {text: ProductType.Soups, imageSource: imageSources.Soups},
+                {text: ProductType.Rolls, imageSource: imageSources.rolls},
+                {text: ProductType.Poke, imageSource: imageSources.poke},
+                {text: ProductType.Wok, imageSource: imageSources.wok},
+                {text: ProductType.Beverages, imageSource: imageSources.beverages},
+                {text: ProductType.Deserts, imageSource: imageSources.desserts},
+                {text: ProductType.Soups, imageSource: imageSources.soups},
             ]),
         };
         this._rowRenderer = this._rowRenderer.bind(this);

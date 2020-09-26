@@ -1,7 +1,10 @@
 import React, {createRef, PureComponent} from "react";
-import {Text, View, StyleSheet, Image} from "react-native";
+import {Image, StyleSheet, Text, View} from "react-native";
 import {globalColors} from "../../resources/styles";
 import CheckBoxGroup from "./СheckBoxGroup";
+import Ingredient from "../entities/Ingredient";
+import {ChoicesLocation, ChoiceType} from "../screens/PokeConstructorScreen";
+import RadioButtonGroup from "./RadioButtonGroup";
 
 export interface IPokeConstructorCardState {
     checked: boolean[];
@@ -14,35 +17,37 @@ export interface IPokeConstructorCardProps {
 export interface IPokeConstructorCardData {
     title: string;
     number: number;
-    image: any;
+    image?: any;
     smallImage: any;
-    choices: string[];
-    choiceType: "radioButton" | "checkBox";
-    choicesLocation: "bottom" | "left";
+    ingredients: Ingredient[];
+    needAdditionalText?: boolean;
+    canUncheck?: boolean;
+    choiceType?: ChoiceType;
+    choicesLocation?: ChoicesLocation;
     choiceLimit?: number;
-    additionalText?: string[];
     onClick?: (values: boolean[], changed: boolean, changedIndex: number, id: number) => void;
-    id?: number;
+    //id?: number;
 }
 
 class PokeConstructorCard extends PureComponent<
     Readonly<IPokeConstructorCardProps>,
     Readonly<IPokeConstructorCardState>
 > {
-    private checkBoxGroup = createRef<CheckBoxGroup>();
+    private checkBoxGroupRef = createRef<CheckBoxGroup>();
+    private radioButtonGroupRef = createRef<RadioButtonGroup>();
 
     constructor(props: IPokeConstructorCardProps) {
         super(props);
-        this.state = {checked: new Array(props.data.choices.length).fill(false)};
+        this.state = {checked: new Array(props.data.ingredients.length).fill(false)};
     }
 
     public setLimit(limit: number | undefined) {
-        this.checkBoxGroup.current?.setLimit(limit);
+        this.checkBoxGroupRef?.current?.setLimit(limit);
     }
 
-    public getCheckedIndexes(): number[] {
-        return this.checkBoxGroup.current ? this.checkBoxGroup.current?.getCheckedIndexes() : [];
-    }
+    // public getCheckedIndexes(): number[] {
+    //     return this.group.current ? this.group.current?.getCheckedIndexes() : [];
+    // }
 
     render() {
         const {
@@ -50,18 +55,20 @@ class PokeConstructorCard extends PureComponent<
             number,
             image,
             smallImage,
-            choices,
+            ingredients,
+            needAdditionalText,
+            canUncheck,
             choiceType,
             choicesLocation,
             choiceLimit,
-            onClick,
-            id,
+            //onClick,
+            //id
         } = this.props.data;
 
         return (
             <View
                 style={
-                    choicesLocation === "bottom"
+                    choicesLocation === ChoicesLocation.Bottom
                         ? {
                               ...stylesheet.container,
                               flexDirection: "column",
@@ -104,32 +111,43 @@ class PokeConstructorCard extends PureComponent<
                             {title}
                         </Text>
                     </View>
-                    <Image
-                        source={image}
-                        style={{
-                            borderRadius: 1000,
-                            width: "100%",
-                            height: "auto",
-                            aspectRatio: 1.5,
-                        }}
-                    />
+                    {image ? (
+                        <Image
+                            source={image}
+                            style={{
+                                borderRadius: 1000,
+                                width: "100%",
+                                height: "auto",
+                                aspectRatio: 1.5,
+                            }}
+                        />
+                    ) : null}
                 </View>
                 <View
                     style={{
                         marginTop: 20,
-                        marginLeft: choicesLocation === "bottom" ? 0 : stylesheet.spaceBetweenColumns.marginLeft,
+                        marginLeft:
+                            choicesLocation === ChoicesLocation.Bottom ? 0 : stylesheet.spaceBetweenColumns.marginLeft,
                         flex: 1,
-                        width: choicesLocation === "bottom" ? "70%" : undefined,
+                        width: choicesLocation === ChoicesLocation.Bottom ? "70%" : undefined,
                     }}>
-                    <CheckBoxGroup
-                        ref={this.checkBoxGroup}
-                        choices={choices}
-                        choiceType={choiceType}
-                        choicesLocation={choicesLocation}
-                        choiceLimit={choiceLimit}
-                        onClick={onClick}
-                        id={id}
-                    />
+                    {choiceType === ChoiceType.CheckBox ? (
+                        <CheckBoxGroup
+                            ref={this.checkBoxGroupRef}
+                            choices={ingredients}
+                            needAdditionalText={needAdditionalText}
+                            choiceLimit={choiceLimit}
+                            //onClick={onClick}
+                        />
+                    ) : (
+                        <RadioButtonGroup
+                            ref={this.radioButtonGroupRef}
+                            choices={ingredients}
+                            needAdditionalText={needAdditionalText}
+                            canUncheck={canUncheck}
+                            //onClick={onClick}
+                        />
+                    )}
                 </View>
             </View>
         );
