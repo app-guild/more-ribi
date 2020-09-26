@@ -100,13 +100,7 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxSelectProps>, Readon
         const {choices, choiceType, additionalText} = this.props;
 
         return choices.map((val: any, index: any) => (
-            <View
-                key={index}
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    width: "100%",
-                }}>
+            <View key={index} style={stylesheet.container}>
                 <CheckBox
                     checked={this.state.checked[index]}
                     onPress={() => this.onCheckBoxPress(index)}
@@ -127,6 +121,11 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxSelectProps>, Readon
 }
 
 export const stylesheet = StyleSheet.create({
+    container: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%",
+    },
     radioButtonText: {
         flex: 1,
         fontFamily: "Montserrat",

@@ -5,8 +5,8 @@ import {globalColors} from "../../resources/styles";
 export interface ICategoryCardState {}
 
 export interface ICategoryCardProps {
-    width: number;
-    height?: number;
+    width: number | string;
+    height?: number | string;
     text: string;
     additionalText?: string;
     onTouchEnd: any;
@@ -41,19 +41,19 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
                         position: "absolute",
                     }}
                 />
-
-                {additionalText ? <Text style={{...stylesheet.additionalText}}>{additionalText}</Text> : null}
-
-                <View
-                    style={
-                        additionalText
-                            ? {
-                                  ...stylesheet.titleContainer,
-                                  ...stylesheet.pokeConstructor,
-                              }
-                            : stylesheet.titleContainer
-                    }>
-                    <Text style={stylesheet.text}>{text}</Text>
+                <View style={{flex: 1, justifyContent: "center", top: additionalText ? undefined : "15%"}}>
+                    {additionalText ? <Text style={stylesheet.additionalText}>{additionalText}</Text> : null}
+                    <View
+                        style={
+                            additionalText
+                                ? {
+                                      ...stylesheet.titleContainer,
+                                      ...stylesheet.pokeConstructor,
+                                  }
+                                : stylesheet.titleContainer
+                        }>
+                        <Text style={stylesheet.text}>{text}</Text>
+                    </View>
                 </View>
             </View>
         );
@@ -70,7 +70,6 @@ export const stylesheet = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 6,
         paddingHorizontal: 15,
-        marginTop: "60%",
     },
     text: {
         fontFamily: "Montserrat",
@@ -85,14 +84,10 @@ export const stylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 18,
-        lineHeight: 22,
-        marginTop: 27,
         marginHorizontal: 32,
         color: globalColors.whiteTextColor,
     },
     pokeConstructor: {
-        marginTop: 5,
-        marginBottom: 10,
         alignItems: "flex-start",
         paddingHorizontal: 32,
     },

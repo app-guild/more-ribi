@@ -45,21 +45,11 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                 case "column0":
                 case "column1":
                     dim.width = this.state.mainContainerWidth / 2 - 0.0001;
-                    dim.height =
-                        (this.state.mainContainerWidth -
-                            2 * stylesheet.containerPadding.padding -
-                            stylesheet.columnMargin.margin) /
-                            2 +
-                        stylesheet.columnMargin.margin;
+                    dim.height = this.state.mainContainerWidth / 2 - 0.0001;
                     break;
                 case "pokeConstructor":
                     dim.width = this.state.mainContainerWidth;
-                    dim.height =
-                        (this.state.mainContainerWidth -
-                            2 * stylesheet.containerPadding.padding -
-                            stylesheet.columnMargin.margin) /
-                            4 +
-                        2 * stylesheet.columnMargin.margin;
+                    dim.height = this.state.mainContainerWidth / 4;
             }
         },
     );
@@ -69,24 +59,9 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
             case "column0":
             case "column1":
                 return (
-                    <View
-                        style={
-                            parseInt(type.slice(-1)) === 0
-                                ? {
-                                      marginLeft: stylesheet.containerPadding.padding,
-                                  }
-                                : {
-                                      alignItems: "flex-end",
-                                      marginRight: stylesheet.containerPadding.padding,
-                                  }
-                        }>
+                    <View style={type === "column0" ? stylesheet.leftCard : stylesheet.rightCard}>
                         <CategoryCard
-                            width={
-                                (this.state.mainContainerWidth -
-                                    2 * stylesheet.containerPadding.padding -
-                                    stylesheet.columnMargin.margin) /
-                                2
-                            }
+                            width={"100%"}
                             text={ProductType.translateCategoryName(data.text)}
                             onTouchEnd={() =>
                                 this.props.navigation.navigate("Main", {
@@ -98,10 +73,10 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                 );
             case "pokeConstructor":
                 return (
-                    <View style={{marginLeft: stylesheet.containerPadding.padding}}>
+                    <View style={stylesheet.fullWidthCard}>
                         <CategoryCard
-                            width={this.state.mainContainerWidth - 2 * stylesheet.containerPadding.padding}
-                            height={93}
+                            width={"100%"} //this.state.mainContainerWidth - 2 * stylesheet.containerPadding.padding
+                            height={"100%"}
                             text={data.text}
                             additionalText={data.additionalText}
                             onTouchEnd={() => this.props.navigation.navigate("PokeConstructor")}
@@ -167,6 +142,18 @@ export const stylesheet = StyleSheet.create({
     headerFishBackButton: {
         position: "absolute",
         left: 0,
+    },
+    leftCard: {
+        padding: 5,
+        paddingLeft: 10,
+    },
+    rightCard: {
+        padding: 5,
+        paddingRight: 10,
+    },
+    fullWidthCard: {
+        padding: 5,
+        paddingHorizontal: 10,
     },
 });
 
