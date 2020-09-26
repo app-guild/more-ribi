@@ -98,9 +98,9 @@ export default class DatabaseApi {
      * @param {Product} product
      * @void
      */
-    static addProductToCart(product: Product): Promise<void> {
+    static addProductToCart(product: Product, count?: number): Promise<void> {
         return this.getCart().then((cart) => {
-            cart.addProduct(product);
+            cart.addProduct(product, count);
             return this.updateProducts(cart);
         });
     }

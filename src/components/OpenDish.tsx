@@ -53,34 +53,33 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
 
     private async addToCartFromButton(product: Product) {
         this.replaceButtonWithCounter();
-        // TODO кол-во изменять после выполнения запроса
-        this.setState({productCount: this.state.productCount + 1});
-        if (this.state.productCount - 1 > 0) {
-            return DatabaseApi.updateProductCount(product, this.state.productCount);
-        } else {
-            return DatabaseApi.addProductToCart(product);
-        }
+        return this.updateProductCount(product, this.state.productCount + 1);
     }
 
-    private async addToCartFromCounter(product: Product) {
+    private async addToCartFromCounter(product: Product, count: number) {
         this.refreshFadeOutTimer();
-        // TODO кол-во изменять после выполнения запроса
-        this.setState({productCount: this.state.productCount + 1});
-        if (this.state.productCount - 1 > 0) {
-            return DatabaseApi.updateProductCount(product, this.state.productCount);
-        } else {
-            return DatabaseApi.addProductToCart(product);
-        }
+        return this.updateProductCount(product, count);
     }
 
-    private async removeFromCartFromCounter(product: Product) {
+    private async removeFromCartFromCounter(product: Product, count: number) {
         this.refreshFadeOutTimer();
-        this.setState({productCount: this.state.productCount - 1});
-        if (this.state.productCount > 0) {
-            return DatabaseApi.updateProductCount(product, this.state.productCount);
-        } else {
-            return DatabaseApi.removeProductFromCart(product);
-        }
+        return this.updateProductCount(product, count);
+    }
+
+    private async updateProductCount(product: Product, count: number) {
+        return new Promise<void>((resolve) => {
+            if (this.state.productCount > 0 && count > 0) {
+                resolve(DatabaseApi.updateProductCount(product, count));
+            } else if (this.state.productCount === 0) {
+                resolve(DatabaseApi.addProductToCart(product, count));
+            } else if (count === 0) {
+                resolve(DatabaseApi.removeProductFromCart(product));
+            }
+            return;
+        }).then(() => {
+            this.setState({productCount: count});
+            console.log(this.state.productCount);
+        });
     }
 
     private replaceButtonWithCounter() {
@@ -134,11 +133,12 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     render() {
         const {width, product} = this.props;
         const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
+        const image = product?.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return product !== null ? (
             <View style={stylesheet.container}>
                 <Image
-                    source={require("../../resources/assets/drawable/food.jpg")}
+                    source={image}
                     style={{
                         width: widthWithoutPadding,
                         maxHeight: widthWithoutPadding,
@@ -188,9 +188,9 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                             initValue={this.state.productCount}
                             onChange={async (value) => {
                                 if (value > this.state.productCount) {
-                                    return this.addToCartFromCounter(product);
+                                    return this.addToCartFromCounter(product, value);
                                 } else if (value < this.state.productCount) {
-                                    return this.removeFromCartFromCounter(product);
+                                    return this.removeFromCartFromCounter(product, value);
                                 }
                                 return;
                             }}

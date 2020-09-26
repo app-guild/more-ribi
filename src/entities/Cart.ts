@@ -2,7 +2,7 @@ import Product from "./Product";
 import {TKey} from "../utils/database/DatabaseApi";
 
 export default class Cart {
-    constructor(protected _id: TKey, protected _products: Map<Product, number>) { }
+    constructor(protected _id: TKey, protected _products: Map<Product, number>) {}
 
     get products(): Product[] {
         return Array.from(this._products.keys());
@@ -16,11 +16,15 @@ export default class Cart {
         return this._id;
     }
 
-    addProduct(product: Product): void {
+    addProduct(product: Product, count?: number): void {
         if (this.getProductById(product.id)) {
             return;
         }
-        this._products.set(product, 1);
+        if (count) {
+            this._products.set(product, count);
+        } else {
+            this._products.set(product, 1);
+        }
     }
 
     removeProduct(product: Product): void {

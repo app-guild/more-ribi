@@ -114,26 +114,36 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         return (
             <View style={stylesheet.container}>
                 <View
-                    style={{flexDirection: "row"}}
+                    style={stylesheet.shoppingCartImageContainer}
                     onTouchEnd={() => {
                         onClick(product);
                     }}>
-                    <View style={stylesheet.shoppingCartImageContainer}>
-                        <Image source={image} style={stylesheet.shoppingCartImage} />
-                    </View>
-                    <View style={stylesheet.shoppingCardTextContainer}>
-                        <Text numberOfLines={2} style={globalStylesheet.primaryText}>
-                            {product.name}
-                        </Text>
-                        <Text numberOfLines={3} style={{...globalStylesheet.secondaryText, marginTop: 10}}>
+                    <Image source={image} style={stylesheet.shoppingCartImage} />
+                </View>
+                <View style={stylesheet.shoppingCardMainContainer}>
+                    <Text
+                        numberOfLines={1}
+                        style={{...globalStylesheet.primaryText, marginRight: 15}}
+                        onPress={() => {
+                            onClick(product);
+                        }}>
+                        {product.name}
+                    </Text>
+                    <View style={stylesheet.shoppingCardSubContainer}>
+                        <Text
+                            numberOfLines={2}
+                            style={stylesheet.shoppingCardCompositionText}
+                            onPress={() => {
+                                onClick(product);
+                            }}>
                             {product.composition}
                         </Text>
+                        <View style={stylesheet.shoppingCartButtonContainer}>
+                            <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
+                                {this.renderPrice(product.price, product.discountPrice)}
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-                <View style={stylesheet.shoppingCartButtonContainer}>
-                    <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
-                        {this.renderPrice(product.price, product.discountPrice)}
-                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -152,16 +162,29 @@ export const stylesheet = StyleSheet.create({
         width: "95%",
         height: "100%",
     },
-    shoppingCardTextContainer: {
+    shoppingCardMainContainer: {
         marginHorizontal: 10,
         flexDirection: "column",
         justifyContent: "flex-start",
-        width: "30%",
+        width: "70%",
+        position: "relative",
+    },
+    shoppingCardSubContainer: {
+        alignContent: "center",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+        height: "100%",
+    },
+    shoppingCardCompositionText: {
+        ...globalStylesheet.secondaryText,
+        marginVertical: 10,
+        width: "50%",
     },
     shoppingCartButtonContainer: {
         justifyContent: "center",
         alignItems: "flex-end",
-        width: "30%",
+        width: "40%",
     },
     shoppingCartImageContainer: {
         justifyContent: "center",
