@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Animated, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import Product from "../entities/Product";
-import DatabaseApi, {TKey} from "../utils/database/DatabaseApi";
+import DatabaseApi from "../utils/database/DatabaseApi";
 import NumericInput from "react-native-numeric-input";
 const timer = require("react-native-timer");
 
@@ -45,40 +45,40 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     componentDidMount() {
-        DatabaseApi.getLastCart().then((cart) => {
+        DatabaseApi.getCart().then((cart) => {
             const count = cart.products.filter((prod) => prod.id === this.props.product?.id).length;
             this.setState({productCount: count});
         });
     }
 
-    private async addToCartFromButton(productId: TKey) {
+    private async addToCartFromButton(product: Product) {
         this.replaceButtonWithCounter();
-        this.setState({productCount: this.state.productCount + 1});
-        if (this.state.productCount - 1 > 0) {
-            return DatabaseApi.updateProductCount(productId, this.state.productCount);
-        } else {
-            return DatabaseApi.addProductToCart(productId);
-        }
+        return this.updateProductCount(product, this.state.productCount + 1);
     }
 
-    private async addToCartFromCounter(productId: TKey) {
+    private async addToCartFromCounter(product: Product, count: number) {
         this.refreshFadeOutTimer();
-        this.setState({productCount: this.state.productCount + 1});
-        if (this.state.productCount - 1 > 0) {
-            return DatabaseApi.updateProductCount(productId, this.state.productCount);
-        } else {
-            return DatabaseApi.addProductToCart(productId);
-        }
+        return this.updateProductCount(product, count);
     }
 
-    private async removeFromCartFromCounter(productId: TKey) {
+    private async removeFromCartFromCounter(product: Product, count: number) {
         this.refreshFadeOutTimer();
-        this.setState({productCount: this.state.productCount - 1});
-        if (this.state.productCount > 0) {
-            return DatabaseApi.updateProductCount(productId, this.state.productCount);
-        } else {
-            return DatabaseApi.removeProductFromCart(productId);
-        }
+        return this.updateProductCount(product, count);
+    }
+
+    private async updateProductCount(product: Product, count: number) {
+        return new Promise<void>((resolve) => {
+            if (this.state.productCount > 0 && count > 0) {
+                resolve(DatabaseApi.updateProductCount(product, count));
+            } else if (this.state.productCount === 0) {
+                resolve(DatabaseApi.addProductToCart(product, count));
+            } else if (count === 0) {
+                resolve(DatabaseApi.removeProductFromCart(product));
+            }
+            return;
+        }).then(() => {
+            this.setState({productCount: count});
+        });
     }
 
     private replaceButtonWithCounter() {
@@ -132,11 +132,12 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     render() {
         const {width, product} = this.props;
         const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
+        const image = product?.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return product !== null ? (
             <View style={stylesheet.container}>
                 <Image
-                    source={require("../../resources/assets/drawable/food.jpg")}
+                    source={image}
                     style={{
                         width: widthWithoutPadding,
                         maxHeight: widthWithoutPadding,
@@ -157,7 +158,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                         }}>
                         <TouchableOpacity
                             style={stylesheet.addToCartButton}
-                            onPress={async () => this.addToCartFromButton(product.id)}
+                            onPress={async () => this.addToCartFromButton(product)}
                             activeOpacity={0.5}>
                             <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
                         </TouchableOpacity>
@@ -186,9 +187,9 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                             initValue={this.state.productCount}
                             onChange={async (value) => {
                                 if (value > this.state.productCount) {
-                                    return this.addToCartFromCounter(product?.id);
+                                    return this.addToCartFromCounter(product, value);
                                 } else if (value < this.state.productCount) {
-                                    return this.removeFromCartFromCounter(product?.id);
+                                    return this.removeFromCartFromCounter(product, value);
                                 }
                                 return;
                             }}
@@ -284,7 +285,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globalColors.categoryCardTextColor,
+        color: globalColors.whiteTextColor,
     },
 });
 

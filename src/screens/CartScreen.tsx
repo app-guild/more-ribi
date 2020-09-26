@@ -2,13 +2,15 @@ import React, {Component} from "react";
 import {Button, Text, View} from "react-native";
 import {globalStylesheet} from "../../resources/styles";
 import DatabaseApi from "../utils/database/DatabaseApi";
+import Cart from "../entities/Cart";
 
-export interface ICartScreenState {}
+export interface ICartScreenState {
+    cart: Cart;
+}
 
 class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
     constructor(props: any) {
         super(props);
-        this.state = {};
     }
 
     render() {
