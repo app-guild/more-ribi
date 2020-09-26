@@ -38,14 +38,14 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => this.parseRestaurants(snapshot.val()));
     }
 
-    static async getPokeConstructorIngredients(): Promise<Map<string, Ingredient>> {
+    static async getPokeConstructorIngredients(): Promise<Map<string, Ingredient[]>> {
         return database()
             .ref("/constructor/poke")
             .once("value")
             .then((snapshot) => this.parseConstructorIngredients(snapshot.val()));
     }
 
-    static async getWokConstructorIngredients(): Promise<Map<string, Ingredient>> {
+    static async getWokConstructorIngredients(): Promise<Map<string, Ingredient[]>> {
         return database()
             .ref("/constructor/wok")
             .once("value")
@@ -68,7 +68,7 @@ export default class RealtimeDatabaseApi {
         return response.filter((it) => !!it).map((it) => Restaurant.parseRealtimeDatabaseJson(it));
     }
 
-    private static parseConstructorIngredients(json: any): Map<string, Ingredient> {
+    private static parseConstructorIngredients(json: any): Map<string, Ingredient[]> {
         const map = new Map();
         for (const [type, ingredients] of Object.entries(json)) {
             const parsedIngredients = (ingredients as any[]).map((it) => Ingredient.parseRealtimeDatabaseJson(it));
