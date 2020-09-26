@@ -44,14 +44,6 @@ class PokeConstructorCard extends PureComponent<
         return this.checkBoxGroup.current ? this.checkBoxGroup.current?.getCheckedIndexes() : [];
     }
 
-    // private initialChoicesTransform(): boolean[] {
-    //     let result: boolean[] = new Array(this.props.data.selectedIngredients.length).fill(false);
-    //     this.props.data.selectedIngredients.forEach((value, index) => {
-    //         result[value] = true;
-    //     });
-    //     return result;
-    // }
-
     render() {
         const {
             title,

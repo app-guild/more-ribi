@@ -1,13 +1,16 @@
 import React, {Component, createRef} from "react";
-import {ImageBackground, Text, View, ScrollView, StyleSheet} from "react-native";
+import {ImageBackground, Text, View, ScrollView, StyleSheet, Dimensions} from "react-native";
 import {globalColors} from "../../resources/styles";
 import PokeConstructorCard, {IPokeConstructorCardData} from "../components/PokeConstructorCard";
 import CheckBoxGroup from "../components/СheckBoxGroup";
+import {Tooltip} from "react-native-elements";
 
 export interface IPokeConstructorScreenState {
     addIngredientOpen: boolean;
     toppingSwitch: 1 | 2;
     totalPrice: number;
+    canDeployIngredientsPopover: boolean;
+    isIngredientsPopoverDeployed: boolean;
 }
 
 const standardProteinPrice = [270, 270, 210, 210, 290, 180, 200];
@@ -27,6 +30,8 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             addIngredientOpen: false,
             toppingSwitch: 1,
             totalPrice: standardProteinPrice[0],
+            canDeployIngredientsPopover: false,
+            isIngredientsPopoverDeployed: false,
         };
         this.data = [
             {
@@ -295,113 +300,142 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         });
 
         return (
-            <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
-                <View style={stylesheet.backgroundOverlay}>
-                    <ScrollView ref={this.scrollViewRef}>
-                        <ImageBackground
-                            style={{width: "auto"}}
-                            source={require("../../resources/assets/drawable/food.jpg")}>
-                            <Text style={stylesheet.topText}>Собери свой идеальный ПОКÉ БОУЛ</Text>
-                        </ImageBackground>
-                        <Text style={stylesheet.titleText}>СОБРАТЬ ПОКÉ</Text>
-                        {cards1_2}
+            <ScrollView ref={this.scrollViewRef}>
+                <ImageBackground style={{width: "auto"}} source={require("../../resources/assets/drawable/food.jpg")}>
+                    <Text style={stylesheet.topText}>Собери свой идеальный ПОКÉ БОУЛ</Text>
+                </ImageBackground>
+                <Text style={stylesheet.titleText}>СОБРАТЬ ПОКÉ</Text>
+                {cards1_2}
+                <View
+                    style={{
+                        ...stylesheet.toggleButtonBlockContainer,
+                        paddingHorizontal: stylesheet.container.paddingHorizontal,
+                    }}>
+                    <Text style={{...stylesheet.mainText, marginBottom: 20}}>Выполняем наполнители и топпинг</Text>
+                    <View style={stylesheet.toggleButtonContainer}>
                         <View
+                            onTouchEnd={() => {
+                                if (this.state.toppingSwitch === 2) {
+                                    this.cardRefs[2]?.setLimit(5);
+                                    this.cardRefs[3]?.setLimit(1);
+                                    this.setState({toppingSwitch: 1});
+                                }
+                            }}
                             style={{
-                                ...stylesheet.toggleButtonBlockContainer,
-                                paddingHorizontal: stylesheet.container.paddingHorizontal,
+                                ...stylesheet.toggleButton,
+                                flex: 1,
+                                backgroundColor:
+                                    this.state.toppingSwitch === 1 ? globalColors.primaryColor : "transparent",
                             }}>
-                            <Text style={{...stylesheet.mainText, marginBottom: 20}}>
-                                Выполняем наполнители и топпинг
-                            </Text>
-                            <View style={stylesheet.toggleButtonContainer}>
-                                <View
-                                    onTouchEnd={() => {
-                                        if (this.state.toppingSwitch === 2) {
-                                            this.cardRefs[2]?.setLimit(5);
-                                            this.cardRefs[3]?.setLimit(1);
-                                            this.setState({toppingSwitch: 1});
-                                        }
-                                    }}
-                                    style={{
-                                        ...stylesheet.toggleButton,
-                                        flex: 1,
-                                        backgroundColor:
-                                            this.state.toppingSwitch === 1 ? globalColors.primaryColor : "transparent",
-                                    }}>
-                                    <Text style={{...stylesheet.text, textAlign: "center"}}>
-                                        5 наполнителей, 1 топпинг
-                                    </Text>
-                                </View>
-                                <Text style={{...stylesheet.text, ...stylesheet.orText}}>или</Text>
-                                <View
-                                    onTouchEnd={() => {
-                                        if (this.state.toppingSwitch === 1) {
-                                            this.cardRefs[2]?.setLimit(3);
-                                            this.cardRefs[3]?.setLimit(2);
-                                            this.setState({toppingSwitch: 2});
-                                        }
-                                    }}
-                                    style={{
-                                        ...stylesheet.toggleButton,
-                                        flex: 1,
-                                        backgroundColor:
-                                            this.state.toppingSwitch === 2 ? globalColors.primaryColor : "transparent",
-                                    }}>
-                                    <Text style={{...stylesheet.text, textAlign: "center"}}>
-                                        3 наполнителя, 2 топпинга
-                                    </Text>
-                                </View>
-                            </View>
+                            <Text style={{...stylesheet.text, textAlign: "center"}}>5 наполнителей, 1 топпинг</Text>
                         </View>
-                        {cards3_6}
-                        <View style={stylesheet.done}>
-                            <Text style={stylesheet.doneText}>ГОТОВО!</Text>
-                            <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
-                            <View style={stylesheet.compositionContainer}>
-                                <Text style={stylesheet.compositionText}>
-                                    <Text>Состав: </Text>
-                                    {ingredients}
-                                    {addIngredients}
-                                </Text>
-                            </View>
-
-                            <Text style={stylesheet.price}>{this.state.totalPrice + " ₽"}</Text>
-                            <View style={stylesheet.buyButton}>
-                                <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
-                            </View>
+                        <Text style={{...stylesheet.text, ...stylesheet.orText}}>или</Text>
+                        <View
+                            onTouchEnd={() => {
+                                if (this.state.toppingSwitch === 1) {
+                                    this.cardRefs[2]?.setLimit(3);
+                                    this.cardRefs[3]?.setLimit(2);
+                                    this.setState({toppingSwitch: 2});
+                                }
+                            }}
+                            style={{
+                                ...stylesheet.toggleButton,
+                                flex: 1,
+                                backgroundColor:
+                                    this.state.toppingSwitch === 2 ? globalColors.primaryColor : "transparent",
+                            }}>
+                            <Text style={{...stylesheet.text, textAlign: "center"}}>3 наполнителя, 2 топпинга</Text>
+                        </View>
+                    </View>
+                </View>
+                {cards3_6}
+                <View style={stylesheet.done}>
+                    <Text style={stylesheet.doneText}>ГОТОВО!</Text>
+                    <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
+                    <View style={stylesheet.compositionContainer}>
+                        <Tooltip
+                            height={-1}
+                            skipAndroidStatusBar
+                            toggleOnPress={this.state.canDeployIngredientsPopover}
+                            withOverlay={false}
+                            backgroundColor={"#ffef75"}
+                            width={
+                                Dimensions.get("window").width - stylesheet.compositionContainer.paddingHorizontal / 2
+                            }
+                            pointerColor={"transparent"}
+                            popover={
+                                <View
+                                    style={{
+                                        width: "100%",
+                                        padding: 10,
+                                        borderRadius: 20,
+                                    }}>
+                                    <Text
+                                        style={{
+                                            ...stylesheet.compositionText,
+                                            width: "100%",
+                                        }}>
+                                        <Text>Состав: </Text>
+                                        {ingredients}
+                                        {addIngredients}
+                                    </Text>
+                                </View>
+                            }>
                             <Text
-                                onPress={() => {
-                                    if (this.state.addIngredientOpen) {
-                                        this.needToScroll = true;
-                                    }
-                                    this.setState({addIngredientOpen: !this.state.addIngredientOpen});
+                                numberOfLines={2}
+                                style={{
+                                    ...stylesheet.compositionText,
                                 }}
-                                style={stylesheet.addIngredientText}>
-                                {this.state.addIngredientOpen
-                                    ? "*Цена основного поке зависит от максимальной стоимости протеина"
-                                    : "Добавить ингридиент в поке"}
-                            </Text>
-                        </View>
-                        {this.state.addIngredientOpen ? (
-                            <View
-                                style={stylesheet.addIngredientsContainer}
-                                onLayout={(event) => {
-                                    if (this.needToScroll) {
-                                        this.needToScroll = false;
-                                        this.scrollViewRef.current?.scrollTo({
-                                            x: 0,
-                                            y: event.nativeEvent.layout.y,
-                                            animated: true,
-                                        });
+                                onTextLayout={(event) => {
+                                    if (event.nativeEvent.lines.length > 2 && !this.state.canDeployIngredientsPopover) {
+                                        this.setState({canDeployIngredientsPopover: true});
+                                    }
+                                    if (event.nativeEvent.lines.length <= 2 && this.state.canDeployIngredientsPopover) {
+                                        this.setState({canDeployIngredientsPopover: false});
                                     }
                                 }}>
-                                <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
-                                {additionalIngredients}
-                            </View>
-                        ) : null}
-                    </ScrollView>
+                                <Text>Состав: </Text>
+                                {ingredients}
+                                {addIngredients}
+                            </Text>
+                        </Tooltip>
+                    </View>
+
+                    <Text style={stylesheet.price}>{this.state.totalPrice + " ₽"}</Text>
+                    <View style={stylesheet.buyButton}>
+                        <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
+                    </View>
+                    <Text
+                        onPress={() => {
+                            if (this.state.addIngredientOpen) {
+                                this.needToScroll = true;
+                            }
+                            this.setState({addIngredientOpen: !this.state.addIngredientOpen});
+                        }}
+                        style={stylesheet.addIngredientText}>
+                        {this.state.addIngredientOpen
+                            ? "*Цена основного поке зависит от максимальной стоимости протеина"
+                            : "Добавить ингридиент в поке"}
+                    </Text>
                 </View>
-            </ImageBackground>
+                {this.state.addIngredientOpen ? (
+                    <View
+                        style={stylesheet.addIngredientsContainer}
+                        onLayout={(event) => {
+                            if (this.needToScroll) {
+                                this.needToScroll = false;
+                                this.scrollViewRef.current?.scrollTo({
+                                    x: 0,
+                                    y: event.nativeEvent.layout.y,
+                                    animated: true,
+                                });
+                            }
+                        }}>
+                        <Text style={{...stylesheet.subTitleText, paddingVertical: 30}}>Дополнительно</Text>
+                        {additionalIngredients}
+                    </View>
+                ) : null}
+            </ScrollView>
         );
     }
 }
@@ -533,9 +567,9 @@ export const stylesheet = StyleSheet.create({
         width: "65%",
     },
     compositionContainer: {
-        paddingHorizontal: "10%",
-        height: 168,
-        justifyContent: "center",
+        paddingHorizontal: 40,
+        paddingVertical: 20,
+        height: 76,
     },
     compositionText: {
         fontFamily: "Montserrat",

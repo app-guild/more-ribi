@@ -49,12 +49,9 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
                         additionalText
                             ? {
                                   ...stylesheet.titleContainer,
-                                  marginTop: 5,
-                                  marginBottom: 10,
-                                  alignItems: "flex-start",
-                                  paddingHorizontal: 32,
+                                  ...stylesheet.pokeConstructor,
                               }
-                            : {...stylesheet.titleContainer, marginTop: "60%"}
+                            : stylesheet.titleContainer
                     }>
                     <Text style={stylesheet.text}>{text}</Text>
                 </View>
@@ -73,6 +70,7 @@ export const stylesheet = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 6,
         paddingHorizontal: 15,
+        marginTop: "60%",
     },
     text: {
         fontFamily: "Montserrat",
@@ -91,6 +89,12 @@ export const stylesheet = StyleSheet.create({
         marginTop: 27,
         marginHorizontal: 32,
         color: globalColors.whiteTextColor,
+    },
+    pokeConstructor: {
+        marginTop: 5,
+        marginBottom: 10,
+        alignItems: "flex-start",
+        paddingHorizontal: 32,
     },
 });
 
