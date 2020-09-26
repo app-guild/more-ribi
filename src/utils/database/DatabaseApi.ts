@@ -177,7 +177,7 @@ export default class DatabaseApi {
             return new Map<Product, number>();
         }
 
-        const jsonProducts = Array.of(json);
+        const jsonProducts = JSON.parse(json);
         const result = new Map();
         jsonProducts
             .filter((it) => it.count && !isNaN(Number(it.count)))

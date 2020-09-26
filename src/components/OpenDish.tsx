@@ -78,7 +78,6 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
             return;
         }).then(() => {
             this.setState({productCount: count});
-            console.log(this.state.productCount);
         });
     }
 
