@@ -6,7 +6,6 @@ import Product from "../entities/Product";
 import Cart from "../entities/Cart";
 
 export interface IProductCardState {
-    product: Product;
     countInCart: number;
 }
 
@@ -20,33 +19,36 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
     constructor(props: IProductCardProps) {
         super(props);
         this.state = {
-            product: props.product,
             countInCart: props.countInCart,
         };
         this.addToCart = this.addToCart.bind(this);
-        this.getCountInCart = this.getCountInCart.bind(this);
+        this.setCountInCart = this.setCountInCart.bind(this);
     }
 
     componentDidMount() {
-        DatabaseApi.addOnCartChangeListener(this.getCountInCart);
-        return DatabaseApi.getLastCart().then(this.getCountInCart);
+        DatabaseApi.addOnCartChangeListener(this.setCountInCart);
+        return DatabaseApi.getCart().then(this.setCountInCart);
     }
 
     componentWillUnmount() {
-        DatabaseApi.removeOnCartChangeListener(this.getCountInCart);
+        DatabaseApi.removeOnCartChangeListener(this.setCountInCart);
     }
 
-    private getCountInCart(cart: Cart) {
-        console.log("Products count: " + cart.products.length);
-        const thisProducts = cart.products.filter((prod) => prod.id === this.state.product.id);
-        this.setState({countInCart: thisProducts.length});
+    componentDidUpdate(prevProps: Readonly<Readonly<IProductCardProps>>) {
+        if (prevProps.product !== this.props.product) {
+            DatabaseApi.getCart().then(this.setCountInCart);
+        }
+    }
+
+    private setCountInCart(cart: Cart) {
+        this.setState({countInCart: cart.getProductCount(this.props.product)});
     }
 
     private async addToCart() {
         if (this.state.countInCart === 0) {
-            return DatabaseApi.addProductToCart(this.props.product.id);
+            return DatabaseApi.addProductToCart(this.props.product);
         } else {
-            return DatabaseApi.updateProductCount(this.props.product.id, this.state.countInCart + 1);
+            return DatabaseApi.updateProductCount(this.props.product, this.state.countInCart + 1);
         }
     }
 
@@ -107,31 +109,41 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     render() {
         const {product, onClick} = this.props;
-        const image = product.imageUrl ? {uri: product.imageUrl} : require("../../resources/assets/drawable/food.jpg");
+        const image = product.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return (
             <View style={stylesheet.container}>
                 <View
-                    style={{flexDirection: "row"}}
+                    style={stylesheet.shoppingCartImageContainer}
                     onTouchEnd={() => {
                         onClick(product);
                     }}>
-                    <View style={stylesheet.shoppingCartImageContainer}>
-                        <Image source={image} style={stylesheet.shoppingCartImage} />
-                    </View>
-                    <View style={stylesheet.shoppingCardTextContainer}>
-                        <Text numberOfLines={2} style={globalStylesheet.primaryText}>
-                            {product.name}
-                        </Text>
-                        <Text numberOfLines={3} style={{...globalStylesheet.secondaryText, marginTop: 10}}>
+                    <Image source={image} style={stylesheet.shoppingCartImage} />
+                </View>
+                <View style={stylesheet.shoppingCardMainContainer}>
+                    <Text
+                        numberOfLines={1}
+                        style={{...globalStylesheet.primaryText, marginRight: 15}}
+                        onPress={() => {
+                            onClick(product);
+                        }}>
+                        {product.name}
+                    </Text>
+                    <View style={stylesheet.shoppingCardSubContainer}>
+                        <Text
+                            numberOfLines={2}
+                            style={stylesheet.shoppingCardCompositionText}
+                            onPress={() => {
+                                onClick(product);
+                            }}>
                             {product.composition}
                         </Text>
+                        <View style={stylesheet.shoppingCartButtonContainer}>
+                            <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
+                                {this.renderPrice(product.price, product.discountPrice)}
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-                <View style={stylesheet.shoppingCartButtonContainer}>
-                    <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
-                        {this.renderPrice(product.price, product.discountPrice)}
-                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -150,16 +162,29 @@ export const stylesheet = StyleSheet.create({
         width: "95%",
         height: "100%",
     },
-    shoppingCardTextContainer: {
+    shoppingCardMainContainer: {
         marginHorizontal: 10,
         flexDirection: "column",
         justifyContent: "flex-start",
-        width: "30%",
+        width: "70%",
+        position: "relative",
+    },
+    shoppingCardSubContainer: {
+        alignContent: "center",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+        height: "100%",
+    },
+    shoppingCardCompositionText: {
+        ...globalStylesheet.secondaryText,
+        marginVertical: 10,
+        width: "50%",
     },
     shoppingCartButtonContainer: {
         justifyContent: "center",
         alignItems: "flex-end",
-        width: "30%",
+        width: "40%",
     },
     shoppingCartImageContainer: {
         justifyContent: "center",
