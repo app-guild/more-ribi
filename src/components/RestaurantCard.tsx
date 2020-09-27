@@ -5,6 +5,8 @@ import {globalColors} from "../../resources/styles";
 import * as Animatable from "react-native-animatable";
 import MarkerIcon from "../../resources/assets/drawable/card_marker.svg";
 
+export const HEIGHT = 100;
+
 interface IRestaurantCardProps {
     restaurant: Restaurant;
     onPress: () => void;
