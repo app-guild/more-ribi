@@ -5,8 +5,6 @@ import {globalColors} from "../../resources/styles";
 import * as Animatable from "react-native-animatable";
 import MarkerIcon from "../../resources/assets/drawable/card_marker.svg";
 
-export const HEIGHT = 100;
-
 interface IRestaurantCardProps {
     restaurant: Restaurant;
     onPress: () => void;
@@ -81,3 +79,9 @@ const stylesheet = StyleSheet.create({
         color: globalColors.additionalTextColor,
     },
 });
+
+export const HEIGHT =
+    stylesheet.address.lineHeight +
+    stylesheet.region.lineHeight +
+    stylesheet.phone.lineHeight +
+    stylesheet.container.paddingTop;
