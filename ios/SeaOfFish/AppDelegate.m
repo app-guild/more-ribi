@@ -45,6 +45,7 @@ static void InitializeFlipper(UIApplication *application) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [SplashScreen show];
+  [YMKMapKit setApiKey: @"e1e7ca61-b8c3-4b09-a837-bea473d4de8b"];
   return YES;
 }
 
