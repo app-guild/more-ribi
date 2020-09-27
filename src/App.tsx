@@ -5,6 +5,9 @@ import SplashScreen from "react-native-splash-screen";
 import Navigation from "./screens/navigation/Navigation";
 import SQLite from "react-native-sqlite-storage";
 import {GooglePayService} from "./utils/payment/GooglePayService";
+import YaMap from "react-native-yamap";
+
+YaMap.init("e1e7ca61-b8c3-4b09-a837-bea473d4de8b");
 
 export default function App() {
     useEffect(() => {
