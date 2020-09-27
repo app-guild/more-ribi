@@ -135,8 +135,8 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             const additional = this.getCurrentIngredients(this.additionalIngredientsRefs);
             this.setState({
                 selectedIngredients: "Состав: " + main + (additional.length ? "\nДополнительно: " + additional : ""),
+                totalPrice: this.getTotalPrice(),
             });
-            this.setState({totalPrice: this.getTotalPrice()});
         }
     }
 
@@ -242,7 +242,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     ): string {
         let currentIngredients: string = "";
         let currentString: string = "";
-        currentRefs.forEach((value, index) => {
+        currentRefs.forEach((value) => {
             if (value) {
                 currentString = value.getCheckedText().toString();
                 if (currentString !== "") {
@@ -255,7 +255,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
 
     render() {
         const cards1_2 = this.initCards(0, 1);
-        const RemainingCards = this.initCards(2, -1);
+        const remainingCards = this.initCards(2, -1);
         const additionalCards = this.initAdditionalCards();
 
         return (
@@ -309,7 +309,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         </View>
                     </View>
                 </View>
-                {RemainingCards}
+                {remainingCards}
                 <View style={stylesheet.done}>
                     <Text style={stylesheet.doneText}>ГОТОВО!</Text>
                     <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>

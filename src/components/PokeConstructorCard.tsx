@@ -72,7 +72,6 @@ class PokeConstructorCard extends PureComponent<
                     choicesLocation === ChoicesLocation.Bottom
                         ? {
                               ...stylesheet.container,
-                              flexDirection: "column",
                               alignItems: "center",
                           }
                         : {
@@ -82,12 +81,7 @@ class PokeConstructorCard extends PureComponent<
                           }
                 }>
                 <View style={{flex: 1, width: "50%"}}>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "flex-end",
-                            justifyContent: "center",
-                        }}>
+                    <View style={stylesheet.centredFlexEndRow}>
                         <View>
                             <Text
                                 style={
@@ -97,39 +91,18 @@ class PokeConstructorCard extends PureComponent<
                                 }>
                                 {number}
                             </Text>
-                            <Image
-                                source={smallImage}
-                                style={{
-                                    position: "absolute",
-                                    width: 25,
-                                    height: 25,
-                                    left: 17,
-                                    top: 32,
-                                }}
-                            />
+                            <Image source={smallImage} style={stylesheet.smallImage} />
                         </View>
-                        <Text numberOfLines={2} style={stylesheet.subTitleText}>
-                            {title}
-                        </Text>
+                        <Text numberOfLines={2} style={stylesheet.title}>{title}</Text>
                     </View>
-                    {image ? (
-                        <Image
-                            source={image}
-                            style={{
-                                borderRadius: 1000,
-                                width: "100%",
-                                height: "auto",
-                                aspectRatio: 1.5,
-                            }}
-                        />
-                    ) : null}
+                    {image ? <Image source={image} style={stylesheet.image} /> : null}
                 </View>
                 <View
                     style={{
                         marginTop: 20,
+                        flex: 1,
                         marginLeft:
                             choicesLocation === ChoicesLocation.Bottom ? 0 : stylesheet.spaceBetweenColumns.marginLeft,
-                        flex: 1,
                         width: choicesLocation === ChoicesLocation.Bottom ? "70%" : undefined,
                     }}>
                     {choiceType === ChoiceType.CheckBox ? (
@@ -177,24 +150,6 @@ export const stylesheet = StyleSheet.create({
         paddingHorizontal: 20,
         textAlign: "center",
     },
-    titleText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "bold",
-        fontSize: 24,
-        color: globalColors.mainTextColor,
-        paddingVertical: 14,
-        textAlign: "center",
-    },
-    descriptionText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
-        fontSize: 13,
-        color: globalColors.mainTextColor,
-        paddingHorizontal: 20,
-        textAlign: "center",
-    },
     number: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
@@ -203,7 +158,7 @@ export const stylesheet = StyleSheet.create({
         lineHeight: 60,
         color: globalColors.mainTextColor,
     },
-    subTitleText: {
+    title: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "bold",
@@ -222,6 +177,24 @@ export const stylesheet = StyleSheet.create({
         margin: 20,
         marginLeft: 10,
         marginRight: 10,
+    },
+    centredFlexEndRow: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "center",
+    },
+    image: {
+        borderRadius: 1000,
+        width: "100%",
+        height: "auto",
+        aspectRatio: 1.5,
+    },
+    smallImage: {
+        position: "absolute",
+        width: 25,
+        height: 25,
+        left: 17,
+        top: 32,
     },
 });
 
