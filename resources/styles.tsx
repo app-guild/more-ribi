@@ -43,19 +43,39 @@ const globalStylesheet = StyleSheet.create({
         color: globalColors.additionalTextColor,
     },
     price: {
-        fontFamily: "Muli",
+        fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "normal",
         fontSize: 14,
         color: globalColors.primaryColor,
     },
     crossedOutPrice: {
-        fontFamily: "Muli",
+        fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "normal",
         fontSize: 12,
         color: globalColors.crossedOutPriceColor,
         textDecorationLine: "line-through",
+    },
+    headerContainer: {
+        paddingVertical: 24,
+        paddingHorizontal: 26,
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    headerText: {
+        fontFamily: "Muli",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 18,
+        lineHeight: 23,
+        color: globalColors.primaryColor,
+    },
+    headerFishBackButton: {
+        position: "absolute",
+        left: 0,
     },
 });
 

@@ -4,10 +4,7 @@ import {globalStylesheet} from "../../resources/styles";
 
 export interface IPromotionsScreenState {}
 
-class PromotionsScreen extends Component<
-    Readonly<any>,
-    Readonly<IPromotionsScreenState>
-> {
+class PromotionsScreen extends Component<Readonly<any>, Readonly<IPromotionsScreenState>> {
     constructor(props: any) {
         super(props);
         this.state = {};

@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Animated, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import Product from "../entities/Product";
-import DatabaseApi, {TKey} from "../utils/database/DatabaseApi";
+import DatabaseApi from "../utils/database/DatabaseApi";
 import NumericInput from "react-native-numeric-input";
 const timer = require("react-native-timer");
 
@@ -45,10 +45,12 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     componentDidMount() {
-        DatabaseApi.getCart().then((cart) => {
-            const count = cart.products.filter((prod) => prod.id === this.props.product?.id).length;
-            this.setState({productCount: count});
-        });
+        const product = this.props.product;
+        if (product) {
+            DatabaseApi.getCart().then((cart) => {
+                this.setState({productCount: cart.getProductCount(product)});
+            });
+        }
     }
 
     private async addToCartFromButton(product: Product) {

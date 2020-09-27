@@ -6,7 +6,7 @@ import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {globalColors} from "../../resources/styles";
 
-const FISH_ICON_SIZE = {width: 47, height: 17};
+const FISH_ICON_BACK_SIZE = {width: 47, height: 17};
 
 export interface ICategoriesScreenState {
     mainContainerWidth: number;
@@ -128,8 +128,8 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
                 <View style={stylesheet.headerContainer}>
                     <View style={stylesheet.header}>
                         <FishIcon
-                            width={FISH_ICON_SIZE.width}
-                            height={FISH_ICON_SIZE.height}
+                            width={FISH_ICON_BACK_SIZE.width}
+                            height={FISH_ICON_BACK_SIZE.height}
                             style={stylesheet.headerFishBackButton}
                             onTouchEnd={() => this.props.navigation.goBack()}
                         />
@@ -169,8 +169,8 @@ export const stylesheet = StyleSheet.create({
         fontFamily: "Muli",
         fontStyle: "normal",
         fontWeight: "bold",
-        fontSize: 16,
-        lineHeight: 20,
+        fontSize: 18,
+        lineHeight: 23,
         color: globalColors.primaryColor,
     },
     headerFishBackButton: {
