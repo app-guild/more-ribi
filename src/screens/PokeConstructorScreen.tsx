@@ -16,6 +16,7 @@ export interface IPokeConstructorScreenState {
     canDeployIngredientsPopover: boolean;
     isIngredientsPopoverDeployed: boolean;
     data: Map<string, Ingredient[]>;
+    selectedIngredients: string;
 }
 
 export enum ChoiceType {
@@ -98,83 +99,46 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             canDeployIngredientsPopover: false,
             isIngredientsPopoverDeployed: false,
             data: new Map(),
+            selectedIngredients: "",
         };
-        //this.onAdditionalClick = this.onAdditionalClick.bind(this);
-        //this.onCardClick = this.onCardClick.bind(this);
+        this.onCardClick = this.onCardClick.bind(this);
     }
 
     componentDidMount() {
         return RealtimeDatabaseApi.getPokeConstructorIngredients().then((ingredients) => {
-            this.setState({data: ingredients});
+            this.setState({data: ingredients}, () => {
+                this.setState({
+                    selectedIngredients: this.initSelectedIngredients(),
+                    totalPrice: this.getTotalPrice(),
+                });
+            });
         });
     }
 
-    // private onCardClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
-    //     if (id === 1 && changed) {
-    //         const proteinPrice = standardProteinPrice[changedIndex];
-    //         const additionalProteinIndex = this.additionalIngredientsRefs[0]?.getCheckedIndexes()[0];
-    //         const additionalProteinPrice = parseInt(
-    //             this.data[1].additionalText ? this.data[1].additionalText[changedIndex].slice(2, -2) : "100",
-    //         );
-    //
-    //         if (additionalProteinIndex && standardProteinPrice[additionalProteinIndex] > proteinPrice) {
-    //             this.setState({
-    //                 totalPrice:
-    //                     standardProteinPrice[additionalProteinIndex] +
-    //                     this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
-    //                     this.additionalSumByCategories[0] +
-    //                     additionalProteinPrice,
-    //             });
-    //         } else {
-    //             this.setState({
-    //                 totalPrice:
-    //                     proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
-    //             });
-    //         }
-    //     } else {
-    //         this.setState({});
-    //     }
-    // }
-    //
-    // private onAdditionalClick(values: boolean[], changed: boolean, changedIndex: number, id: number) {
-    //     if (changed) {
-    //         let sum = 0;
-    //         const proteinIndex = this.cardRefs[1] ? this.cardRefs[1].getCheckedIndexes()[0] : 0;
-    //         const proteinPrice = standardProteinPrice[proteinIndex];
-    //
-    //         if (this.additionalTitleText[id] === "") {
-    //             this.data[id + 1].additionalText?.forEach((val, index, array) => {
-    //                 if (values[index]) {
-    //                     sum += parseInt(val.slice(2, -2));
-    //                     if (proteinPrice < sum) {
-    //                         this.additionalSumByCategories[id] = sum;
-    //
-    //                         this.setState({
-    //                             totalPrice:
-    //                                 standardProteinPrice[index] +
-    //                                 this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0) -
-    //                                 sum +
-    //                                 parseInt(array[proteinIndex].slice(2, -2)),
-    //                         });
-    //                         return;
-    //                     }
-    //                 }
-    //             });
-    //             this.additionalSumByCategories[id] = sum;
-    //         } else {
-    //             values.forEach((val) => {
-    //                 if (val) {
-    //                     sum += parseInt(this.additionalTitleText[id].slice(2, -2));
-    //                 }
-    //             });
-    //             this.additionalSumByCategories[id] = sum;
-    //         }
-    //         this.setState({
-    //             totalPrice:
-    //                 proteinPrice + this.additionalSumByCategories.reduce((partial_sum, a) => partial_sum + a, 0),
-    //         });
-    //     }
-    // }
+    initSelectedIngredients(): string {
+        let result = "Состав: ";
+        let current;
+        staticData.forEach((value) => {
+            if (value.choiceType === ChoiceType.RadioButton) {
+                current = this.state.data.get(value.title);
+                if (current) {
+                    result = result.concat(current[0].name, ", ");
+                }
+            }
+        });
+        return result.slice(0, -2);
+    }
+
+    private onCardClick(changed: boolean) {
+        if (changed) {
+            const main = this.getCurrentIngredients(this.cardRefs);
+            const additional = this.getCurrentIngredients(this.additionalIngredientsRefs);
+            this.setState({
+                selectedIngredients: "Состав: " + main + (additional.length ? "\nДополнительно: " + additional : ""),
+            });
+            this.setState({totalPrice: this.getTotalPrice()});
+        }
+    }
 
     private initCards(start: number, end: number): JSX.Element[] {
         let result: JSX.Element[] = [];
@@ -198,7 +162,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         choiceType: staticData[i].choiceType,
                         choicesLocation: staticData[i].choicesLocation,
                         choiceLimit: staticData[i].choiceLimit,
-                        //onClick: this.onCardClick,
+                        onClick: this.onCardClick,
                     }}
                 />,
             );
@@ -212,7 +176,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         for (let i = 1; i < this.state.data.size; i++) {
             ingredients = this.state.data.get(staticData[i].title);
             result.push(
-                <>
+                <View key={i}>
                     <View style={{flexDirection: "row"}}>
                         <Text style={{...stylesheet.subTitleText, marginTop: 30, marginLeft: 10}}>
                             {PokeIngredients.translateCategoryName(PokeIngredients.parse(staticData[i].title))}
@@ -232,7 +196,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             }}
                             choices={ingredients ? ingredients : []}
                             needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
-                            //onClick={onClick}
+                            onClick={this.onCardClick}
                         />
                     ) : (
                         <RadioButtonGroup
@@ -243,76 +207,56 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             choices={ingredients ? ingredients : []}
                             needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
                             canUncheck={true}
-                            //onClick={onClick}
+                            onClick={this.onCardClick}
                         />
                     )}
-                </>,
+                </View>,
             );
         }
         return result;
     }
 
-    // private getTotalPrice(): number {
-    //
-    // }
+    private getTotalPrice(): number {
+        const proteinIndex = this.cardRefs[1] ? this.cardRefs[1].getCheckedIndexes()[0] : 0;
+        const proteinIngredients = this.state.data.get(staticData[1].title);
+        const proteinPrice = proteinIngredients ? proteinIngredients[proteinIndex].mainPrice : 0;
+
+        let price: number = proteinPrice ? proteinPrice : 0;
+        let currentIngredients;
+        let currentPrice;
+
+        this.additionalIngredientsRefs.forEach((value, index) => {
+            if (value) {
+                value.getCheckedIndexes().forEach((value1) => {
+                    currentIngredients = this.state.data.get(staticData[index].title);
+                    currentPrice = currentIngredients ? currentIngredients[value1].additionalPrice : 0;
+                    price += currentPrice ? currentPrice : 0;
+                });
+            }
+        });
+        return price;
+    }
+
+    private getCurrentIngredients(
+        currentRefs: (PokeConstructorCard | CheckBoxGroup | RadioButtonGroup | null)[],
+    ): string {
+        let currentIngredients: string = "";
+        let currentString: string = "";
+        currentRefs.forEach((value, index) => {
+            if (value) {
+                currentString = value.getCheckedText().toString();
+                if (currentString !== "") {
+                    currentIngredients = currentIngredients.concat(currentString + ", ");
+                }
+            }
+        });
+        return currentIngredients.slice(0, -2);
+    }
 
     render() {
         const cards1_2 = this.initCards(0, 1);
         const RemainingCards = this.initCards(2, -1);
         const additionalCards = this.initAdditionalCards();
-        const ingredients = <View />;
-        //     (() => {
-        //     let currentIngredients: string[] = [];
-        //     this.cardRefs.forEach((value, index) => {
-        //         value?.getCheckedIndexes().forEach((value1) => {
-        //             currentIngredients.push(this.data[index].choices[value1] + ", ");
-        //         });
-        //     });
-        //     if (currentIngredients.length) {
-        //         currentIngredients[currentIngredients.length - 1] = currentIngredients[
-        //             currentIngredients.length - 1
-        //         ].slice(0, -2);
-        //     } else {
-        //         currentIngredients.push("рис, тунец, терияки, кешью");
-        //     }
-        //     return currentIngredients;
-        // }).call(this);
-
-        const addIngredients = <View />; //(() => {
-        //     let currentIngredients: string[] = [];
-        //     this.additionalIngredientsRefs.forEach((value, index) => {
-        //         value?.getCheckedIndexes().forEach((value1) => {
-        //             if (currentIngredients.length === 0) {
-        //                 currentIngredients.push("\nДополнительно: ");
-        //             }
-        //
-        //             currentIngredients.push(this.data[index + 1].choices[value1] + ", ");
-        //         });
-        //     });
-        //     if (currentIngredients.length) {
-        //         currentIngredients[currentIngredients.length - 1] = currentIngredients[
-        //             currentIngredients.length - 1
-        //         ].slice(0, -2);
-        //     }
-        //     return currentIngredients;
-        // }).call(this);
-        //
-        // this.data.map((value, index) => {
-        //     let currentIngredients: string[] = [];
-        //
-        //     this.cardRefs[index]?.getCheckedIndexes().forEach((value2) => {
-        //         currentIngredients.push(value.choices[value2] + ", ");
-        //     });
-        //     this.additionalIngredientsRefs[index - 1]?.getCheckedIndexes().forEach((value3) => {
-        //         currentIngredients.push(value.choices[value3] + ", ");
-        //     });
-        //     if (currentIngredients.length) {
-        //         currentIngredients[currentIngredients.length - 1] = currentIngredients[
-        //             currentIngredients.length - 1
-        //         ].slice(0, -2);
-        //     }
-        //     return <Text key={index}>{currentIngredients}</Text>;
-        // });
 
         return (
             <ScrollView ref={this.scrollViewRef}>
@@ -384,25 +328,14 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                 <View
                                     style={{
                                         width: "100%",
-                                        padding: 10,
                                         borderRadius: 20,
                                     }}>
-                                    <Text
-                                        style={{
-                                            ...stylesheet.compositionText,
-                                            width: "100%",
-                                        }}>
-                                        <Text>Состав: </Text>
-                                        {ingredients}
-                                        {addIngredients}
-                                    </Text>
+                                    <Text style={stylesheet.compositionText}>{this.state.selectedIngredients}</Text>
                                 </View>
                             }>
                             <Text
                                 numberOfLines={2}
-                                style={{
-                                    ...stylesheet.compositionText,
-                                }}
+                                style={stylesheet.compositionText}
                                 onTextLayout={(event) => {
                                     if (event.nativeEvent.lines.length > 2 && !this.state.canDeployIngredientsPopover) {
                                         this.setState({canDeployIngredientsPopover: true});
@@ -411,9 +344,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                                         this.setState({canDeployIngredientsPopover: false});
                                     }
                                 }}>
-                                <Text>Состав: </Text>
-                                {ingredients}
-                                {addIngredients}
+                                {this.state.selectedIngredients}
                             </Text>
                         </Tooltip>
                     </View>
@@ -502,11 +433,6 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 23,
         color: globalColors.mainTextColor,
-    },
-    backgroundOverlay: {
-        backgroundColor: globalColors.backgroundOverlay,
-        flex: 1,
-        opacity: 0.95,
     },
     doneText: {
         fontFamily: "Montserrat",

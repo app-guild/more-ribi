@@ -14,8 +14,8 @@ export interface ICheckBoxGroupProps {
     needAdditionalText?: boolean;
     choiceLimit?: number;
     additionalText?: string[];
-    onClick?: (values: boolean[], changed: boolean, changedIndex: number, id: number) => void;
-    //id?: number;
+    onClick?: (changed: boolean) => void;
+    id?: number;
 }
 
 class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonly<ICheckBoxGroupState>> {
@@ -36,7 +36,7 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonl
     }
 
     onCheckBoxPress(index: number) {
-        //const oldValue = this.state.checked[index];
+        const oldValue = this.state.checked[index];
         let checked = this.state.checked.slice();
 
         if (this.state.choiceLimit && this.getCheckCount() >= this.state.choiceLimit) {
@@ -47,35 +47,9 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonl
             checked[index] = !checked[index];
         }
         this.setState({checked: checked});
-        // if (this.state.choiceLimit && this.getCheckCount() >= this.state.choiceLimit) {
-        //     if (checked[index]) {
-        //         checked[index] = false;
-        //     }
-        // } else if (this.props.choiceType === "radioButton") {
-        //     if (this.props.canUncheck) {
-        //         if (checked[index]) {
-        //             checked[index] = false;
-        //         } else {
-        //             checked.fill(false);
-        //             checked[index] = true;
-        //         }
-        //     } else {
-        //         checked.fill(false);
-        //         checked[index] = !checked[index];
-        //     }
-        // } else {
-        //     checked[index] = !checked[index];
-        // }
-        // this.setState({checked: checked}, () => {
-        //     if (this.props.onClick) {
-        //         this.props.onClick(
-        //             this.state.checked,
-        //             oldValue !== this.state.checked[index],
-        //             index,
-        //             this.props.id ? this.props.id : 0,
-        //         );
-        //     }
-        // });
+        if (this.props.onClick) {
+            this.props.onClick(oldValue === this.state.checked[index]);
+        }
     }
 
     public setLimit(limit: number | undefined) {
@@ -97,6 +71,16 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonl
             }
         });
         return result;
+    }
+
+    public getCheckedText(): string {
+        let result: string = "";
+        this.state.checked.forEach((val, index) => {
+            if (val) {
+                result = result.concat(this.props.choices[index].name + ", ");
+            }
+        });
+        return result.slice(0, -2);
     }
 
     render() {

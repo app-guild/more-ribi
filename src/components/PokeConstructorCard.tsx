@@ -1,4 +1,4 @@
-import React, {createRef, PureComponent} from "react";
+import React, {PureComponent} from "react";
 import {Image, StyleSheet, Text, View} from "react-native";
 import {globalColors} from "../../resources/styles";
 import CheckBoxGroup from "./СheckBoxGroup";
@@ -25,16 +25,14 @@ export interface IPokeConstructorCardData {
     choiceType?: ChoiceType;
     choicesLocation?: ChoicesLocation;
     choiceLimit?: number;
-    onClick?: (values: boolean[], changed: boolean, changedIndex: number, id: number) => void;
-    //id?: number;
+    onClick?: (changed: boolean) => void;
 }
 
 class PokeConstructorCard extends PureComponent<
     Readonly<IPokeConstructorCardProps>,
     Readonly<IPokeConstructorCardState>
 > {
-    private checkBoxGroupRef = createRef<CheckBoxGroup>();
-    private radioButtonGroupRef = createRef<RadioButtonGroup>();
+    private groupRef: CheckBoxGroup | RadioButtonGroup | null = null;
 
     constructor(props: IPokeConstructorCardProps) {
         super(props);
@@ -42,12 +40,16 @@ class PokeConstructorCard extends PureComponent<
     }
 
     public setLimit(limit: number | undefined) {
-        this.checkBoxGroupRef?.current?.setLimit(limit);
+        this.groupRef instanceof CheckBoxGroup ? this.groupRef?.setLimit(limit) : null;
     }
 
-    // public getCheckedIndexes(): number[] {
-    //     return this.group.current ? this.group.current?.getCheckedIndexes() : [];
-    // }
+    public getCheckedIndexes(): number[] {
+        return this.groupRef ? this.groupRef.getCheckedIndexes() : [];
+    }
+
+    public getCheckedText(): string {
+        return this.groupRef ? this.groupRef.getCheckedText() : "";
+    }
 
     render() {
         const {
@@ -61,8 +63,7 @@ class PokeConstructorCard extends PureComponent<
             choiceType,
             choicesLocation,
             choiceLimit,
-            //onClick,
-            //id
+            onClick,
         } = this.props.data;
 
         return (
@@ -133,19 +134,25 @@ class PokeConstructorCard extends PureComponent<
                     }}>
                     {choiceType === ChoiceType.CheckBox ? (
                         <CheckBoxGroup
-                            ref={this.checkBoxGroupRef}
+                            ref={(ref) => {
+                                this.groupRef = ref;
+                                return true;
+                            }}
                             choices={ingredients}
                             needAdditionalText={needAdditionalText}
                             choiceLimit={choiceLimit}
-                            //onClick={onClick}
+                            onClick={onClick}
                         />
                     ) : (
                         <RadioButtonGroup
-                            ref={this.radioButtonGroupRef}
+                            ref={(ref) => {
+                                this.groupRef = ref;
+                                return true;
+                            }}
                             choices={ingredients}
                             needAdditionalText={needAdditionalText}
                             canUncheck={canUncheck}
-                            //onClick={onClick}
+                            onClick={onClick}
                         />
                     )}
                 </View>

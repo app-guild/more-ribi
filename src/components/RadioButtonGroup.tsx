@@ -1,8 +1,8 @@
 import React, {PureComponent} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {CheckBox} from "react-native-elements";
-import {globalColors} from "../../resources/styles";
 import Ingredient from "../entities/Ingredient";
+import {stylesheet} from "./СheckBoxGroup";
 
 export interface IRadioButtonGroupState {
     checked: number;
@@ -12,8 +12,7 @@ export interface IRadioButtonGroupProps {
     choices: Ingredient[];
     needAdditionalText?: boolean;
     canUncheck?: boolean;
-    onClick?: (prevState: boolean[], currentState: boolean[], id: number) => void;
-    id?: number;
+    onClick?: (changed: boolean) => void;
 }
 
 class RadioButtonGroup extends PureComponent<Readonly<IRadioButtonGroupProps>, Readonly<IRadioButtonGroupState>> {
@@ -26,19 +25,23 @@ class RadioButtonGroup extends PureComponent<Readonly<IRadioButtonGroupProps>, R
         this.getCheckedNumber = this.getCheckedNumber.bind(this);
     }
 
-    getCheckedNumber() {
+    public getCheckedNumber(): number {
         return this.state.checked;
     }
 
+    public getCheckedIndexes(): number[] {
+        return this.getCheckedNumber() === -1 ? [] : [this.getCheckedNumber()];
+    }
+
+    public getCheckedText(): string {
+        return this.state.checked === -1 ? "" : this.props.choices[this.state.checked].name;
+    }
+
     onRadioButtonPress(index: number) {
+        const oldValue = this.state.checked;
         this.setState({checked: this.state.checked === index && this.props.canUncheck ? -1 : index}, () => {
             if (this.props.onClick) {
-                // this.props.onClick(
-                //     this.state.checked,
-                //     oldValue !== this.state.checked[index],
-                //     index,
-                //     this.props.id ? this.props.id : 0,
-                // );
+                this.props.onClick(oldValue !== this.state.checked);
             }
         });
     }
@@ -72,30 +75,5 @@ class RadioButtonGroup extends PureComponent<Readonly<IRadioButtonGroupProps>, R
         ));
     }
 }
-
-export const stylesheet = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        alignItems: "center",
-        width: "100%",
-    },
-    radioButtonText: {
-        //flex: 1,
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
-        fontSize: 20,
-        lineHeight: 20,
-        color: globalColors.mainTextColor,
-    },
-    additionalText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
-        fontSize: 20,
-        lineHeight: 20,
-        color: globalColors.additionalTextColor,
-    },
-});
 
 export default RadioButtonGroup;
