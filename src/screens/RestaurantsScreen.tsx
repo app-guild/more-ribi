@@ -1,9 +1,8 @@
 import React, {Component} from "react";
-import {View, Button, ScrollView} from "react-native";
-import YaMap, {Marker, Point} from "react-native-yamap";
+import {View, ScrollView, StyleSheet} from "react-native";
+import YaMap, {Marker} from "react-native-yamap";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Restaurant from "../entities/Restaurant";
-import SlidingUpPanel from "rn-sliding-up-panel";
 import RestaurantCard from "../components/RestaurantCard";
 import {Divider} from "react-native-paper";
 
@@ -15,7 +14,8 @@ export interface IRestaurantsScreenState {
 
 class RestaurantsScreen extends Component<Readonly<any>, Readonly<IRestaurantsScreenState>> {
     private map = React.createRef<YaMap>();
-    private panel = React.createRef<SlidingUpPanel>();
+    private scroll = React.createRef<ScrollView>();
+    private restaurantCards: Array<RestaurantCard | null> = [];
 
     constructor(props: any) {
         super(props);
@@ -35,9 +35,35 @@ class RestaurantsScreen extends Component<Readonly<any>, Readonly<IRestaurantsSc
         }
     }
 
-    private _onPressMarker = (position: Point) => {
-        this.map.current?.setCenter(position, 17);
+    private _onPressMarker = (restaurant: Restaurant) => {
+        this._centerOnRestaurant(restaurant);
+
+        const restaurantCard = this.restaurantCards.find((card) => card?.props?.restaurant === restaurant);
+        if (restaurantCard) {
+            this._scrollToRestaurant(restaurantCard);
+            setTimeout(() => restaurantCard.blink(), 250);
+        }
     };
+
+    private _onPressCard = (restaurant: Restaurant) => {
+        this._centerOnRestaurant(restaurant);
+    };
+
+    private _centerOnRestaurant(restaurant: Restaurant) {
+        const point = {
+            lat: restaurant.position.latitude,
+            lon: restaurant.position.longitude,
+        };
+        this.map.current?.setCenter(point, 17);
+    }
+
+    private _scrollToRestaurant(restaurantCard: RestaurantCard) {
+        const cardHeight = 100;
+        const index = this.restaurantCards.indexOf(restaurantCard);
+        if (index !== -1) {
+            this.scroll.current?.scrollTo({y: cardHeight * index});
+        }
+    }
 
     private _getMarkers(): JSX.Element[] {
         return this.state.restaurants.map((restaurant, index) => {
@@ -49,24 +75,31 @@ class RestaurantsScreen extends Component<Readonly<any>, Readonly<IRestaurantsSc
                 <Marker
                     key={index}
                     point={point}
-                    source={require("../../resources/assets/drawable/marker.png")}
+                    source={require("../../resources/assets/drawable/map_marker.png")}
                     scale={0.2}
                     anchor={{x: 0.7, y: 0.9}}
-                    onPress={() => this._onPressMarker(point)}
+                    onPress={() => this._onPressMarker(restaurant)}
                 />
             );
         });
     }
 
     private _getRestaurantCards(): JSX.Element[] {
-        return this.state.restaurants.map((restaurant, index) => {
+        const cards = this.state.restaurants.map((restaurant, index) => {
             return (
                 <>
-                    <RestaurantCard key={index} restaurant={restaurant} />
-                    <Divider />
+                    <RestaurantCard
+                        ref={(ref) => (this.restaurantCards[index] = ref)}
+                        key={index}
+                        restaurant={restaurant}
+                        onPress={() => this._onPressCard(restaurant)}
+                    />
+                    <Divider key={-index - 1} />
                 </>
             );
         });
+        cards.unshift(<Divider />);
+        return cards;
     }
 
     render() {
@@ -77,12 +110,7 @@ class RestaurantsScreen extends Component<Readonly<any>, Readonly<IRestaurantsSc
                 <YaMap ref={this.map} style={{flex: 2}}>
                     {markers}
                 </YaMap>
-                <ScrollView
-                    style={{
-                        flex: 1,
-                        backgroundColor: "#FFFFFF",
-                    }}>
-                    <Divider />
+                <ScrollView ref={this.scroll} style={stylesheet.scroll}>
                     {restaurantCards}
                 </ScrollView>
             </View>
@@ -91,3 +119,10 @@ class RestaurantsScreen extends Component<Readonly<any>, Readonly<IRestaurantsSc
 }
 
 export default RestaurantsScreen;
+
+const stylesheet = StyleSheet.create({
+    scroll: {
+        flex: 1,
+        backgroundColor: "#FFFFFF",
+    },
+});
