@@ -56,33 +56,35 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
 
         return (
             <View style={stylesheet.container}>
-                <Text>{this.props.product.name}</Text>
-                <View style={stylesheet.controlContainer}>
-                    <NumericInput
-                        containerStyle={{
-                            borderColor: globalColors.fadePrimaryColor,
-                            borderRadius: 20,
-                            backgroundColor: globalColors.fadePrimaryColor,
-                        }}
-                        inputStyle={{
-                            borderColor: globalColors.fadePrimaryColor,
-                        }}
-                        iconStyle={{
-                            color: globalColors.cardBackgroundColor,
-                        }}
-                        leftButtonBackgroundColor={globalColors.fadePrimaryColor}
-                        rightButtonBackgroundColor={globalColors.fadePrimaryColor}
-                        textColor={globalColors.cardBackgroundColor}
-                        minValue={0}
-                        rounded={true}
-                        initValue={this.state.productCount}
-                        onChange={async (value) => {
-                            if (value !== this.state.productCount) {
-                                return this.updateProductCount(product, value);
-                            }
-                            return;
-                        }}
-                    />
+                <Text style={stylesheet.column}>{this.props.product.name}</Text>
+                <NumericInput
+                    containerStyle={{
+                        ...stylesheet.column,
+                        flex: 0.9,
+                        borderColor: globalColors.fadePrimaryColor,
+                        borderRadius: 20,
+                        backgroundColor: globalColors.fadePrimaryColor,
+                    }}
+                    inputStyle={{
+                        borderColor: globalColors.fadePrimaryColor,
+                    }}
+                    iconStyle={{
+                        color: globalColors.cardBackgroundColor,
+                    }}
+                    leftButtonBackgroundColor={globalColors.fadePrimaryColor}
+                    rightButtonBackgroundColor={globalColors.fadePrimaryColor}
+                    textColor={globalColors.cardBackgroundColor}
+                    minValue={0}
+                    rounded={true}
+                    initValue={this.state.productCount}
+                    onChange={async (value) => {
+                        if (value !== this.state.productCount) {
+                            return this.updateProductCount(product, value);
+                        }
+                        return;
+                    }}
+                />
+                <View style={{...stylesheet.column, justifyContent: "flex-end"}}>
                     <Text style={{...globalStylesheet.price, marginHorizontal: 10}}>{textPrice}</Text>
                     <View>
                         <CloseIcon
@@ -105,8 +107,8 @@ const stylesheet = StyleSheet.create({
         marginVertical: 5,
         marginHorizontal: 10,
     },
-    controlContainer: {
-        justifyContent: "flex-end",
+    column: {
+        flex: 1,
         alignItems: "center",
         flexDirection: "row",
     },

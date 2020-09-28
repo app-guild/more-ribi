@@ -3,19 +3,23 @@ import {StyleSheet, Text, View} from "react-native";
 import {globalColors} from "../../resources/styles";
 import MenuIcon from "../../resources/assets/drawable/menu_icon.svg";
 import CartIcon from "../../resources/assets/drawable/cart_icon.svg";
+import TrashIcon from "../../resources/assets/drawable/delete_icon.svg";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
 import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import {StackNavigationProp} from "@react-navigation/stack";
+import Product from "../entities/Product";
 
 const MENU_ICON_SIZE = 40;
 const CART_ICON_SIZE = 20;
+const TRASH_ICON_SIZE = 30;
 
 export interface IHeaderState {
-    cartPrise: number;
+    cart: Cart;
 }
 export interface IHeaderProps {
     screenTitle: string;
+    isCartScreen?: boolean;
     drawerNavigation: DrawerNavigationProp<any>;
     stackNavigation: StackNavigationProp<any>;
 }
@@ -24,35 +28,45 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
     constructor(props: any) {
         super(props);
         this.state = {
-            cartPrise: 0,
+            cart: new Cart(-1, new Map<Product, number>()),
         };
-        this.updateCartPrice = this.updateCartPrice.bind(this);
+        this.updateCart = this.updateCart.bind(this);
     }
 
     componentDidMount() {
-        DatabaseApi.addOnCartChangeListener(this.updateCartPrice);
-        return DatabaseApi.getCart().then(this.updateCartPrice);
+        DatabaseApi.addOnCartChangeListener(this.updateCart);
+        return DatabaseApi.getCart().then(this.updateCart);
     }
 
     componentWillUnmount() {
-        DatabaseApi.removeOnCartChangeListener(this.updateCartPrice);
+        DatabaseApi.removeOnCartChangeListener(this.updateCart);
     }
 
-    updateCartPrice(cart: Cart) {
-        this.setState({cartPrise: cart.totalPrice});
+    clearCart() {
+        return DatabaseApi.clearCart();
+    }
+
+    updateCart(cart: Cart) {
+        this.setState({cart});
     }
 
     render() {
-        let cartIcon = <View />;
-        if (this.state.cartPrise > 0) {
-            cartIcon = (
+        let actionIcon = <View />;
+        if (!this.props.isCartScreen && this.state.cart.totalPrice > 0) {
+            actionIcon = (
                 <View
                     style={stylesheet.topContainer}
                     onTouchEnd={() => this.props.stackNavigation.navigate("CartScreen")}>
                     <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
                     <Text numberOfLines={1} style={stylesheet.priceText}>
-                        {Math.round(this.state.cartPrise)}
+                        {Math.round(this.state.cart.totalPrice)}
                     </Text>
+                </View>
+            );
+        } else if (this.props.isCartScreen) {
+            actionIcon = (
+                <View style={stylesheet.topContainer} onTouchEnd={this.clearCart}>
+                    <TrashIcon width={TRASH_ICON_SIZE} height={TRASH_ICON_SIZE} fill={globalColors.primaryColor} />
                 </View>
             );
         }
@@ -67,7 +81,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                     />
                     <Text style={stylesheet.title}>{this.props.screenTitle}</Text>
                 </View>
-                <View style={stylesheet.topContainer}>{cartIcon}</View>
+                <View style={stylesheet.topContainer}>{actionIcon}</View>
             </View>
         );
     }

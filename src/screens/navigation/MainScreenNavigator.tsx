@@ -22,15 +22,28 @@ export default function MainScreenNavigator(props: any) {
                             drawerNavigation={props.navigation}
                         />
                     ),
+                    cardOverlay: () => <MainBackground />,
                     headerStyle: {backgroundColor: globalColors.transparent},
                     cardStyle: {backgroundColor: globalColors.transparent},
-                    cardOverlay: () => <MainBackground />,
                 }}
                 initialRouteName="Main"
                 headerMode={"screen"}>
                 <Stack.Screen name="Main" component={MainScreen} />
                 <Stack.Screen name="Categories" component={CategoriesScreen} />
-                <Stack.Screen name="CartScreen" component={CartScreen} />
+                <Stack.Screen
+                    options={{
+                        header: ({navigation}) => (
+                            <Header
+                                isCartScreen={true}
+                                screenTitle={"Корзина"}
+                                stackNavigation={navigation}
+                                drawerNavigation={props.navigation}
+                            />
+                        ),
+                    }}
+                    name="CartScreen"
+                    component={CartScreen}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
