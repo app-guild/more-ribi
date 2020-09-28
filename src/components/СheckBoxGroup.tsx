@@ -46,10 +46,11 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonl
         } else {
             checked[index] = !checked[index];
         }
-        this.setState({checked: checked});
-        if (this.props.onClick) {
-            this.props.onClick(oldValue === this.state.checked[index]);
-        }
+        this.setState({checked: checked}, () => {
+            if (this.props.onClick) {
+                this.props.onClick(oldValue !== this.state.checked[index]);
+            }
+        });
     }
 
     public setLimit(limit: number | undefined) {

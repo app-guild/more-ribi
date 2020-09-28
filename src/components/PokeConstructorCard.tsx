@@ -73,10 +73,10 @@ class PokeConstructorCard extends PureComponent<
                         ? {
                               ...stylesheet.container,
                               alignItems: "center",
+                              flexDirection: "column",
                           }
                         : {
                               ...stylesheet.container,
-                              flexDirection: "row",
                               alignItems: "flex-start",
                           }
                 }>

@@ -8,6 +8,9 @@ import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Ingredient from "../entities/Ingredient";
 import {PokeIngredients} from "../entities/PokeIngredients";
 import RadioButtonGroup from "../components/RadioButtonGroup";
+import DatabaseApi from "../utils/database/DatabaseApi";
+import {ProductType} from "../entities/ProductType";
+import Product from "../entities/Product";
 
 export interface IPokeConstructorScreenState {
     addIngredientOpen: boolean;
@@ -107,26 +110,15 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     componentDidMount() {
         return RealtimeDatabaseApi.getPokeConstructorIngredients().then((ingredients) => {
             this.setState({data: ingredients}, () => {
+                const main = this.getCurrentIngredients(this.cardRefs);
+                const additional = this.getCurrentIngredients(this.additionalIngredientsRefs);
                 this.setState({
-                    selectedIngredients: this.initSelectedIngredients(),
+                    selectedIngredients:
+                        "Состав: " + main + (additional.length ? "\nДополнительно: " + additional : ""),
                     totalPrice: this.getTotalPrice(),
                 });
             });
         });
-    }
-
-    initSelectedIngredients(): string {
-        let result = "Состав: ";
-        let current;
-        staticData.forEach((value) => {
-            if (value.choiceType === ChoiceType.RadioButton) {
-                current = this.state.data.get(value.title);
-                if (current) {
-                    result = result.concat(current[0].name, ", ");
-                }
-            }
-        });
-        return result.slice(0, -2);
     }
 
     private onCardClick(changed: boolean) {
@@ -253,6 +245,22 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         return currentIngredients.slice(0, -2);
     }
 
+    private async addToCart(ingredients: string, price: number, image: string) {
+        DatabaseApi.getCart().then((cart) => {
+            const productIndex = cart.products.findIndex((value1) => value1.composition === ingredients);
+            if (productIndex === -1) {
+                return DatabaseApi.addProductToCart(
+                    new Product("Идеальный поке", ProductType.CustomPoke, price, undefined, true, image, ingredients),
+                );
+            } else {
+                return DatabaseApi.updateProductCount(
+                    cart.products[productIndex],
+                    cart.getProductCount(cart.products[productIndex]) + 1,
+                );
+            }
+        });
+    }
+
     render() {
         const cards1_2 = this.initCards(0, 1);
         const remainingCards = this.initCards(2, -1);
@@ -350,7 +358,11 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                     </View>
 
                     <Text style={stylesheet.price}>{this.state.totalPrice + " ₽"}</Text>
-                    <View style={stylesheet.buyButton}>
+                    <View
+                        style={stylesheet.buyButton}
+                        onTouchEnd={() =>
+                            this.addToCart(this.state.selectedIngredients.slice(8), this.state.totalPrice, "")
+                        }>
                         <Text style={stylesheet.buyText}>ЗАКАЗАТЬ</Text>
                     </View>
                     <Text
