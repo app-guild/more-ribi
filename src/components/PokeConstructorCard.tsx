@@ -40,7 +40,8 @@ class PokeConstructorCard extends PureComponent<
     }
 
     public setLimit(limit: number | undefined) {
-        this.groupRef instanceof CheckBoxGroup ? this.groupRef?.setLimit(limit) : null;
+        if (this.groupRef instanceof CheckBoxGroup)
+            this.groupRef?.setLimit(limit);
     }
 
     public getCheckedIndexes(): number[] {
@@ -93,7 +94,9 @@ class PokeConstructorCard extends PureComponent<
                             </Text>
                             <Image source={smallImage} style={stylesheet.smallImage} />
                         </View>
-                        <Text numberOfLines={2} style={stylesheet.title}>{title}</Text>
+                        <Text numberOfLines={2} style={stylesheet.title}>
+                            {title}
+                        </Text>
                     </View>
                     {image ? <Image source={image} style={stylesheet.image} /> : null}
                 </View>

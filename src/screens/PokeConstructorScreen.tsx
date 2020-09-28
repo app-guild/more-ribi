@@ -233,10 +233,9 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         currentRefs: (PokeConstructorCard | CheckBoxGroup | RadioButtonGroup | null)[],
     ): string {
         let currentIngredients: string = "";
-        let currentString: string = "";
         currentRefs.forEach((value) => {
             if (value) {
-                currentString = value.getCheckedText().toString();
+                const currentString = value.getCheckedText().toString();
                 if (currentString !== "") {
                     currentIngredients = currentIngredients.concat(currentString + ", ");
                 }
