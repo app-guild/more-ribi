@@ -15,35 +15,23 @@ export default function MainScreenNavigator(props: any) {
         <NavigationContainer independent={true}>
             <Stack.Navigator
                 screenOptions={{
-                    header: ({navigation}) => (
+                    header: ({scene, navigation}) => (
                         <Header
+                            isCartScreen={scene.route.name === "CartScreen"}
                             screenTitle={"Море рыбы"}
                             stackNavigation={navigation}
                             drawerNavigation={props.navigation}
                         />
                     ),
                     cardOverlay: () => <MainBackground />,
-                    headerStyle: {backgroundColor: globalColors.transparent},
+                    headerStyle: {backgroundColor: globalColors.fadePrimaryColor},
                     cardStyle: {backgroundColor: globalColors.transparent},
                 }}
                 initialRouteName="Main"
                 headerMode={"screen"}>
                 <Stack.Screen name="Main" component={MainScreen} />
                 <Stack.Screen name="Categories" component={CategoriesScreen} />
-                <Stack.Screen
-                    options={{
-                        header: ({navigation}) => (
-                            <Header
-                                isCartScreen={true}
-                                screenTitle={"Корзина"}
-                                stackNavigation={navigation}
-                                drawerNavigation={props.navigation}
-                            />
-                        ),
-                    }}
-                    name="CartScreen"
-                    component={CartScreen}
-                />
+                <Stack.Screen name="CartScreen" component={CartScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
