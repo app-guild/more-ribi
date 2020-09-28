@@ -248,9 +248,18 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     private async addToCart(ingredients: string, price: number, image: string) {
         DatabaseApi.getCart().then((cart) => {
             const productIndex = cart.products.findIndex((value1) => value1.composition === ingredients);
+            const cartCount = cart.products.length;
             if (productIndex === -1) {
                 return DatabaseApi.addProductToCart(
-                    new Product("Идеальный поке", ProductType.CustomPoke, price, undefined, true, image, ingredients),
+                    new Product(
+                        "Идеальный поке" + (cartCount === 0 ? "" : " №" + cartCount + 1),
+                        ProductType.CustomPoke,
+                        price,
+                        undefined,
+                        true,
+                        image,
+                        ingredients,
+                    ),
                 );
             } else {
                 return DatabaseApi.updateProductCount(
