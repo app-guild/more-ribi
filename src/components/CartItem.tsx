@@ -14,7 +14,7 @@ export interface ICartItemProps {
     product: Product;
 }
 
-const CLOSE_ICON_SIZE = 10;
+const CLOSE_ICON_SIZE = 15;
 
 class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemState>> {
     constructor(props: any) {
@@ -27,10 +27,11 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
     componentDidMount() {
         const product = this.props.product;
         if (product) {
-            DatabaseApi.getCart().then((cart) => {
+            return DatabaseApi.getCart().then((cart) => {
                 this.setState({productCount: cart.getProductCount(product)});
             });
         }
+        return;
     }
 
     private async updateProductCount(product: Product, count: number) {
@@ -55,21 +56,23 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
 
         return (
             <View style={stylesheet.container}>
-                <Text>Promotions Screen</Text>
+                <Text>{this.props.product.name}</Text>
                 <View style={stylesheet.controlContainer}>
                     <NumericInput
                         containerStyle={{
-                            borderColor: globalColors.transparent,
+                            borderColor: globalColors.fadePrimaryColor,
+                            borderRadius: 20,
+                            backgroundColor: globalColors.fadePrimaryColor,
                         }}
                         inputStyle={{
-                            borderColor: globalColors.transparent,
+                            borderColor: globalColors.fadePrimaryColor,
                         }}
                         iconStyle={{
-                            color: globalColors.mainBackgroundColor,
+                            color: globalColors.cardBackgroundColor,
                         }}
-                        leftButtonBackgroundColor={globalColors.primaryColor}
-                        rightButtonBackgroundColor={globalColors.primaryColor}
-                        textColor={globalColors.primaryColor}
+                        leftButtonBackgroundColor={globalColors.fadePrimaryColor}
+                        rightButtonBackgroundColor={globalColors.fadePrimaryColor}
+                        textColor={globalColors.cardBackgroundColor}
                         minValue={0}
                         rounded={true}
                         initValue={this.state.productCount}
@@ -80,7 +83,7 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
                             return;
                         }}
                     />
-                    <Text style={globalStylesheet.price}>{textPrice}</Text>
+                    <Text style={{...globalStylesheet.price, marginHorizontal: 10}}>{textPrice}</Text>
                     <View>
                         <CloseIcon
                             width={CLOSE_ICON_SIZE}
@@ -96,10 +99,11 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
 
 const stylesheet = StyleSheet.create({
     container: {
-        width: "100%",
         justifyContent: "space-between",
         alignItems: "center",
         flexDirection: "row",
+        marginVertical: 5,
+        marginHorizontal: 10,
     },
     controlContainer: {
         justifyContent: "flex-end",
