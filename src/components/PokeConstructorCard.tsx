@@ -75,7 +75,7 @@ class PokeConstructorCard extends PureComponent<
             choiceLimit,
             onClick,
         } = this.props.data;
-
+        console.log("RENDER: Card", title);
         return (
             <View
                 style={

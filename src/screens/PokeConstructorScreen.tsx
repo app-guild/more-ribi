@@ -272,6 +272,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     }
 
     render() {
+        console.log("RENDER: Screen");
         const cards1_2 = this.initCards(0, 1);
         const remainingCards = this.initCards(2, -1);
         const additionalCards = this.initAdditionalCards();

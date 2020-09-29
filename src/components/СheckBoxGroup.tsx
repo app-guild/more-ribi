@@ -1,6 +1,6 @@
 import React, {PureComponent} from "react";
-import {StyleSheet, Text, View} from "react-native";
-import {CheckBox} from "react-native-elements";
+import {StyleSheet, Text} from "react-native";
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from "react-native-simple-radio-button";
 import {globalColors} from "../../resources/styles";
 import Ingredient from "../entities/Ingredient";
 
@@ -85,24 +85,39 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonl
     }
 
     render() {
+        console.log("RENDER: CBGroup", this.props.choices[0] ? this.props.choices[0].name : "хз шо");
         const {choices} = this.props;
         const needAdditionalText = this.props.needAdditionalText ? this.props.needAdditionalText : false;
 
-        return choices.map((val: any, index: any) => (
-            <View key={index} style={stylesheet.container}>
-                <CheckBox
-                    checked={this.state.checked[index]}
-                    onPress={() => this.onCheckBoxPress(index)}
-                    wrapperStyle={{paddingVertical: 4}}
-                    containerStyle={{
-                        padding: 0,
-                        margin: 0,
-                    }}
-                />
-                <Text style={stylesheet.radioButtonText}>{val.name + " "}</Text>
-                <Text style={stylesheet.additionalText}>{needAdditionalText ? val.additionalPrice : null}</Text>
-            </View>
-        ));
+        return (
+            <RadioForm animation={false}>
+                {choices.map((obj, i) => (
+                    <RadioButton labelHorizontal={true} key={i}>
+                        <RadioButtonInput
+                            obj={{label: obj.name, value: i}}
+                            isSelected={this.state.checked[i]}
+                            onPress={() => this.onCheckBoxPress(i)}
+                            borderWidth={1}
+                            buttonSize={22}
+                            buttonOuterSize={24}
+                            buttonInnerColor={globalColors.primaryColor}
+                            buttonOuterColor={globalColors.mainTextColor}
+                            buttonStyle={{borderRadius: 0, flex: 1}}
+                            buttonWrapStyle={{marginLeft: 10, borderRadius: 0}}
+                        />
+                        <RadioButtonLabel
+                            obj={{label: obj.name, value: i}}
+                            labelHorizontal={true}
+                            onPress={() => this.onCheckBoxPress(i)}
+                            labelStyle={stylesheet.radioButtonText}
+                        />
+                        {needAdditionalText ? (
+                            <Text style={stylesheet.additionalText}>{" (+" + obj.additionalPrice + "₽)"}</Text>
+                        ) : null}
+                    </RadioButton>
+                ))}
+            </RadioForm>
+        );
     }
 }
 
@@ -113,7 +128,6 @@ export const stylesheet = StyleSheet.create({
         width: "100%",
     },
     radioButtonText: {
-        flex: 1,
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "300",
