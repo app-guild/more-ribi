@@ -69,7 +69,7 @@ class RadioButtonGroup extends PureComponent<Readonly<IRadioButtonGroupProps>, R
 
                 <Text style={stylesheet.radioButtonText}>{val.name + " "}</Text>
                 {needAdditionalText ? (
-                    <Text style={stylesheet.additionalText}>"(+" + val.additionalPrice + "₽)"</Text>
+                    <Text style={stylesheet.additionalText}>{"(+" + val.additionalPrice + "₽)"}</Text>
                 ) : null}
             </View>
         ));

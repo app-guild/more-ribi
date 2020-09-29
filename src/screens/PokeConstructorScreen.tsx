@@ -1,7 +1,7 @@
 import React, {Component, createRef} from "react";
 import {ImageBackground, Text, View, ScrollView, StyleSheet, Dimensions} from "react-native";
 import {globalColors} from "../../resources/styles";
-import PokeConstructorCard from "../components/PokeConstructorCard";
+import PokeConstructorCard, {ChoicesLocation, ChoiceType} from "../components/PokeConstructorCard";
 import CheckBoxGroup from "../components/СheckBoxGroup";
 import {Tooltip} from "react-native-elements";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
@@ -20,16 +20,6 @@ export interface IPokeConstructorScreenState {
     isIngredientsPopoverDeployed: boolean;
     data: Map<string, Ingredient[]>;
     selectedIngredients: string;
-}
-
-export enum ChoiceType {
-    RadioButton = "radioButton",
-    CheckBox = "checkBox",
-}
-
-export enum ChoicesLocation {
-    Right = "right",
-    Bottom = "bottom",
 }
 
 export enum AdditionalTextType {
@@ -109,16 +99,28 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
 
     componentDidMount() {
         return RealtimeDatabaseApi.getPokeConstructorIngredients().then((ingredients) => {
-            this.setState({data: ingredients}, () => {
-                const main = this.getCurrentIngredients(this.cardRefs);
-                const additional = this.getCurrentIngredients(this.additionalIngredientsRefs);
-                this.setState({
-                    selectedIngredients:
-                        "Состав: " + main + (additional.length ? "\nДополнительно: " + additional : ""),
-                    totalPrice: this.getTotalPrice(),
-                });
+            const protein = ingredients.get(PokeIngredients.Protein);
+            const proteinPrice = protein ? protein[0].mainPrice : 0;
+            this.setState({
+                data: ingredients,
+                selectedIngredients: this.initSelectedIngredients(ingredients),
+                totalPrice: proteinPrice ? proteinPrice : 0,
             });
         });
+    }
+
+    initSelectedIngredients(ingredients: Map<string, Ingredient[]>): string {
+        let result = "Состав: ";
+        let current;
+        staticData.forEach((value) => {
+            if (value.choiceType === ChoiceType.RadioButton) {
+                current = ingredients.get(value.title);
+                if (current) {
+                    result = result.concat(current[0].name, ", ");
+                }
+            }
+        });
+        return result.slice(0, -2);
     }
 
     private onCardClick(changed: boolean) {

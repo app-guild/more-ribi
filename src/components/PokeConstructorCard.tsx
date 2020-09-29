@@ -3,7 +3,6 @@ import {Image, StyleSheet, Text, View} from "react-native";
 import {globalColors} from "../../resources/styles";
 import CheckBoxGroup from "./СheckBoxGroup";
 import Ingredient from "../entities/Ingredient";
-import {ChoicesLocation, ChoiceType} from "../screens/PokeConstructorScreen";
 import RadioButtonGroup from "./RadioButtonGroup";
 
 export interface IPokeConstructorCardState {
@@ -12,6 +11,16 @@ export interface IPokeConstructorCardState {
 
 export interface IPokeConstructorCardProps {
     data: IPokeConstructorCardData;
+}
+
+export enum ChoiceType {
+    RadioButton = "radioButton",
+    CheckBox = "checkBox",
+}
+
+export enum ChoicesLocation {
+    Right = "right",
+    Bottom = "bottom",
 }
 
 export interface IPokeConstructorCardData {
