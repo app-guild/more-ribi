@@ -19,7 +19,7 @@ export interface IHeaderState {
 }
 export interface IHeaderProps {
     screenTitle: string;
-    isCartScreen?: boolean;
+    sceneName: string;
     drawerNavigation: DrawerNavigationProp<any>;
     stackNavigation: StackNavigationProp<any>;
 }
@@ -52,23 +52,28 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
 
     render() {
         let actionIcon = <View />;
-        if (!this.props.isCartScreen && this.state.cart.totalPrice > 0) {
-            actionIcon = (
-                <View
-                    style={stylesheet.topContainer}
-                    onTouchEnd={() => this.props.stackNavigation.navigate("CartScreen")}>
-                    <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
-                    <Text numberOfLines={1} style={stylesheet.priceText}>
-                        {Math.round(this.state.cart.totalPrice)}
-                    </Text>
-                </View>
-            );
-        } else if (this.props.isCartScreen) {
-            actionIcon = (
-                <View style={stylesheet.topContainer} onTouchEnd={this.clearCart}>
-                    <TrashIcon width={TRASH_ICON_SIZE} height={TRASH_ICON_SIZE} fill={globalColors.primaryColor} />
-                </View>
-            );
+
+        switch (this.props.sceneName) {
+            case "CartScreen":
+                actionIcon = (
+                    <View style={stylesheet.topContainer} onTouchEnd={this.clearCart}>
+                        <TrashIcon width={TRASH_ICON_SIZE} height={TRASH_ICON_SIZE} fill={globalColors.primaryColor} />
+                    </View>
+                );
+                break;
+            default:
+                if (this.state.cart.totalPrice > 0) {
+                    actionIcon = (
+                        <View
+                            style={stylesheet.topContainer}
+                            onTouchEnd={() => this.props.stackNavigation.navigate("CartScreen")}>
+                            <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
+                            <Text numberOfLines={1} style={stylesheet.priceText}>
+                                {Math.round(this.state.cart.totalPrice)}
+                            </Text>
+                        </View>
+                    );
+                }
         }
 
         return (

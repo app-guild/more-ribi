@@ -7,6 +7,7 @@ import Header from "../../components/Header";
 import MainBackground from "../../components/MainBackground";
 import {globalColors} from "../../../resources/styles";
 import CartScreen from "../CartScreen";
+import CreateOrderScreen from "../CreateOrderScreen";
 
 const Stack = createStackNavigator();
 
@@ -17,7 +18,7 @@ export default function MainScreenNavigator(props: any) {
                 screenOptions={{
                     header: ({scene, navigation}) => (
                         <Header
-                            isCartScreen={scene.route.name === "CartScreen"}
+                            sceneName={scene.route.name}
                             screenTitle={"Море рыбы"}
                             stackNavigation={navigation}
                             drawerNavigation={props.navigation}
@@ -32,6 +33,7 @@ export default function MainScreenNavigator(props: any) {
                 <Stack.Screen name="Main" component={MainScreen} />
                 <Stack.Screen name="Categories" component={CategoriesScreen} />
                 <Stack.Screen name="CartScreen" component={CartScreen} />
+                <Stack.Screen name="CreateOrderScreen" component={CreateOrderScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -1,13 +1,14 @@
 import Cart from "./Cart";
 import {Json, TKey} from "../utils/database/DatabaseApi";
 import Product from "./Product";
+import Address from "./Address";
 
 export default class Order extends Cart {
     constructor(
         id: TKey,
         products: Map<Product, number>,
         private _date: Date,
-        private _address: string,
+        private _address: Address,
         private _comment: string,
     ) {
         super(id, products);
@@ -17,7 +18,7 @@ export default class Order extends Cart {
         return this._date;
     }
 
-    get address(): string {
+    get address(): Address {
         return this._address;
     }
 
@@ -30,7 +31,7 @@ export default class Order extends Cart {
             response.id,
             products,
             new Date(response.date * 1000),
-            response.address,
+            JSON.parse(response.address),
             response.comment,
         );
     }

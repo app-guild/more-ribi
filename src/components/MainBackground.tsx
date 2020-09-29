@@ -21,7 +21,8 @@ class MainBackground extends Component<Readonly<any>, Readonly<any>> {
 
 export const stylesheet = StyleSheet.create({
     background: {
-        flex: 1,
+        height: "100%",
+        width: "100%",
         backgroundColor: globalColors.mainBackgroundColor,
     },
     backgroundOverlay: {

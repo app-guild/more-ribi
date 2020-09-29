@@ -43,7 +43,6 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
             } else if (count === 0) {
                 resolve(DatabaseApi.removeProductFromCart(product));
             }
-            return;
         }).then(() => {
             this.setState({productCount: count});
         });

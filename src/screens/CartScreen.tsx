@@ -67,7 +67,9 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
                             <Text style={stylesheet.totalPriceText}>Итого: </Text>
                             <Text style={stylesheet.totalPriceText}>{this.state.cart.totalPrice + " ₽"}</Text>
                         </View>
-                        <TouchableOpacity style={stylesheet.orderButton}>
+                        <TouchableOpacity
+                            style={stylesheet.orderButton}
+                            onPress={() => this.props.navigation.navigate("CreateOrderScreen")}>
                             <Text style={stylesheet.orderButtonText}>ОФОРМИТЬ ЗАКАЗ</Text>
                         </TouchableOpacity>
                     </View>
