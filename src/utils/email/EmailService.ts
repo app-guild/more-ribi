@@ -3,7 +3,7 @@ import SimpleToast from "react-native-simple-toast";
 import Address from "../../entities/Address";
 import DatabaseApi from "../database/DatabaseApi";
 
-const TARGET_EMAIL = "";
+const TARGET_EMAIL = "smouk.chayz@gmail.com";
 
 export default class EmailService {
     public static async sendEmail(to: string | string[], subject: string, body: string, errorMessage?: string) {
@@ -41,5 +41,16 @@ export default class EmailService {
             .then(() => {
                 DatabaseApi.createOrderFromCart(JSON.stringify(address), comment ? comment : "");
             });
+    }
+
+    public static async sendFeedback(name: string, comment: string) {
+        const subject = "Отзыв (мобильное приложение)";
+        let body = `Имя: ${name}\nОтзыв: ${comment}\n`;
+        return this.sendEmail(
+            TARGET_EMAIL,
+            subject,
+            body,
+            "Не удалось отправить отзыв. Пожалуйста, проверьте соединение с интернетом.",
+        );
     }
 }
