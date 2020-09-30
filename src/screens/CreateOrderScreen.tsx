@@ -39,7 +39,18 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <Text style={stylesheet.rowHeader}>Доставка</Text>
                         </View>
                         <View style={stylesheet.row}>
-
+                            <TextInput style={stylesheet.rowText} placeholder={"Улица"} />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput style={stylesheet.rowText} placeholder={"Дом"} />
+                            <TextInput style={stylesheet.rowText} placeholder={"Подъезд"} />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput style={stylesheet.rowText} placeholder={"Этаж"} />
+                            <TextInput style={stylesheet.rowText} placeholder={"Квартира/офис"} />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput style={stylesheet.rowText} multiline placeholder={"Комментарий к заказу"} />
                         </View>
                     </View>
                 </ScrollView>
