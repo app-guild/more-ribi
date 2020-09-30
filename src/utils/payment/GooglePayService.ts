@@ -54,6 +54,13 @@ export class GooglePayService {
         }
     }
 
+    public async isReadyToPay(): Promise<boolean> {
+        return GooglePay.isReadyToPay(
+            this.cardPaymentMethodMap.allowedCardNetworks,
+            this.cardPaymentMethodMap.allowedCardAuthMethods,
+        );
+    }
+
     public async doPaymentRequest(
         transaction: IPaymentTransaction,
         tokenCallback?: (token: string) => void,
@@ -64,13 +71,10 @@ export class GooglePayService {
             transaction: transaction,
         };
 
-        return GooglePay.isReadyToPay(
-            paymentRequest.cardPaymentMethod.allowedCardNetworks,
-            paymentRequest.cardPaymentMethod.allowedCardAuthMethods,
-        ).then((ready) => {
+        return this.isReadyToPay().then((ready) => {
             if (ready) {
                 // Request payment token
-                GooglePay.requestPayment(paymentRequest)
+                return GooglePay.requestPayment(paymentRequest)
                     .then((token: string) => {
                         // Send a token to your payment gateway
                         if (tokenCallback) {
@@ -79,6 +83,7 @@ export class GooglePayService {
                     })
                     .catch((error) => console.log(error.code, error.message));
             }
+            return;
         });
     }
 }

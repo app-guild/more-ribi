@@ -1,16 +1,18 @@
 import React, {Component} from "react";
 import {Picker, ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
-import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
+import {PaymentsMethods} from "../utils/payment/PaymentsMethods";
 
-export interface ICreateOrderScreenState {}
-
-const FISH_ICON_BACK_SIZE = {width: 47, height: 17};
+export interface ICreateOrderScreenState {
+    paymentMethod: PaymentsMethods;
+}
 
 class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderScreenState>> {
     constructor(props: any) {
         super(props);
-        this.state = {};
+        this.state = {
+            paymentMethod: PaymentsMethods.CashToCourier,
+        };
     }
 
     render() {
@@ -39,12 +41,14 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <TextInput style={stylesheet.rowText} placeholder={"Квартира/офис"} />
                         </View>
                         <View style={stylesheet.row}>
-                            <TextInput style={stylesheet.rowText} multiline placeholder={"Комментарий к заказу"} />
+                            <TextInput
+                                style={{...stylesheet.rowText, ...stylesheet.rowTextMultiline}}
+                                multiline
+                                placeholder={"Комментарий к заказу"}
+                            />
                         </View>
                         <View style={stylesheet.row}>
-                            <Picker >
-
-                            </Picker>
+                            <Picker />
                         </View>
                     </View>
                 </ScrollView>
@@ -78,6 +82,11 @@ const stylesheet = StyleSheet.create({
         marginHorizontal: 14,
         borderColor: globalColors.fadePrimaryColor,
         borderWidth: 1,
+    },
+    rowTextMultiline: {
+        minHeight: 120,
+        maxHeight: 300,
+        textAlignVertical: "top",
     },
 });
 
