@@ -6,7 +6,7 @@ import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {globalColors} from "../../resources/styles";
 
-const FISH_ICON_BACK_SIZE = {width: 47, height: 17};
+const FISH_ICON_SIZE = {width: 47, height: 17};
 
 export interface ICategoriesScreenState {
     mainContainerWidth: number;
@@ -125,18 +125,6 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
     render() {
         return (
             <View style={stylesheet.container}>
-                <View style={stylesheet.headerContainer}>
-                    <View style={stylesheet.header}>
-                        <FishIcon
-                            width={FISH_ICON_BACK_SIZE.width}
-                            height={FISH_ICON_BACK_SIZE.height}
-                            style={stylesheet.headerFishBackButton}
-                            onTouchEnd={() => this.props.navigation.goBack()}
-                        />
-                        <Text style={stylesheet.headerText}>Разделы</Text>
-                    </View>
-                </View>
-
                 <RecyclerListView
                     layoutProvider={this.layoutProvider}
                     dataProvider={this.state.dataProvider}
@@ -150,32 +138,13 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
 export const stylesheet = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 10,
     },
     columnMargin: {
         margin: 10,
     },
     containerPadding: {
         padding: 26,
-    },
-    headerContainer: {
-        paddingVertical: 24,
-        paddingHorizontal: 26,
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "center",
-    },
-    headerText: {
-        fontFamily: "Muli",
-        fontStyle: "normal",
-        fontWeight: "bold",
-        fontSize: 18,
-        lineHeight: 23,
-        color: globalColors.primaryColor,
-    },
-    headerFishBackButton: {
-        position: "absolute",
-        left: 0,
     },
 });
 
