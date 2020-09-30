@@ -21,6 +21,7 @@ export interface IHeaderState {
 }
 export interface IHeaderProps {
     headerText: string;
+    sceneName: string;
     drawerNavigation: DrawerNavigationProp<any>;
     stackNavigation: StackNavigationProp<any>;
     showBackButton?: boolean;
@@ -90,7 +91,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                         />
                         <Text style={stylesheet.title}>{this.props.headerText}</Text>
                     </View>
-                    <View style={stylesheet.topContainer}>{cartIcon}</View>
+                    <View style={stylesheet.topContainer}>{actionIcon}</View>
                 </View>
                 {this.props.showBackButton !== false ? (
                     <View style={stylesheet.subheaderContainer}>

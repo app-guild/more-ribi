@@ -23,6 +23,7 @@ export default function MainScreenNavigator(props: any) {
                             drawerNavigation={props.navigation}
                             showBackButton={scene.descriptor.options.showBackButton}
                             subheaderText={scene.descriptor.options.subheaderText as string}
+                            sceneName={scene.route.name}
                         />
                     ),
                     cardOverlay: () => <MainBackground />,
@@ -33,8 +34,12 @@ export default function MainScreenNavigator(props: any) {
                 headerMode={"screen"}>
                 <Stack.Screen name="Main" options={{showBackButton: false}} component={MainScreen} />
                 <Stack.Screen name="Categories" options={{subheaderText: "Разделы"}} component={CategoriesScreen} />
-                <Stack.Screen name="CartScreen" component={CartScreen} />
-                <Stack.Screen name="CreateOrderScreen" component={CreateOrderScreen} />
+                <Stack.Screen name="CartScreen" options={{subheaderText: "Ваш улов:"}} component={CartScreen} />
+                <Stack.Screen
+                    name="CreateOrderScreen"
+                    options={{subheaderText: "Оформляем заказ"}}
+                    component={CreateOrderScreen}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );

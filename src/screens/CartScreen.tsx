@@ -49,17 +49,6 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
     render() {
         return (
             <View style={stylesheet.container}>
-                <View style={globalStylesheet.headerContainer}>
-                    <View style={globalStylesheet.header}>
-                        <FishIcon
-                            width={FISH_ICON_BACK_SIZE.width}
-                            height={FISH_ICON_BACK_SIZE.height}
-                            style={globalStylesheet.headerFishBackButton}
-                            onTouchEnd={() => this.props.navigation.goBack()}
-                        />
-                        <Text style={globalStylesheet.headerText}>Ваш улов:</Text>
-                    </View>
-                </View>
                 <View style={stylesheet.bodyContainer}>
                     <FlatList data={this.state.cart.products} renderItem={this.renderItem} />
                     <View>

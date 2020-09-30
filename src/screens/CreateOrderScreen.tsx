@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
+import {Picker, ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 
@@ -16,17 +16,6 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     render() {
         return (
             <View>
-                <View style={globalStylesheet.headerContainer}>
-                    <View style={globalStylesheet.header}>
-                        <FishIcon
-                            width={FISH_ICON_BACK_SIZE.width}
-                            height={FISH_ICON_BACK_SIZE.height}
-                            style={globalStylesheet.headerFishBackButton}
-                            onTouchEnd={() => this.props.navigation.goBack()}
-                        />
-                        <Text style={globalStylesheet.headerText}>Оформляем заказ</Text>
-                    </View>
-                </View>
                 <ScrollView>
                     <View style={stylesheet.container}>
                         <View style={stylesheet.row}>
@@ -51,6 +40,11 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                         </View>
                         <View style={stylesheet.row}>
                             <TextInput style={stylesheet.rowText} multiline placeholder={"Комментарий к заказу"} />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <Picker >
+
+                            </Picker>
                         </View>
                     </View>
                 </ScrollView>
