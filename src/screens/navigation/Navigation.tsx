@@ -6,10 +6,10 @@ import MyOrdersScreen from "../MyOrdersScreen";
 import RestaurantsScreen from "../RestaurantsScreen";
 import PromotionsScreen from "../PromotionsScreen";
 import DeliveryConditionsScreen from "../DeliveryConditionsScreen";
-import FeedbackScreen from "../FeedbackScreen";
 import AboutUsScreen from "../AboutUsScreen";
 import MainScreenNavigator from "./MainScreenNavigator";
 import {globalColors} from "../../../resources/styles";
+import FeedbackScreenNavigator from "./FeedbackScreenNavigator";
 
 const Drawer = createDrawerNavigator();
 
@@ -29,7 +29,7 @@ export default function Navigation() {
                 <Drawer.Screen name="Рестораны" component={RestaurantsScreen} />
                 <Drawer.Screen name="Акции" component={PromotionsScreen} />
                 <Drawer.Screen name="Условия доставки" component={DeliveryConditionsScreen} />
-                <Drawer.Screen name="Обратная связь" component={FeedbackScreen} />
+                <Drawer.Screen name="Обратная связь" component={FeedbackScreenNavigator} />
                 <Drawer.Screen name="О приложении" component={AboutUsScreen} />
             </Drawer.Navigator>
         </NavigationContainer>
