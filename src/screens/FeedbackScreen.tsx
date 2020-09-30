@@ -88,6 +88,7 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
                         style={{...stylesheet.input, ...stylesheet.commentInput}}
                         onChangeText={this._onChangeComment}
                         value={this.state.comment}
+                        placeholder={"Отзыв"}
                         multiline
                     />
                 </View>
