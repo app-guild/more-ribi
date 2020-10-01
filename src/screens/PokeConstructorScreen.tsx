@@ -259,7 +259,6 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             const productIndex = cart.products.findIndex((value1) => value1.composition === ingredients);
             const cartCount = cart.products.length;
             if (productIndex === -1) {
-                console.log(cart.products);
                 return DatabaseApi.addProductToCart(
                     new Product(
                         "Идеальный поке" + (cartCount === 0 ? "" : " №" + (cartCount + 1)),
