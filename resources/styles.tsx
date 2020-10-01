@@ -17,6 +17,7 @@ const globalColors = {
     categoriesScreenCardTitleContainerBGColor: "rgba(0,0,0,0.35)",
     orangeColor: "#ffc11e",
     unloadedCard: "lightgrey",
+    redBlinkColor: "rgba(255, 0, 0, 0.35)",
 };
 
 const globalStylesheet = StyleSheet.create({

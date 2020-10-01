@@ -14,6 +14,8 @@ export interface ICheckBoxProps {
     buttonSize: number;
     buttonOuterSize: number;
     labelStyle?: TextStyle;
+    textColor?: any;
+    buttonColor?: any;
 }
 
 class CheckBox extends PureComponent<Readonly<ICheckBoxProps>, Readonly<ICheckBoxState>> {
@@ -25,10 +27,19 @@ class CheckBox extends PureComponent<Readonly<ICheckBoxProps>, Readonly<ICheckBo
     }
 
     render() {
-        const {label, labelStyle, isSelected, onPress, borderWidth, buttonSize, buttonOuterSize} = this.props;
+        const {
+            label,
+            labelStyle,
+            isSelected,
+            onPress,
+            borderWidth,
+            buttonSize,
+            buttonOuterSize,
+            buttonColor,
+        } = this.props;
 
         return (
-            <View style={stylesheet.container} onTouchEnd={onPress}>
+            <View style={{...stylesheet.container, backgroundColor: buttonColor}} onTouchEnd={onPress}>
                 <View
                     style={{
                         ...stylesheet.checkboxContainer,
@@ -36,15 +47,13 @@ class CheckBox extends PureComponent<Readonly<ICheckBoxProps>, Readonly<ICheckBo
                         height: buttonOuterSize,
                         borderWidth: borderWidth,
                     }}>
-                    {isSelected && (
-                        <View
-                            style={{
-                                ...stylesheet.checkboxButton,
-                                width: buttonSize,
-                                height: buttonSize,
-                            }}
-                        />
-                    )}
+                    <View
+                        style={{
+                            width: buttonSize,
+                            height: buttonSize,
+                            backgroundColor: isSelected ? globalColors.primaryColor : "transparent",
+                        }}
+                    />
                 </View>
                 <View style={stylesheet.labelWrapper}>
                     <Text style={{...stylesheet.label, ...labelStyle}}>{label}</Text>
@@ -58,7 +67,10 @@ export const stylesheet = StyleSheet.create({
     container: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 3,
+        marginVertical: 2,
+        borderRadius: 10,
     },
     label: {
         fontFamily: "Montserrat",
@@ -74,9 +86,6 @@ export const stylesheet = StyleSheet.create({
     checkboxContainer: {
         justifyContent: "center",
         alignItems: "center",
-    },
-    checkboxButton: {
-        backgroundColor: globalColors.primaryColor,
     },
 });
 
