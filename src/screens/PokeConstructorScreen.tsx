@@ -20,7 +20,7 @@ export interface IPokeConstructorScreenState {
     isIngredientsPopoverDeployed: boolean;
     data: Map<string, Ingredient[]>;
     selectedIngredients: string;
-    isDataLoaded: boolean;
+    isLoaded: boolean;
 }
 
 export enum AdditionalTextType {
@@ -94,7 +94,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             isIngredientsPopoverDeployed: false,
             data: new Map(),
             selectedIngredients: "",
-            isDataLoaded: true,
+            isLoaded: false,
         };
         this.onCardClick = this.onCardClick.bind(this);
     }
@@ -107,11 +107,12 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                 data: ingredients,
                 selectedIngredients: this.initSelectedIngredients(ingredients),
                 totalPrice: proteinPrice ? proteinPrice : 0,
+                isLoaded: true,
             });
         });
     }
 
-    initSelectedIngredients(ingredients: Map<string, Ingredient[]>): string {
+    private initSelectedIngredients(ingredients: Map<string, Ingredient[]>): string {
         let result = "Состав: ";
         let current;
         staticData.forEach((value) => {
@@ -136,9 +137,9 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         }
     }
 
-    private initCards(start: number, end: number): JSX.Element[] {
+    private getCards(start: number, end: number, lastInit?: boolean): JSX.Element[] {
         end = end < 0 ? this.state.data.size + end : end;
-        return [...this.state.data]
+        const result = [...this.state.data]
             .sort((a, b) => {
                 return PokeIngredients.sort(PokeIngredients.parse(a[0]), PokeIngredients.parse(b[0]));
             })
@@ -166,9 +167,10 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                     />
                 );
             });
+        return result;
     }
 
-    private initAdditionalCards(start: number, end?: number): JSX.Element[] {
+    private getAdditionalCards(start: number, end?: number): JSX.Element[] {
         return [...this.state.data]
             .sort((a, b) => {
                 return PokeIngredients.sort(PokeIngredients.parse(a[0]), PokeIngredients.parse(b[0]));
@@ -189,34 +191,28 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                             ) : null}
                         </View>
 
-                        {staticData[i].choiceType === ChoiceType.CheckBox
-                            ? this.state.isDataLoaded && (
-                                  <CheckBoxGroup
-                                      ref={(ref) => {
-                                          this.additionalIngredientsRefs[i] = ref;
-                                          return true;
-                                      }}
-                                      choices={value[1]}
-                                      needAdditionalText={
-                                          staticData[i].additionalTextType === AdditionalTextType.AllChoices
-                                      }
-                                      onClick={this.onCardClick}
-                                  />
-                              )
-                            : this.state.isDataLoaded && (
-                                  <RadioButtonGroup
-                                      ref={(ref) => {
-                                          this.additionalIngredientsRefs[i] = ref;
-                                          return true;
-                                      }}
-                                      choices={value[1]}
-                                      needAdditionalText={
-                                          staticData[i].additionalTextType === AdditionalTextType.AllChoices
-                                      }
-                                      canUncheck={true}
-                                      onClick={this.onCardClick}
-                                  />
-                              )}
+                        {staticData[i].choiceType === ChoiceType.CheckBox ? (
+                            <CheckBoxGroup
+                                ref={(ref) => {
+                                    this.additionalIngredientsRefs[i] = ref;
+                                    return true;
+                                }}
+                                choices={value[1]}
+                                needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
+                                onClick={this.onCardClick}
+                            />
+                        ) : (
+                            <RadioButtonGroup
+                                ref={(ref) => {
+                                    this.additionalIngredientsRefs[i] = ref;
+                                    return true;
+                                }}
+                                choices={value[1]}
+                                needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
+                                canUncheck={true}
+                                onClick={this.onCardClick}
+                            />
+                        )}
                     </View>
                 );
             });
@@ -285,10 +281,22 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
 
     render() {
         console.log("RENDER: Screen");
-        const cards1_2 = this.initCards(0, 1);
-        const remainingCards = this.initCards(2, -1);
-        const additionalCards = this.initAdditionalCards(1);
-        //console.log(this.state.data);
+        console.log(this.state.isLoaded);
+        const cards1_2 = this.getCards(0, 1);
+        const remainingCards = this.getCards(2, -1);
+        const additionalCards = this.getAdditionalCards(1);
+        const unloadedCard = (
+            <View style={stylesheet.unloadedCardContainer}>
+                <View style={{backgroundColor: globalColors.unloadedCard, flex: 1}} />
+                <View style={{flex: 1, marginLeft: 20}}>
+                    <View style={stylesheet.unloadedCard} />
+                    <View style={stylesheet.unloadedCard} />
+                    <View style={stylesheet.unloadedCard} />
+                    <View style={stylesheet.unloadedCard} />
+                    <View style={stylesheet.unloadedCard} />
+                </View>
+            </View>
+        );
 
         return (
             <ScrollView ref={this.scrollViewRef}>
@@ -298,7 +306,14 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                     <Text style={stylesheet.topText}>Собери свой идеальный ПОКÉ БОУЛ</Text>
                 </ImageBackground>
                 <Text style={stylesheet.titleText}>СОБРАТЬ ПОКÉ</Text>
-                {cards1_2}
+                {this.state.isLoaded ? (
+                    cards1_2
+                ) : (
+                    <View>
+                        {unloadedCard}
+                        {unloadedCard}
+                    </View>
+                )}
                 <View
                     style={{
                         ...stylesheet.toggleButtonBlockContainer,
@@ -341,7 +356,16 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         </View>
                     </View>
                 </View>
-                {remainingCards}
+                {this.state.isLoaded ? (
+                    remainingCards
+                ) : (
+                    <View>
+                        {unloadedCard}
+                        {unloadedCard}
+                        {unloadedCard}
+                        {unloadedCard}
+                    </View>
+                )}
                 <View style={stylesheet.done}>
                     <Text style={stylesheet.doneText}>ГОТОВО!</Text>
                     <Text style={{...stylesheet.subTitleText, fontSize: 18}}>ВЫ СОБРАЛИ ИДЕАЛЬНЫЙ ПОКЕ!</Text>
@@ -555,6 +579,18 @@ export const stylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontSize: 14,
         textAlign: "center",
+    },
+    unloadedCardContainer: {
+        flexDirection: "row",
+        marginTop: 40,
+        paddingHorizontal: 20,
+        flex: 1,
+    },
+    unloadedCard: {
+        marginBottom: 10,
+        width: "100%",
+        height: 20,
+        backgroundColor: globalColors.unloadedCard,
     },
 });
 
