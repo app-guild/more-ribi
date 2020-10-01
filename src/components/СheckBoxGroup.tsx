@@ -86,7 +86,6 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonl
     }
 
     render() {
-        console.log("RENDER: CBGroup", this.props.choices[0] ? this.props.choices[0].name : "хз шо");
         const {choices} = this.props;
         const needAdditionalText = this.props.needAdditionalText ? this.props.needAdditionalText : false;
 

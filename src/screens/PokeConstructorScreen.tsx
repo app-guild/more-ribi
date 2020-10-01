@@ -280,14 +280,15 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     }
 
     render() {
-        console.log("RENDER: Screen");
-        console.log(this.state.isLoaded);
         const cards1_2 = this.getCards(0, 1);
         const remainingCards = this.getCards(2, -1);
         const additionalCards = this.getAdditionalCards(1);
         const unloadedCard = (
             <View style={stylesheet.unloadedCardContainer}>
-                <View style={{backgroundColor: globalColors.unloadedCard, flex: 1}} />
+                <View style={{flex: 1}}>
+                    <View style={stylesheet.unloadedTitle} />
+                    <View style={stylesheet.unloadedImage} />
+                </View>
                 <View style={{flex: 1, marginLeft: 20}}>
                     <View style={stylesheet.unloadedCard} />
                     <View style={stylesheet.unloadedCard} />
@@ -591,6 +592,19 @@ export const stylesheet = StyleSheet.create({
         width: "100%",
         height: 20,
         backgroundColor: globalColors.unloadedCard,
+        borderRadius: 10,
+    },
+    unloadedImage: {
+        backgroundColor: globalColors.unloadedCard,
+        flex: 1,
+        borderRadius: 9999,
+    },
+    unloadedTitle: {
+        marginBottom: 10,
+        width: "100%",
+        height: 30,
+        backgroundColor: globalColors.unloadedCard,
+        borderRadius: 10,
     },
 });
 

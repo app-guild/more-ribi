@@ -52,7 +52,6 @@ class RadioButtonGroup extends PureComponent<Readonly<IRadioButtonGroupProps>, R
     }
 
     render() {
-        console.log("RENDER: RBGroup", this.props.choices[0] ? this.props.choices[0].name : "хз шо");
         const {choices} = this.props;
         const needAdditionalText = this.props.needAdditionalText ? this.props.needAdditionalText : false;
         return (
