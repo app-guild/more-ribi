@@ -23,12 +23,10 @@ export default class RealtimeDatabaseApi {
      * @return {Promise<Map<ProductType, Product[]>>}
      */
     static async getProducts(): Promise<Map<ProductType, Product[]>> {
-        const timestart = Date.now();
         return database()
             .ref("/products")
             .once("value")
             .then((snapshot) => {
-                console.log("Products: " + (Date.now() - timestart));
                 return this.parseProducts(snapshot.val());
             });
     }
@@ -45,12 +43,10 @@ export default class RealtimeDatabaseApi {
     }
 
     static async getPokeConstructorIngredients(): Promise<Map<string, Ingredient[]>> {
-        const timestart = Date.now();
         return database()
             .ref("/constructor/poke")
             .once("value")
             .then((snapshot) => {
-                console.log("Poke: " + (Date.now() - timestart));
                 return this.parseConstructorIngredients(snapshot.val());
             });
     }
