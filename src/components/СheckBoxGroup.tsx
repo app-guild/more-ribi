@@ -1,8 +1,9 @@
 import React, {PureComponent} from "react";
-import {StyleSheet, Text} from "react-native";
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from "react-native-simple-radio-button";
+import {StyleSheet, Text, View} from "react-native";
+import RadioForm from "react-native-simple-radio-button";
 import {globalColors} from "../../resources/styles";
 import Ingredient from "../entities/Ingredient";
+import CheckBox from "./CheckBox";
 
 export interface ICheckBoxGroupState {
     checked: boolean[];
@@ -92,29 +93,20 @@ class CheckBoxGroup extends PureComponent<Readonly<ICheckBoxGroupProps>, Readonl
         return (
             <RadioForm animation={false}>
                 {choices.map((obj, i) => (
-                    <RadioButton labelHorizontal={true} key={i}>
-                        <RadioButtonInput
-                            obj={{label: obj.name, value: i}}
+                    <View key={i}>
+                        <CheckBox
+                            label={obj.name}
+                            labelStyle={stylesheet.radioButtonText}
                             isSelected={this.state.checked[i]}
                             onPress={() => this.onCheckBoxPress(i)}
                             borderWidth={1}
-                            buttonSize={22}
-                            buttonOuterSize={24}
-                            buttonInnerColor={globalColors.primaryColor}
-                            buttonOuterColor={globalColors.mainTextColor}
-                            buttonStyle={{borderRadius: 0, flex: 1}}
-                            buttonWrapStyle={{marginLeft: 10, borderRadius: 0}}
-                        />
-                        <RadioButtonLabel
-                            obj={{label: obj.name, value: i}}
-                            labelHorizontal={true}
-                            onPress={() => this.onCheckBoxPress(i)}
-                            labelStyle={stylesheet.radioButtonText}
+                            buttonSize={18}
+                            buttonOuterSize={20}
                         />
                         {needAdditionalText ? (
                             <Text style={stylesheet.additionalText}>{" (+" + obj.additionalPrice + "₽)"}</Text>
                         ) : null}
-                    </RadioButton>
+                    </View>
                 ))}
             </RadioForm>
         );
@@ -132,7 +124,7 @@ export const stylesheet = StyleSheet.create({
         fontStyle: "normal",
         fontWeight: "300",
         fontSize: 20,
-        lineHeight: 20,
+        lineHeight: 24,
         color: globalColors.mainTextColor,
     },
     additionalText: {

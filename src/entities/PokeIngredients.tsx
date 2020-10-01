@@ -46,4 +46,26 @@ export namespace PokeIngredients {
                 return "";
         }
     }
+
+    export function sort(a: PokeIngredients, b: PokeIngredients): number {
+        return getSortAmount(a) - getSortAmount(b);
+    }
+    export function getSortAmount(a: PokeIngredients): number {
+        switch (a) {
+            case PokeIngredients.Base:
+                return 0;
+            case PokeIngredients.Protein:
+                return 1;
+            case PokeIngredients.Filler:
+                return 2;
+            case PokeIngredients.Topping:
+                return 3;
+            case PokeIngredients.Sauce:
+                return 4;
+            case PokeIngredients.Crunch:
+                return 5;
+            default:
+                return -1;
+        }
+    }
 }

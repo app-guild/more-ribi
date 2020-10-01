@@ -64,12 +64,11 @@ class RadioButtonGroup extends PureComponent<Readonly<IRadioButtonGroupProps>, R
                             isSelected={this.state.checked === i}
                             onPress={() => this.onRadioButtonPress(i)}
                             borderWidth={1}
-                            buttonSize={22}
-                            buttonOuterSize={24}
+                            buttonSize={18}
+                            buttonOuterSize={20}
                             buttonInnerColor={globalColors.primaryColor}
                             buttonOuterColor={globalColors.mainTextColor}
-                            buttonStyle={{borderRadius: 0, flex: 1}}
-                            buttonWrapStyle={{marginLeft: 10, borderRadius: 0}}
+                            buttonWrapStyle={{marginLeft: 10, borderRadius: 0, alignSelf: "center"}}
                         />
                         <RadioButtonLabel
                             obj={{label: obj.name, value: i}}

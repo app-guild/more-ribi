@@ -20,6 +20,7 @@ export interface IPokeConstructorScreenState {
     isIngredientsPopoverDeployed: boolean;
     data: Map<string, Ingredient[]>;
     selectedIngredients: string;
+    isDataLoaded: boolean;
 }
 
 export enum AdditionalTextType {
@@ -93,6 +94,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             isIngredientsPopoverDeployed: false,
             data: new Map(),
             selectedIngredients: "",
+            isDataLoaded: true,
         };
         this.onCardClick = this.onCardClick.bind(this);
     }
@@ -135,79 +137,89 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     }
 
     private initCards(start: number, end: number): JSX.Element[] {
-        let result: JSX.Element[] = [];
-        let ingredients;
         end = end < 0 ? this.state.data.size + end : end;
-        for (let i = start; i <= end; i++) {
-            ingredients = this.state.data.get(staticData[i].title);
-            result.push(
-                <PokeConstructorCard
-                    ref={(ref) => {
-                        this.cardRefs[i] = ref;
-                        return true;
-                    }}
-                    key={i}
-                    data={{
-                        title: PokeIngredients.translateCategoryName(PokeIngredients.parse(staticData[i].title)),
-                        number: i + 1,
-                        image: staticData[i].imageSource,
-                        smallImage: staticData[i].iconSource,
-                        ingredients: ingredients ? ingredients : [],
-                        choiceType: staticData[i].choiceType,
-                        choicesLocation: staticData[i].choicesLocation,
-                        choiceLimit: staticData[i].choiceLimit,
-                        onClick: this.onCardClick,
-                    }}
-                />,
-            );
-        }
-        return result;
+        return [...this.state.data]
+            .sort((a, b) => {
+                return PokeIngredients.sort(PokeIngredients.parse(a[0]), PokeIngredients.parse(b[0]));
+            })
+            .slice(start, end + 1)
+            .map((value, index) => {
+                const i = start + index;
+                return (
+                    <PokeConstructorCard
+                        ref={(ref) => {
+                            this.cardRefs[i] = ref;
+                            return true;
+                        }}
+                        key={start + i}
+                        data={{
+                            title: PokeIngredients.translateCategoryName(PokeIngredients.parse(value[0])),
+                            number: i + 1,
+                            image: staticData[i].imageSource,
+                            smallImage: staticData[i].iconSource,
+                            ingredients: value[1],
+                            choiceType: staticData[i].choiceType,
+                            choicesLocation: staticData[i].choicesLocation,
+                            choiceLimit: staticData[i].choiceLimit,
+                            onClick: this.onCardClick,
+                        }}
+                    />
+                );
+            });
     }
 
-    private initAdditionalCards(): JSX.Element[] {
-        let result: JSX.Element[] = [];
-        let ingredients;
-        for (let i = 1; i < this.state.data.size; i++) {
-            ingredients = this.state.data.get(staticData[i].title);
-            result.push(
-                <View key={i}>
-                    <View style={{flexDirection: "row"}}>
-                        <Text style={{...stylesheet.subTitleText, marginTop: 30, marginLeft: 10}}>
-                            {PokeIngredients.translateCategoryName(PokeIngredients.parse(staticData[i].title))}
-                        </Text>
-                        {staticData[i].additionalTextType === AdditionalTextType.OnlyTitle ? (
-                            <Text style={{...stylesheet.additionalText, marginTop: 30}}>
-                                {ingredients ? " (+" + ingredients[0].additionalPrice + "₽)" : null}
+    private initAdditionalCards(start: number, end?: number): JSX.Element[] {
+        return [...this.state.data]
+            .sort((a, b) => {
+                return PokeIngredients.sort(PokeIngredients.parse(a[0]), PokeIngredients.parse(b[0]));
+            })
+            .slice(start, end)
+            .map((value, index) => {
+                const i = index + start;
+                return (
+                    <View key={index} style={{width: stylesheet.addIngredientsContainer.width}}>
+                        <View style={{flexDirection: "row"}}>
+                            <Text style={{...stylesheet.subTitleText, marginTop: 30, marginLeft: 10}}>
+                                {PokeIngredients.translateCategoryName(PokeIngredients.parse(value[0]))}
                             </Text>
-                        ) : null}
-                    </View>
+                            {staticData[i].additionalTextType === AdditionalTextType.OnlyTitle ? (
+                                <Text style={{...stylesheet.additionalText, marginTop: 30}}>
+                                    {" (+" + value[1][0].additionalPrice + "₽)"}
+                                </Text>
+                            ) : null}
+                        </View>
 
-                    {staticData[i].choiceType === ChoiceType.CheckBox ? (
-                        <CheckBoxGroup
-                            ref={(ref) => {
-                                this.additionalIngredientsRefs[i] = ref;
-                                return true;
-                            }}
-                            choices={ingredients ? ingredients : []}
-                            needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
-                            onClick={this.onCardClick}
-                        />
-                    ) : (
-                        <RadioButtonGroup
-                            ref={(ref) => {
-                                this.additionalIngredientsRefs[i] = ref;
-                                return true;
-                            }}
-                            choices={ingredients ? ingredients : []}
-                            needAdditionalText={staticData[i].additionalTextType === AdditionalTextType.AllChoices}
-                            canUncheck={true}
-                            onClick={this.onCardClick}
-                        />
-                    )}
-                </View>,
-            );
-        }
-        return result;
+                        {staticData[i].choiceType === ChoiceType.CheckBox
+                            ? this.state.isDataLoaded && (
+                                  <CheckBoxGroup
+                                      ref={(ref) => {
+                                          this.additionalIngredientsRefs[i] = ref;
+                                          return true;
+                                      }}
+                                      choices={value[1]}
+                                      needAdditionalText={
+                                          staticData[i].additionalTextType === AdditionalTextType.AllChoices
+                                      }
+                                      onClick={this.onCardClick}
+                                  />
+                              )
+                            : this.state.isDataLoaded && (
+                                  <RadioButtonGroup
+                                      ref={(ref) => {
+                                          this.additionalIngredientsRefs[i] = ref;
+                                          return true;
+                                      }}
+                                      choices={value[1]}
+                                      needAdditionalText={
+                                          staticData[i].additionalTextType === AdditionalTextType.AllChoices
+                                      }
+                                      canUncheck={true}
+                                      onClick={this.onCardClick}
+                                  />
+                              )}
+                    </View>
+                );
+            });
     }
 
     private getTotalPrice(): number {
@@ -275,7 +287,8 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
         console.log("RENDER: Screen");
         const cards1_2 = this.initCards(0, 1);
         const remainingCards = this.initCards(2, -1);
-        const additionalCards = this.initAdditionalCards();
+        const additionalCards = this.initAdditionalCards(1);
+        //console.log(this.state.data);
 
         return (
             <ScrollView ref={this.scrollViewRef}>
