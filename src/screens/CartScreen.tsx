@@ -1,14 +1,11 @@
 import React, {Component} from "react";
 import {FlatList, StyleSheet, Text, View} from "react-native";
 import Cart from "../entities/Cart";
-import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import CartItem from "../components/CartItem";
 import Product from "../entities/Product";
 import {TouchableOpacity} from "react-native-gesture-handler";
-
-const FISH_ICON_BACK_SIZE = {width: 47, height: 17};
 
 export interface ICartScreenState {
     cart: Cart;
@@ -86,7 +83,7 @@ const stylesheet = StyleSheet.create({
     totalPriceText: {
         ...globalStylesheet.primaryText,
         fontSize: 18,
-        color: globalColors.additionalTextColor,
+        color: globalColors.primaryColor,
     },
     orderButton: {
         width: "100%",

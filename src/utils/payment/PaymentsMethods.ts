@@ -1,6 +1,6 @@
 export enum PaymentsMethods {
     GooglePay = "GooglePay",
     ApplePay = "ApplePay",
-    CashToCourier = "CashToCourier",
-    CardToCourier = "CardToCourier",
+    CardToCourier = "Картой курьеру",
+    CashToCourier = "Наличными курьеру",
 }
