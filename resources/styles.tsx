@@ -8,13 +8,16 @@ const globalColors = {
     navigatorBackgroundColor: "white",
     mainTextColor: "#000000",
     cardBackgroundColor: "#FFFFFF",
-    categoryCardTextColor: "#FFFFFF",
+    whiteTextColor: "#FFFFFF",
     shadowColor: "#000000",
     additionalTextColor: "#CFD2D7",
     crossedOutPriceColor: "#A5A5A5",
     backgroundOverlay: "#efefef",
     headerUnderlineColor: "#FFC11E",
     categoriesScreenCardTitleContainerBGColor: "rgba(0,0,0,0.35)",
+    orangeColor: "#ffc11e",
+    unloadedCard: "lightgrey",
+    redBlinkColor: "rgba(255, 0, 0, 0.35)",
 };
 
 const globalStylesheet = StyleSheet.create({
