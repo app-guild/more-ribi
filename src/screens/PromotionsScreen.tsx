@@ -34,7 +34,11 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
                     return (
                         <>
                             <Divider style={dividerStyle} />
-                            <PromotionCard text={promotion.text} imageUrl={promotion.imageUrl} />
+                            <PromotionCard
+                                text={promotion.text}
+                                imageUrl={promotion.imageUrl}
+                                linkToPromotion={promotion.link}
+                            />
                         </>
                     );
                 })}

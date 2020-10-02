@@ -1,9 +1,10 @@
 import React, {Component} from "react";
-import {Image, StyleSheet, View, Text} from "react-native";
+import {Image, StyleSheet, View, Text, TouchableOpacity, Linking} from "react-native";
 
 interface IPromotionCardProps {
     text: string;
     imageUrl?: string;
+    linkToPromotion?: string;
     headerText?: string;
 }
 
@@ -12,10 +13,20 @@ export default class PromotionCard extends Component<Readonly<IPromotionCardProp
         super(props);
     }
 
+    private _onImagePress = () => {
+        if (this.props.linkToPromotion && Linking.canOpenURL(this.props.linkToPromotion)) {
+            Linking.openURL(this.props.linkToPromotion);
+        }
+    };
+
     render() {
         return (
             <View>
-                {this.props.imageUrl ? <Image source={{uri: this.props.imageUrl}} style={stylesheet.image} /> : null}
+                {this.props.imageUrl ? (
+                    <TouchableOpacity onPress={this._onImagePress}>
+                        <Image source={{uri: this.props.imageUrl}} style={stylesheet.image} />
+                    </TouchableOpacity>
+                ) : null}
                 {this.props.headerText ? (
                     <Text style={stylesheet.header} numberOfLines={1}>
                         {this.props.headerText}

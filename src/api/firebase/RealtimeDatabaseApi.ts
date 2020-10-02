@@ -77,7 +77,7 @@ export default class RealtimeDatabaseApi {
     }
 
     private static parseInstagramPosts(json: any): InstagramPost[] {
-        return Object.values(json).map((it) => InstagramPost.parseDatabaseJson(it));
+        return Object.values(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it));
     }
 
     private static parseConstructorIngredients(json: any): Map<string, Ingredient[]> {
