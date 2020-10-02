@@ -7,6 +7,7 @@ import Header from "../../components/Header";
 import MainBackground from "../../components/MainBackground";
 import {globalColors} from "../../../resources/styles";
 import CartScreen from "../CartScreen";
+import PokeConstructorScreen from "../PokeConstructorScreen";
 import CreateOrderScreen from "../CreateOrderScreen";
 
 const Stack = createStackNavigator();
@@ -40,6 +41,7 @@ export default function MainScreenNavigator(props: any) {
                     options={{subheaderText: "Оформляем заказ"}}
                     component={CreateOrderScreen}
                 />
+                <Stack.Screen name="PokeConstructor" component={PokeConstructorScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

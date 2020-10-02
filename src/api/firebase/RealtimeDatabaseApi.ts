@@ -15,6 +15,8 @@ interface ProductJson {
 
 type ProductsJson = Map<string, ProductJson[]>;
 
+database().setPersistenceEnabled(true);
+
 export default class RealtimeDatabaseApi {
     /**
      * Return promise with map when for each product type contains list of products
@@ -24,7 +26,9 @@ export default class RealtimeDatabaseApi {
         return database()
             .ref("/products")
             .once("value")
-            .then((snapshot) => this.parseProducts(snapshot.val()));
+            .then((snapshot) => {
+                return this.parseProducts(snapshot.val());
+            });
     }
 
     /**
@@ -42,7 +46,9 @@ export default class RealtimeDatabaseApi {
         return database()
             .ref("/constructor/poke")
             .once("value")
-            .then((snapshot) => this.parseConstructorIngredients(snapshot.val()));
+            .then((snapshot) => {
+                return this.parseConstructorIngredients(snapshot.val());
+            });
     }
 
     static async getWokConstructorIngredients(): Promise<Map<string, Ingredient[]>> {

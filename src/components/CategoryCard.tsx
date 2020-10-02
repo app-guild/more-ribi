@@ -5,10 +5,12 @@ import {globalColors} from "../../resources/styles";
 export interface ICategoryCardState {}
 
 export interface ICategoryCardProps {
-    size: number;
+    width: number | string;
+    height?: number | string;
     text: string;
+    additionalText?: string;
     onTouchEnd: any;
-    image?: any;
+    imageSource: any;
     style?: any;
 }
 
@@ -19,25 +21,39 @@ class CategoryCard extends Component<Readonly<ICategoryCardProps>, Readonly<ICat
     }
 
     render() {
-        const {size, text, onTouchEnd, style} = this.props;
+        const {width, text, onTouchEnd, style, additionalText} = this.props;
+        const height = this.props.height ? this.props.height : this.props.width;
         return (
             <View
                 style={{
-                    width: size,
+                    width: width,
+                    height: height,
                     ...stylesheet.card,
                     ...style,
                 }}
                 onTouchEnd={onTouchEnd}>
                 <Image
-                    source={require("../../resources/assets/drawable/food.jpg")}
+                    source={this.props.imageSource}
                     style={{
-                        width: size,
-                        height: size,
+                        width: width,
+                        height: height,
                         borderRadius: stylesheet.card.borderRadius,
+                        position: "absolute",
                     }}
                 />
-                <View style={stylesheet.cardTitleContainer}>
-                    <Text style={stylesheet.cardTitle}>{text}</Text>
+                <View style={{flex: 1, justifyContent: "center", top: additionalText ? undefined : "15%"}}>
+                    {additionalText ? <Text style={stylesheet.additionalText}>{additionalText}</Text> : null}
+                    <View
+                        style={
+                            additionalText
+                                ? {
+                                      ...stylesheet.titleContainer,
+                                      ...stylesheet.pokeConstructor,
+                                  }
+                                : stylesheet.titleContainer
+                        }>
+                        <Text style={stylesheet.text}>{text}</Text>
+                    </View>
                 </View>
             </View>
         );
@@ -48,22 +64,32 @@ export const stylesheet = StyleSheet.create({
     card: {
         borderRadius: 10,
     },
-    cardTitleContainer: {
-        position: "absolute",
+    titleContainer: {
         width: "100%",
         backgroundColor: globalColors.categoriesScreenCardTitleContainerBGColor,
         alignItems: "center",
         paddingVertical: 6,
-        top: "60%",
         paddingHorizontal: 15,
     },
-    cardTitle: {
+    text: {
         fontFamily: "Montserrat",
         fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globalColors.categoryCardTextColor,
+        color: globalColors.whiteTextColor,
+    },
+    additionalText: {
+        fontFamily: "Montserrat",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 18,
+        marginHorizontal: 32,
+        color: globalColors.whiteTextColor,
+    },
+    pokeConstructor: {
+        alignItems: "flex-start",
+        paddingHorizontal: 32,
     },
 });
 

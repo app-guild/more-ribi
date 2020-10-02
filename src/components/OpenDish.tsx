@@ -287,7 +287,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globalColors.categoryCardTextColor,
+        color: globalColors.whiteTextColor,
     },
 });
 

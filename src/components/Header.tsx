@@ -99,7 +99,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                             style={{flex: 1}}
                             width={FISH_ICON_SIZE.width}
                             height={FISH_ICON_SIZE.height}
-                            onTouchEnd={() => this.props.drawerNavigation.goBack()}
+                            onTouchEnd={() => this.props.stackNavigation.goBack()}
                         />
                         {this.props.subheaderText ? (
                             <>
@@ -129,7 +129,7 @@ export const stylesheet = StyleSheet.create({
         paddingHorizontal: 12,
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 10,
+        marginBottom: 20,
     },
     title: {
         fontFamily: "Montserrat",
