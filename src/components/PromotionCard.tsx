@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Image, StyleSheet, View, Text, TouchableOpacity, Linking} from "react-native";
+import { globalColors } from '../../resources/styles';
 
 interface IPromotionCardProps {
     text: string;
@@ -57,7 +58,7 @@ const stylesheet = StyleSheet.create({
     text: {
         fontFamily: "Mulish",
         fontSize: 12,
-        color: "#909193",
+        color: globalColors.additionalTextColor,
         marginTop: 10,
     },
 });

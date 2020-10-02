@@ -10,7 +10,7 @@ const globalColors = {
     cardBackgroundColor: "#FFFFFF",
     categoryCardTextColor: "#FFFFFF",
     shadowColor: "#000000",
-    additionalTextColor: "#CFD2D7",
+    additionalTextColor: "#909193",
     crossedOutPriceColor: "#A5A5A5",
     backgroundOverlay: "#efefef",
     headerUnderlineColor: "#FFC11E",
