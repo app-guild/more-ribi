@@ -20,6 +20,11 @@ export default class PromotionCard extends Component<Readonly<IPromotionCardProp
     };
 
     render() {
+        const textStyle = {...stylesheet.text};
+        if (!this.props.headerText) {
+            textStyle.color = "#000000";
+        }
+
         return (
             <View>
                 {this.props.imageUrl ? (
@@ -32,7 +37,7 @@ export default class PromotionCard extends Component<Readonly<IPromotionCardProp
                         {this.props.headerText}
                     </Text>
                 ) : null}
-                <Text style={stylesheet.text} numberOfLines={2} ellipsizeMode={"tail"}>
+                <Text style={textStyle} numberOfLines={2} ellipsizeMode={"tail"}>
                     {this.props.text}
                 </Text>
             </View>

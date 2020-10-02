@@ -27,7 +27,7 @@ export default function Navigation() {
                 <Drawer.Screen name="Меню доставки" component={MainScreenNavigator} />
                 <Drawer.Screen name="Мои заказы" component={MyOrdersScreen} />
                 <Drawer.Screen name="Рестораны" component={RestaurantsScreen} />
-                <Drawer.Screen name="Акции" component={PromotionsScreenNavigator} />
+                <Drawer.Screen name="Новости" component={PromotionsScreenNavigator} />
                 <Drawer.Screen name="Условия доставки" component={DeliveryConditionsScreen} />
                 <Drawer.Screen name="Обратная связь" component={FeedbackScreenNavigator} />
                 <Drawer.Screen name="О приложении" component={AboutUsScreen} />
