@@ -8,24 +8,28 @@ import DatabaseApi from "../utils/database/DatabaseApi";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import Address from "../entities/Address";
 import KeyValueStorage from "../utils/KeyValueStorage";
+import TextInputMask from "react-native-text-input-mask";
+import RNGooglePayButton from "react-native-gpay-button";
 
 export interface ICreateOrderScreenState {
     availablePaymentMethods: Set<PaymentsMethods>;
     paymentMethod: PaymentsMethods;
     totalPrice: number;
     buttonVisible: boolean;
-    address: Address | null;
+    address: Address;
     name: string;
     phone: string;
+    comment: string;
 }
 
 class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderScreenState>> {
     constructor(props: any) {
         super(props);
         this.state = {
+            comment: "",
             name: "",
             phone: "",
-            address: null,
+            address: new Address(),
             buttonVisible: true,
             totalPrice: 0,
             availablePaymentMethods: new Set([PaymentsMethods.CardToCourier, PaymentsMethods.CashToCourier]),
@@ -37,32 +41,46 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     }
 
     componentDidMount() {
+        return this.getModifiedPaymentsMethods()
+            .then(async (modifiedPaymentsMethods) => {
+                const cart = await DatabaseApi.getCart();
+                let address = await KeyValueStorage.getAddress();
+                const name = await KeyValueStorage.getUserName();
+                const phone = await KeyValueStorage.getPhoneNumber();
+                if (!address) {
+                    address = new Address();
+                }
+                this.setState({...modifiedPaymentsMethods, totalPrice: cart.totalPrice, address, name, phone});
+            })
+            .then(() => DatabaseApi.addOnCartChangeListener(this.updateTotalPrice));
+    }
+
+    private async getModifiedPaymentsMethods(): Promise<{
+        availablePaymentMethods: Set<PaymentsMethods>,
+        paymentMethod: PaymentsMethods,
+    }> {
         return new Promise(async (resolve) => {
             if (Platform.OS === "ios") {
                 // Todo добавить проверку для Apple Pay
+                let availablePaymentMethods = this.state.availablePaymentMethods;
+                let paymentMethod = this.state.paymentMethod;
+
+                resolve({availablePaymentMethods, paymentMethod});
             } else {
                 global.googlePayService.isReadyToPay().then((isReady: boolean) => {
+                    let availablePaymentMethods = this.state.availablePaymentMethods;
+                    let paymentMethod = this.state.paymentMethod;
                     if (isReady) {
-                        this.setState({
-                            availablePaymentMethods: new Set([
-                                ...this.state.availablePaymentMethods,
-                                PaymentsMethods.GooglePay,
-                            ]),
-                            paymentMethod: PaymentsMethods.GooglePay,
-                        });
+                        availablePaymentMethods = new Set([
+                            ...this.state.availablePaymentMethods,
+                            PaymentsMethods.GooglePay,
+                        ]);
+                        paymentMethod = PaymentsMethods.GooglePay;
                     }
-                    resolve();
+                    resolve({availablePaymentMethods, paymentMethod});
                 });
             }
-        })
-            .then(async () => {
-                const cart = await DatabaseApi.getCart();
-                const address = await KeyValueStorage.getAddress();
-                const name = await KeyValueStorage.getUserName();
-                const phone = await KeyValueStorage.getPhoneNumber();
-                this.setState({totalPrice: cart.totalPrice, address, name, phone});
-            })
-            .then(() => DatabaseApi.addOnCartChangeListener(this.updateTotalPrice));
+        });
     }
 
     updateTotalPrice(cart: Cart) {
@@ -78,77 +96,101 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     };
 
     private renderPaymentsPickerItems() {
-        console.log(this.state.availablePaymentMethods);
         return [...this.state.availablePaymentMethods].map((method: PaymentsMethods) => {
             console.log(method);
             return <Picker.Item label={method.toString()} value={method} key={method} />;
         });
     }
 
+    private renderGooglePayButton() {
+        return <RNGooglePayButton style={{flex: 1}} />;
+    }
+
     render() {
         return (
-            <KeyboardAwareScrollView>
-                <View style={{flex: 1, justifyContent: "space-between"}}>
-                    <ScrollView>
-                        <View style={stylesheet.container}>
-                            <View style={stylesheet.row}>
-                                <TextInput style={stylesheet.rowText} placeholder={"Имя"} />
-                            </View>
-                            <View style={stylesheet.row}>
-                                <TextInput
-                                    style={stylesheet.rowText}
-                                    keyboardType="phone-pad"
-                                    placeholder={"Телефон"}
-                                />
-                            </View>
-                            <View style={stylesheet.row}>
-                                <Text style={stylesheet.rowHeader}>Доставка</Text>
-                            </View>
-                            <View style={stylesheet.row}>
-                                <TextInput style={stylesheet.rowText} placeholder={"Улица"} />
-                            </View>
-                            <View style={stylesheet.row}>
-                                <TextInput style={stylesheet.rowText} placeholder={"Дом"} />
-                                <TextInput style={stylesheet.rowText} placeholder={"Подъезд"} />
-                            </View>
-                            <View style={stylesheet.row}>
-                                <TextInput style={stylesheet.rowText} placeholder={"Этаж"} />
-                                <TextInput style={stylesheet.rowText} placeholder={"Квартира/офис"} />
-                            </View>
-                            <View style={stylesheet.row}>
-                                <TextInput
-                                    style={{...stylesheet.rowText, ...stylesheet.rowTextMultiline}}
-                                    multiline
-                                    placeholder={"Комментарий к заказу"}
-                                />
-                            </View>
-                            <View style={stylesheet.row}>
-                                <View style={stylesheet.rowText}>
-                                    <Picker
-                                        selectedValue={this.state.paymentMethod}
-                                        style={stylesheet.rowHeader}
-                                        onValueChange={(itemValue) => this.setState({paymentMethod: itemValue})}>
-                                        {this.renderPaymentsPickerItems()}
-                                    </Picker>
-                                </View>
+            <View style={{flex: 1, justifyContent: "space-between"}}>
+                <KeyboardAwareScrollView>
+                    <View style={stylesheet.container}>
+                        <View style={stylesheet.row}>
+                            <TextInput style={stylesheet.rowText} value={this.state.name} placeholder={"Имя"} />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInputMask
+                                style={stylesheet.rowText}
+                                value={this.state.phone}
+                                keyboardType="phone-pad"
+                                placeholder={"Телефон"}
+                                mask={"+7 ([000]) [000] [00] [00]"}
+                            />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <Text style={stylesheet.rowHeader}>Доставка</Text>
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput
+                                style={stylesheet.rowText}
+                                value={this.state.address.street}
+                                placeholder={"Улица"}
+                            />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput
+                                style={stylesheet.rowText}
+                                value={this.state.address.buildingNumber}
+                                placeholder={"Дом"}
+                            />
+                            <TextInput
+                                style={stylesheet.rowText}
+                                value={this.state.address.entrance}
+                                placeholder={"Подъезд"}
+                            />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput
+                                style={stylesheet.rowText}
+                                value={this.state.address.flor}
+                                placeholder={"Этаж"}
+                            />
+                            <TextInput
+                                style={stylesheet.rowText}
+                                value={this.state.address.apartment}
+                                placeholder={"Квартира/офис"}
+                            />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput
+                                style={{...stylesheet.rowText, ...stylesheet.rowTextMultiline}}
+                                multiline
+                                value={this.state.comment}
+                                placeholder={"Комментарий к заказу"}
+                            />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <View style={stylesheet.rowText}>
+                                <Picker
+                                    selectedValue={this.state.paymentMethod}
+                                    style={stylesheet.rowHeader}
+                                    onValueChange={(itemValue) => this.setState({paymentMethod: itemValue})}>
+                                    {this.renderPaymentsPickerItems()}
+                                </Picker>
                             </View>
                         </View>
-                    </ScrollView>
-                    {this.state.buttonVisible ? (
-                        <View>
-                            <View style={stylesheet.totalPriceContainer}>
-                                <Text style={stylesheet.totalPriceText}>Сумма заказа: </Text>
-                                <Text style={stylesheet.totalPriceText}>{this.state.totalPrice + " ₽"}</Text>
-                            </View>
-                            <TouchableOpacity
-                                style={stylesheet.orderButton}
-                                onPress={() => this.props.navigation.navigate("CreateOrderScreen")}>
-                                <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
-                            </TouchableOpacity>
+                    </View>
+                </KeyboardAwareScrollView>
+                {this.state.buttonVisible ? (
+                    <View>
+                        <View style={stylesheet.totalPriceContainer}>
+                            <Text style={stylesheet.totalPriceText}>Сумма заказа: </Text>
+                            <Text style={stylesheet.totalPriceText}>{this.state.totalPrice + " ₽"}</Text>
                         </View>
-                    ) : null}
-                </View>
-            </KeyboardAwareScrollView>
+                        <TouchableOpacity
+                            style={stylesheet.orderButton}
+                            onPress={() => this.props.navigation.navigate("CreateOrderScreen")}>
+                            <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : null}
+            </View>
         );
     }
 }

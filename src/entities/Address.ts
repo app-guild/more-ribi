@@ -1,10 +1,10 @@
 export default class Address {
     constructor(
-        private _street: string,
-        private _buildingNumber: string,
-        private _entrance?: string,
-        private _flor?: string,
-        private _apartment?: string,
+        private _street: string = "",
+        private _buildingNumber: string = "",
+        private _entrance: string = "",
+        private _flor: string = "",
+        private _apartment: string = "",
     ) {}
 
     toString(): string {
