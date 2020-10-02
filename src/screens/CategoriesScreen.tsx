@@ -1,12 +1,9 @@
 import React, {Component} from "react";
-import {Dimensions, StyleSheet, Text, View} from "react-native";
-import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
+import {Dimensions, StyleSheet, View} from "react-native";
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {globalColors} from "../../resources/styles";
-
-const FISH_ICON_SIZE = {width: 47, height: 17};
 
 export interface ICategoriesScreenState {
     mainContainerWidth: number;
@@ -104,18 +101,6 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
     render() {
         return (
             <View style={stylesheet.container}>
-                <View style={stylesheet.headerContainer}>
-                    <View style={stylesheet.header}>
-                        <FishIcon
-                            width={FISH_ICON_SIZE.width}
-                            height={FISH_ICON_SIZE.height}
-                            style={stylesheet.headerFishBackButton}
-                            onTouchEnd={() => this.props.navigation.goBack()}
-                        />
-                        <Text style={stylesheet.headerText}>Разделы</Text>
-                    </View>
-                </View>
-
                 <RecyclerListView
                     layoutProvider={this.layoutProvider}
                     dataProvider={this.state.dataProvider}
@@ -129,6 +114,7 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
 export const stylesheet = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 10,
     },
     columnMargin: {
         margin: 10,

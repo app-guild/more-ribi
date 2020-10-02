@@ -7,17 +7,21 @@ import {DrawerNavigationProp} from "@react-navigation/drawer";
 import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import {StackNavigationProp} from "@react-navigation/stack";
+import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 
 const MENU_ICON_SIZE = 40;
 const CART_ICON_SIZE = 20;
+const FISH_ICON_SIZE = {width: 47, height: 17};
 
 export interface IHeaderState {
     cartPrise: number;
 }
 export interface IHeaderProps {
-    screenTitle: string;
+    headerText: string;
     drawerNavigation: DrawerNavigationProp<any>;
     stackNavigation: StackNavigationProp<any>;
+    showBackButton?: boolean;
+    subheaderText?: string;
 }
 
 class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
@@ -58,17 +62,35 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
         }
 
         return (
-            <View style={stylesheet.container}>
-                <View style={stylesheet.topContainer}>
-                    <MenuIcon
-                        width={MENU_ICON_SIZE}
-                        height={MENU_ICON_SIZE}
-                        onTouchEnd={this.props.drawerNavigation.openDrawer}
-                    />
-                    <Text style={stylesheet.title}>{this.props.screenTitle}</Text>
+            <>
+                <View style={stylesheet.container}>
+                    <View style={stylesheet.topContainer}>
+                        <MenuIcon
+                            width={MENU_ICON_SIZE}
+                            height={MENU_ICON_SIZE}
+                            onTouchEnd={this.props.drawerNavigation.openDrawer}
+                        />
+                        <Text style={stylesheet.title}>{this.props.headerText}</Text>
+                    </View>
+                    <View style={stylesheet.topContainer}>{cartIcon}</View>
                 </View>
-                <View style={stylesheet.topContainer}>{cartIcon}</View>
-            </View>
+                {this.props.showBackButton !== false ? (
+                    <View style={stylesheet.subheaderContainer}>
+                        <FishIcon
+                            style={{flex: 1}}
+                            width={FISH_ICON_SIZE.width}
+                            height={FISH_ICON_SIZE.height}
+                            onTouchEnd={() => this.props.drawerNavigation.goBack()}
+                        />
+                        {this.props.subheaderText ? (
+                            <>
+                                <Text style={stylesheet.subTitle}>{this.props.subheaderText}</Text>
+                                <View style={{flex: 1}} />
+                            </>
+                        ) : null}
+                    </View>
+                ) : null}
+            </>
         );
     }
 }
@@ -78,10 +100,17 @@ export const stylesheet = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 12,
         width: "100%",
-        minHeight: 70,
+        height: 70,
         flexDirection: "row",
         justifyContent: "space-between",
         backgroundColor: globalColors.transparent,
+    },
+    subheaderContainer: {
+        width: "100%",
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 10,
     },
     title: {
         fontFamily: "Montserrat",
@@ -93,13 +122,14 @@ export const stylesheet = StyleSheet.create({
         marginLeft: 9,
     },
     subTitle: {
-        fontFamily: "Muli",
-        fontStyle: "normal",
-        fontWeight: "bold",
-        fontSize: 16,
-        lineHeight: 20,
+        flex: 5,
+        textAlignVertical: "center",
+        textAlign: "center",
+        height: "100%",
+        fontFamily: "Mulish",
+        fontWeight: "700",
+        fontSize: 18,
         color: globalColors.primaryColor,
-        marginRight: 7,
     },
     topContainer: {
         flexDirection: "row",
