@@ -4,6 +4,7 @@ import {globalColors, globalStylesheet} from "../../resources/styles";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Cart from "../entities/Cart";
+import renderPrice from "./PriceButton";
 
 export interface IProductCardState {
     countInCart: number;
@@ -52,61 +53,6 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         }
     }
 
-    private renderPrice(price: number, discountPrice?: number | null) {
-        let result: any;
-        let styleForMainPrice = stylesheet.shoppingCartMainPrice;
-        if (this.state.countInCart > 0) {
-            styleForMainPrice = stylesheet.shoppingCartMainPriceSelected;
-        }
-        let displayCountOfSelected = "";
-        if (this.state.countInCart > 1) {
-            displayCountOfSelected = `  X ${this.state.countInCart}`;
-        }
-
-        if (discountPrice || discountPrice === 0) {
-            let mainPriceTextColor = globalColors.headerUnderlineColor;
-            if (this.state.countInCart > 0) {
-                mainPriceTextColor = globalColors.backgroundOverlay;
-            }
-            result = (
-                <View style={stylesheet.shoppingCartPriceContainer}>
-                    <Text
-                        numberOfLines={1}
-                        style={{
-                            ...globalStylesheet.crossedOutPrice,
-                            marginLeft: stylesheet.shoppingCartMainPrice.padding,
-                        }}>
-                        {price + " ₽"}
-                    </Text>
-                    <View style={{display: "flex", flexDirection: "row"}}>
-                        <View style={styleForMainPrice}>
-                            <Text numberOfLines={1} style={{...globalStylesheet.price, color: mainPriceTextColor}}>
-                                {discountPrice + " ₽" + displayCountOfSelected}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-            );
-        } else {
-            let mainPriceTextColor = globalColors.crossedOutPriceColor;
-            if (this.state.countInCart > 0) {
-                mainPriceTextColor = globalColors.backgroundOverlay;
-            }
-            result = (
-                <View style={stylesheet.shoppingCartPriceContainer}>
-                    <View style={{display: "flex", flexDirection: "row"}}>
-                        <View style={styleForMainPrice}>
-                            <Text numberOfLines={1} style={{...globalStylesheet.price, color: mainPriceTextColor}}>
-                                {price + " ₽" + displayCountOfSelected}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-            );
-        }
-        return result;
-    }
-
     render() {
         const {product, onClick} = this.props;
         const image = product.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
@@ -140,7 +86,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                         </Text>
                         <View style={stylesheet.shoppingCartButtonContainer}>
                             <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
-                                {this.renderPrice(product.price, product.discountPrice)}
+                                {renderPrice(product.price, this.state.countInCart, product.discountPrice)}
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -195,32 +141,6 @@ export const stylesheet = StyleSheet.create({
         height: "100%",
         aspectRatio: 1,
         borderRadius: 20,
-    },
-    shoppingCartPriceContainer: {
-        marginRight: 10,
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        width: "100%",
-    },
-    shoppingCartMainPrice: {
-        borderColor: globalColors.accentColor,
-        borderWidth: 1,
-        borderTopLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 5,
-        width: "100%",
-    },
-    shoppingCartMainPriceSelected: {
-        backgroundColor: globalColors.headerUnderlineColor,
-        borderTopLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 5,
-        width: "100%",
     },
 });
 
