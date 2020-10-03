@@ -42,7 +42,6 @@ export default class PromotionCard extends Component<Readonly<IPromotionCardProp
             textStyle.color = "#000000";
         }
 
-
         return (
             <View>
                 {this.props.imageUrl ? (
