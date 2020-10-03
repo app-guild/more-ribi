@@ -3,6 +3,7 @@ import {ProductType} from "../../entities/ProductType";
 import Product from "../../entities/Product";
 import Restaurant from "../../entities/Restaurant";
 import Ingredient from "../../entities/Ingredient";
+import InstagramPost from "../../entities/InstagramPost";
 
 interface ProductJson {
     name: string;
@@ -42,6 +43,13 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => this.parseRestaurants(snapshot.val()));
     }
 
+    static async getInstagramPosts(): Promise<InstagramPost[]> {
+        return database()
+            .ref("/instagram")
+            .once("value")
+            .then((snapshot) => this.parseInstagramPosts(snapshot.val()));
+    }
+
     static async getPokeConstructorIngredients(): Promise<Map<string, Ingredient[]>> {
         return database()
             .ref("/constructor/poke")
@@ -72,6 +80,10 @@ export default class RealtimeDatabaseApi {
 
     private static parseRestaurants(response: any[]): Restaurant[] {
         return response.filter((it) => !!it).map((it) => Restaurant.parseRealtimeDatabaseJson(it));
+    }
+
+    private static parseInstagramPosts(json: any): InstagramPost[] {
+        return Object.values(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it));
     }
 
     private static parseConstructorIngredients(json: any): Map<string, Ingredient[]> {
