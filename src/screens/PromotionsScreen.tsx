@@ -38,8 +38,8 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
                 <FlatList
                     contentContainerStyle={stylesheet.container}
                     data={this.state.promotions}
-                    maxToRenderPerBatch={3}
-                    initialNumToRender={3}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={5}
                     renderItem={this._renderItem}
                     ItemSeparatorComponent={this._renderSeparator}
                     keyExtractor={(item, index) => String(index)}
