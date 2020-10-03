@@ -16,8 +16,8 @@ export interface IProductCardProps {
     onClick: (product: Product) => any;
 }
 
-class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProductCardState>> {
-    constructor(props: IProductCardProps) {
+class ProductCard<P extends IProductCardProps, S extends IProductCardState> extends Component<P, S> {
+    constructor(props: P) {
         super(props);
         this.state = {
             countInCart: props.countInCart,
@@ -35,17 +35,17 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         DatabaseApi.removeOnCartChangeListener(this.setCountInCart);
     }
 
-    componentDidUpdate(prevProps: Readonly<Readonly<IProductCardProps>>) {
+    componentDidUpdate(prevProps: Readonly<P>) {
         if (prevProps.product !== this.props.product) {
             DatabaseApi.getCart().then(this.setCountInCart);
         }
     }
 
-    private setCountInCart(cart: Cart) {
+    protected setCountInCart(cart: Cart) {
         this.setState({countInCart: cart.getProductCount(this.props.product)});
     }
 
-    private async addToCart() {
+    protected async addToCart() {
         if (this.state.countInCart === 0) {
             return DatabaseApi.addProductToCart(this.props.product);
         } else {

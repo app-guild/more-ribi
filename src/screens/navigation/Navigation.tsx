@@ -10,8 +10,6 @@ import {globalColors} from "../../../resources/styles";
 import FeedbackScreenNavigator from "./FeedbackScreenNavigator";
 import PromotionsScreenNavigator from "./PromotionsScreenNavigator";
 import DeliveryConditionsScreenNavigator from "./DeliveryConditionsScreenNavigator";
-import PokeConstructorScreen from "../PokeConstructorScreen";
-import WokConstructorScreen from "../WokConstructorScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -24,7 +22,7 @@ export default function Navigation() {
                     activeTintColor: globalColors.headerUnderlineColor,
                     inactiveTintColor: globalColors.primaryColor,
                 }}
-                initialRouteName="WokConstructor"
+                initialRouteName="Меню доставки"
                 edgeWidth={Dimensions.get("window").width / 3}>
                 <Drawer.Screen name="Меню доставки" component={MainScreenNavigator} />
                 <Drawer.Screen name="Мои заказы" component={MyOrdersScreen} />
@@ -33,7 +31,6 @@ export default function Navigation() {
                 <Drawer.Screen name="Условия доставки" component={DeliveryConditionsScreenNavigator} />
                 <Drawer.Screen name="Обратная связь" component={FeedbackScreenNavigator} />
                 <Drawer.Screen name="О приложении" component={AboutUsScreen} />
-                <Drawer.Screen name="WokConstructor" component={WokConstructorScreen} />
             </Drawer.Navigator>
         </NavigationContainer>
     );

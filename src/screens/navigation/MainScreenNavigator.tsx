@@ -8,7 +8,6 @@ import MainBackground from "../../components/MainBackground";
 import {globalColors} from "../../../resources/styles";
 import CartScreen from "../CartScreen";
 import PokeConstructorScreen from "../PokeConstructorScreen";
-import WokConstructorScreen from "../WokConstructorScreen";
 
 const Stack = createStackNavigator();
 
@@ -30,13 +29,12 @@ export default function MainScreenNavigator(props: any) {
                     cardStyle: {backgroundColor: globalColors.transparent},
                     cardOverlay: () => <MainBackground />,
                 }}
-                initialRouteName="WokConstructor"
+                initialRouteName="Main"
                 headerMode={"screen"}>
                 <Stack.Screen name="Main" options={{showBackButton: false}} component={MainScreen} />
                 <Stack.Screen name="Categories" options={{subheaderText: "Разделы"}} component={CategoriesScreen} />
                 <Stack.Screen name="CartScreen" component={CartScreen} />
                 <Stack.Screen name="PokeConstructor" component={PokeConstructorScreen} />
-                <Stack.Screen name="WokConstructor" component={WokConstructorScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

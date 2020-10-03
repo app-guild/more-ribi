@@ -1,81 +1,55 @@
-import React, {Component} from "react";
+import React from "react";
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Ingredient from "../entities/Ingredient";
-import {globalColors} from "../../resources/styles";
+import {globalColors, globalStylesheet} from "../../resources/styles";
+import {IProductCardProps, IProductCardState, stylesheet as productCardStylesheet} from "./ProductCard";
 import renderPrice from "./PriceButton";
-import DatabaseApi from "../utils/database/DatabaseApi";
-import Cart from "../entities/Cart";
-import Product from "../entities/Product";
 import {Picker} from "@react-native-community/picker";
+import ProductCard from "./ProductCard";
 
-export interface IWokCardProps {
-    product: Product;
+export interface IWokCardProps extends IProductCardProps {
     baseIngredients: Ingredient[];
     sauceIngredients: Ingredient[];
-    countInCart?: number;
-    style?: any;
 }
 
-export interface IWokCardState {
-    countInCart: number;
+export interface IWokCardState extends IProductCardState {
     basePicker: string;
     saucePicker: string;
 }
 
-class WokCard extends Component<Readonly<IWokCardProps>, Readonly<IWokCardState>> {
+class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
     constructor(props: IWokCardProps) {
         super(props);
         this.state = {
-            countInCart: props.countInCart ? props.countInCart : 0,
-            basePicker: props.baseIngredients[0].name, //? props.baseIngredients[0].name : "",
-            saucePicker: props.sauceIngredients[0].name, //? props.sauceIngredients[0].name : "",
+            basePicker: props.baseIngredients[0] ? props.baseIngredients[0].name : "",
+            saucePicker: props.sauceIngredients[0] ? props.sauceIngredients[0].name : "",
         };
-        this.addToCart = this.addToCart.bind(this);
-        this.setCountInCart = this.setCountInCart.bind(this);
     }
 
-    componentDidMount() {
-        DatabaseApi.addOnCartChangeListener(this.setCountInCart);
-        return DatabaseApi.getCart().then(this.setCountInCart);
-    }
-
-    componentDidUpdate(prevProps: Readonly<Readonly<IWokCardProps>>) {
-        if (prevProps.product !== this.props.product) {
-            DatabaseApi.getCart().then(this.setCountInCart);
-        }
-    }
-
-    private setCountInCart(cart: Cart) {
-        this.setState({countInCart: cart.getProductCount(this.props.product)});
-    }
-    private async addToCart() {
-        // const product = this.props.product;
-        // new Product(
-        //     product.name,
-        //     product.type,
-        //     product.price,
-        //     product.discountPrice,
-        //     product.isAvailable,
-        //     product.image,
-        //     this.state.basePicker + ", " + this.state.saucePicker,
-        // );
-        if (this.state.countInCart === 0) {
-            return DatabaseApi.addProductToCart(this.props.product);
-        } else {
-            return DatabaseApi.updateProductCount(this.props.product, this.state.countInCart + 1);
-        }
-    }
     render() {
-        const {product, baseIngredients, sauceIngredients, style} = this.props;
+        const {product, onClick, baseIngredients, sauceIngredients} = this.props;
         const image = product.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
+
         return (
-            <View style={{...stylesheet.container, ...style}}>
-                <View style={stylesheet.card}>
-                    <Image style={stylesheet.image} source={image} />
-                    <View style={{flex: 1}}>
-                        <Text style={stylesheet.name}>{product.name}</Text>
-                        <View style={stylesheet.centredRow}>
-                            <Text style={stylesheet.text}>Основа</Text>
+            <View style={productCardStylesheet.container}>
+                <View
+                    style={productCardStylesheet.shoppingCartImageContainer}
+                    onTouchEnd={() => {
+                        onClick(product);
+                    }}>
+                    <Image source={image} style={productCardStylesheet.shoppingCartImage} />
+                </View>
+                <View style={productCardStylesheet.shoppingCardMainContainer}>
+                    <Text
+                        numberOfLines={1}
+                        style={{...globalStylesheet.primaryText, marginRight: 15}}
+                        onPress={() => {
+                            onClick(product);
+                        }}>
+                        {product.name}
+                    </Text>
+                    <View style={productCardStylesheet.shoppingCardSubContainer}>
+                        <View style={stylesheet.pickers}>
                             <View style={stylesheet.pickerContainer}>
                                 <Picker
                                     mode={"dropdown"}
@@ -87,9 +61,6 @@ class WokCard extends Component<Readonly<IWokCardProps>, Readonly<IWokCardState>
                                     ))}
                                 </Picker>
                             </View>
-                        </View>
-                        <View style={stylesheet.centredRow}>
-                            <Text style={stylesheet.text}>Соус</Text>
                             <View style={stylesheet.pickerContainer}>
                                 <Picker
                                     mode={"dropdown"}
@@ -102,7 +73,7 @@ class WokCard extends Component<Readonly<IWokCardProps>, Readonly<IWokCardState>
                                 </Picker>
                             </View>
                         </View>
-                        <View style={stylesheet.shoppingCartButtonContainer}>
+                        <View style={productCardStylesheet.shoppingCartButtonContainer}>
                             <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
                                 {renderPrice(product.price, this.state.countInCart, product.discountPrice)}
                             </TouchableOpacity>
@@ -113,59 +84,32 @@ class WokCard extends Component<Readonly<IWokCardProps>, Readonly<IWokCardState>
         );
     }
 }
-
 export const stylesheet = StyleSheet.create({
-    container: {
-        paddingHorizontal: 20,
-        paddingTop: 20,
-    },
-    card: {
-        flexDirection: "row",
-    },
-    image: {
-        width: "40%",
-        aspectRatio: 1,
-        borderRadius: 15,
-        marginRight: 15,
-    },
-    name: {
-        fontFamily: "Mulish",
-        fontStyle: "normal",
-        fontWeight: "bold",
-        fontSize: 16,
-        lineHeight: 20,
-        color: globalColors.mainTextColor,
-    },
     text: {
         minWidth: 55,
         color: globalColors.additionalTextColor,
     },
-    shoppingCartButtonContainer: {
-        width: "50%",
-        alignSelf: "flex-end",
-        minWidth: 100,
-        maxWidth: 150,
-        marginTop: 10,
-    },
     centredRow: {
         flexDirection: "row",
-        alignItems: "center",
         marginTop: 10,
+        backgroundColor: "red",
     },
     pickerContainer: {
-        maxWidth: 200,
-        flex: 1,
-        marginLeft: 5,
+        width: "100%",
+        marginTop: 5,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: globalColors.primaryColor,
     },
     pricker: {
-        width: "130%",
-        height: 30,
+        width: "140%",
+        height: 20,
         padding: 0,
         margin: 0,
         color: globalColors.additionalTextColor,
+    },
+    pickers: {
+        width: "50%",
     },
 });
 

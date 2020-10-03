@@ -10,6 +10,8 @@ import Product from "../entities/Product";
 import Modal from "react-native-modal";
 import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
+import WokCard from "../components/WokCard";
+import Ingredient from "../entities/Ingredient";
 
 export interface IMainScreenState {
     productCardSize: Dimension;
@@ -26,6 +28,7 @@ const FISH_ICON_SIZE = {width: 47, height: 17};
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
     private layoutSize: Dimension[];
+    private wokIngredients: Map<string, Ingredient[]>;
 
     constructor(props: any) {
         super(props);
@@ -59,6 +62,9 @@ class MainScreen extends Component<any, IMainScreenState> {
 
     componentDidMount() {
         return RealtimeDatabaseApi.getProducts().then((splitProducts) => {
+            RealtimeDatabaseApi.getWokConstructorIngredients().then((ingredients) => {
+                this.wokIngredients = ingredients;
+            });
             const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, splitProducts);
 
             this.setState({
@@ -98,7 +104,20 @@ class MainScreen extends Component<any, IMainScreenState> {
                     </View>
                 );
             case "column0":
-                return <ProductCard product={data.item} onClick={this.onCardClick} />;
+                if (data.item.type === ProductType.Wok) {
+                    const baseIngredients = this.wokIngredients.get("base");
+                    const sauceIngredients = this.wokIngredients.get("souce");
+                    return (
+                        <WokCard
+                            product={data.item}
+                            onClick={this.onCardClick}
+                            baseIngredients={baseIngredients ? baseIngredients : []}
+                            sauceIngredients={sauceIngredients ? sauceIngredients : []}
+                        />
+                    );
+                } else {
+                    return <ProductCard product={data.item} onClick={this.onCardClick} />;
+                }
             default:
                 return null;
         }
