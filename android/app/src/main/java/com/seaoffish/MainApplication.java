@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.reactlibrary.RNGooglePayButtonPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.busfor.RNGooglePayPackage;
 import io.liteglue.SQLitePluginPackage;

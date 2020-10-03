@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Keyboard, Picker, Platform, ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
+import {Keyboard, Picker, Platform, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {PaymentsMethods} from "../utils/payment/PaymentsMethods";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -9,7 +9,6 @@ import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import Address from "../entities/Address";
 import KeyValueStorage from "../utils/KeyValueStorage";
 import TextInputMask from "react-native-text-input-mask";
-import RNGooglePayButton from "react-native-gpay-button";
 
 export interface ICreateOrderScreenState {
     availablePaymentMethods: Set<PaymentsMethods>;
@@ -97,27 +96,39 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
 
     private renderPaymentsPickerItems() {
         return [...this.state.availablePaymentMethods].map((method: PaymentsMethods) => {
-            console.log(method);
             return <Picker.Item label={method.toString()} value={method} key={method} />;
         });
     }
 
-    private renderGooglePayButton() {
-        return <RNGooglePayButton style={{flex: 1}} />;
-    }
-
     render() {
+        const buttonColor =
+            this.state.name &&
+            this.state.phone.length === 18 &&
+            this.state.address.street &&
+            this.state.address.buildingNumber
+                ? globalColors.primaryColor
+                : globalColors.fadePrimaryColor;
+
         return (
             <View style={{flex: 1, justifyContent: "space-between"}}>
                 <KeyboardAwareScrollView>
                     <View style={stylesheet.container}>
                         <View style={stylesheet.row}>
-                            <TextInput style={stylesheet.rowText} value={this.state.name} placeholder={"Имя"} />
+                            <TextInput
+                                style={stylesheet.rowText}
+                                value={this.state.name}
+                                onChangeText={(name) => this.setState({name})}
+                                placeholder={"Имя"}
+                            />
                         </View>
                         <View style={stylesheet.row}>
                             <TextInputMask
                                 style={stylesheet.rowText}
                                 value={this.state.phone}
+                                onChangeText={(phone: string) => {
+                                    console.log(phone);
+                                    this.setState({phone});
+                                }}
                                 keyboardType="phone-pad"
                                 placeholder={"Телефон"}
                                 mask={"+7 ([000]) [000] [00] [00]"}
@@ -130,6 +141,10 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <TextInput
                                 style={stylesheet.rowText}
                                 value={this.state.address.street}
+                                onChangeText={(street: string) => {
+                                    this.state.address.street = street;
+                                    this.setState({address: this.state.address});
+                                }}
                                 placeholder={"Улица"}
                             />
                         </View>
@@ -137,11 +152,19 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <TextInput
                                 style={stylesheet.rowText}
                                 value={this.state.address.buildingNumber}
+                                onChangeText={(buildingNumber: string) => {
+                                    this.state.address.buildingNumber = buildingNumber;
+                                    this.setState({address: this.state.address});
+                                }}
                                 placeholder={"Дом"}
                             />
                             <TextInput
                                 style={stylesheet.rowText}
                                 value={this.state.address.entrance}
+                                onChangeText={(entrance: string) => {
+                                    this.state.address.entrance = entrance;
+                                    this.setState({address: this.state.address});
+                                }}
                                 placeholder={"Подъезд"}
                             />
                         </View>
@@ -149,11 +172,19 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <TextInput
                                 style={stylesheet.rowText}
                                 value={this.state.address.flor}
+                                onChangeText={(flor: string) => {
+                                    this.state.address.flor = flor;
+                                    this.setState({address: this.state.address});
+                                }}
                                 placeholder={"Этаж"}
                             />
                             <TextInput
                                 style={stylesheet.rowText}
                                 value={this.state.address.apartment}
+                                onChangeText={(apartment: string) => {
+                                    this.state.address.apartment = apartment;
+                                    this.setState({address: this.state.address});
+                                }}
                                 placeholder={"Квартира/офис"}
                             />
                         </View>
@@ -162,6 +193,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                                 style={{...stylesheet.rowText, ...stylesheet.rowTextMultiline}}
                                 multiline
                                 value={this.state.comment}
+                                onChangeText={(comment: string) => this.setState({comment})}
                                 placeholder={"Комментарий к заказу"}
                             />
                         </View>
@@ -184,7 +216,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <Text style={stylesheet.totalPriceText}>{this.state.totalPrice + " ₽"}</Text>
                         </View>
                         <TouchableOpacity
-                            style={stylesheet.orderButton}
+                            style={{...stylesheet.orderButton, backgroundColor: buttonColor}}
                             onPress={() => this.props.navigation.navigate("CreateOrderScreen")}>
                             <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
                         </TouchableOpacity>

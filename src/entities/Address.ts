@@ -25,19 +25,39 @@ export default class Address {
         return this._street;
     }
 
+    set street(value: string) {
+        this._street = value;
+    }
+
     get buildingNumber(): string {
         return this._buildingNumber;
     }
 
-    get entrance(): string | undefined {
+    set buildingNumber(value: string) {
+        this._buildingNumber = value;
+    }
+
+    get entrance(): string {
         return this._entrance;
     }
 
-    get flor(): string | undefined {
+    set entrance(value: string) {
+        this._entrance = value;
+    }
+
+    get flor(): string {
         return this._flor;
     }
 
-    get apartment(): string | undefined {
+    set flor(value: string) {
+        this._flor = value;
+    }
+
+    get apartment(): string {
         return this._apartment;
+    }
+
+    set apartment(value: string) {
+        this._apartment = value;
     }
 }
