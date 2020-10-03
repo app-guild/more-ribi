@@ -6,6 +6,9 @@ import Navigation from "./screens/navigation/Navigation";
 import SQLite from "react-native-sqlite-storage";
 import {GooglePayService} from "./utils/payment/GooglePayService";
 import YaMap from "react-native-yamap";
+import "moment/locale/ru";
+import Moment from "react-moment";
+import "moment-timezone";
 
 YaMap.init("e1e7ca61-b8c3-4b09-a837-bea473d4de8b");
 
@@ -23,6 +26,9 @@ export default class App extends Component<Readonly<any>, Readonly<any>> {
         return <Navigation />;
     }
 }
+
+Moment.globalLocale = "ru";
+Moment.globalTimezone = "Europe/Moscow";
 
 global.googlePayService = new GooglePayService(
     {
