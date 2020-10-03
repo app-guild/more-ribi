@@ -34,18 +34,16 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
 
     render() {
         return (
-            <>
-                <FlatList
-                    contentContainerStyle={stylesheet.container}
-                    data={this.state.promotions}
-                    initialNumToRender={10}
-                    maxToRenderPerBatch={5}
-                    renderItem={this._renderItem}
-                    ItemSeparatorComponent={this._renderSeparator}
-                    keyExtractor={(item, index) => String(index)}
-                    ListHeaderComponent={() => <Divider style={stylesheet.firstDivider} />}
-                />
-            </>
+            <FlatList
+                contentContainerStyle={stylesheet.container}
+                data={this.state.promotions}
+                initialNumToRender={10}
+                maxToRenderPerBatch={5}
+                renderItem={this._renderItem}
+                ItemSeparatorComponent={this._renderSeparator}
+                keyExtractor={(item, index) => String(index)}
+                ListHeaderComponent={() => <Divider style={stylesheet.firstDivider} />}
+            />
         );
     }
 }

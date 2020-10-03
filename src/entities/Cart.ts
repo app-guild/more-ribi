@@ -4,7 +4,7 @@ import {TKey} from "../utils/database/DatabaseApi";
 export default class Cart {
     constructor(protected _id: TKey, protected _products: Map<Product, number>) {}
 
-    get products(): Product[] {
+    protected get products(): Product[] {
         return Array.from(this._products.keys());
     }
 
