@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Image, StyleSheet, View, Text, TouchableOpacity, Linking} from "react-native";
-import { globalColors } from '../../resources/styles';
+import {globalColors} from "../../resources/styles";
+import ExpandableTextContainer from "react-native-expandable-text";
 
 interface IPromotionCardProps {
     text: string;
@@ -9,9 +10,17 @@ interface IPromotionCardProps {
     headerText?: string;
 }
 
-export default class PromotionCard extends Component<Readonly<IPromotionCardProps>, any> {
+interface IPromotionCardState {
+    collapsed: boolean;
+}
+
+export default class PromotionCard extends Component<Readonly<IPromotionCardProps>, IPromotionCardState> {
     constructor(props: IPromotionCardProps) {
         super(props);
+
+        this.state = {
+            collapsed: true,
+        };
     }
 
     private _onImagePress = () => {
@@ -20,11 +29,19 @@ export default class PromotionCard extends Component<Readonly<IPromotionCardProp
         }
     };
 
+    // обязательный параметр в компоненте, но нам на него ничего не нужно делать
+    private _onExpandableChange = () => {};
+
+    private _toggleCollapsed = () => {
+        this.setState({collapsed: !this.state.collapsed});
+    };
+
     render() {
         const textStyle = {...stylesheet.text};
         if (!this.props.headerText) {
             textStyle.color = "#000000";
         }
+
 
         return (
             <View>
@@ -38,9 +55,15 @@ export default class PromotionCard extends Component<Readonly<IPromotionCardProp
                         {this.props.headerText}
                     </Text>
                 ) : null}
-                <Text style={textStyle} numberOfLines={2} ellipsizeMode={"tail"}>
-                    {this.props.text}
-                </Text>
+                <ExpandableTextContainer
+                    style={{marginTop: 10}}
+                    collapsed={this.state.collapsed}
+                    collapseNumberOfLines={4}
+                    onExpandableChange={this._onExpandableChange}>
+                    <Text style={textStyle} onPress={this._toggleCollapsed}>
+                        {this.props.text}
+                    </Text>
+                </ExpandableTextContainer>
             </View>
         );
     }
@@ -59,6 +82,5 @@ const stylesheet = StyleSheet.create({
         fontFamily: "Mulish",
         fontSize: 12,
         color: globalColors.additionalTextColor,
-        marginTop: 10,
     },
 });
