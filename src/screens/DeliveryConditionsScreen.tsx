@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {StyleSheet, Text, View} from "react-native";
-import { globalColors, globalStylesheet } from "../../resources/styles";
 import {Divider} from "react-native-paper";
 
 export interface IDeliveryConditionsScreenState {}
