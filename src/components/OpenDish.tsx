@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Animated, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import Product from "../entities/Product";
-import DatabaseApi, {TKey} from "../utils/database/DatabaseApi";
+import DatabaseApi from "../utils/database/DatabaseApi";
 import NumericInput from "react-native-numeric-input";
 const timer = require("react-native-timer");
 
@@ -285,7 +285,7 @@ export const stylesheet = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 14,
         lineHeight: 17,
-        color: globalColors.categoryCardTextColor,
+        color: globalColors.whiteTextColor,
     },
 });
 

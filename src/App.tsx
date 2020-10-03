@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 import * as React from "react";
-import {useEffect} from "react";
+import {Component} from "react";
 import SplashScreen from "react-native-splash-screen";
 import Navigation from "./screens/navigation/Navigation";
 import SQLite from "react-native-sqlite-storage";
@@ -9,12 +9,19 @@ import YaMap from "react-native-yamap";
 
 YaMap.init("e1e7ca61-b8c3-4b09-a837-bea473d4de8b");
 
-export default function App() {
-    useEffect(() => {
-        SplashScreen.hide();
-    }, []);
+export default class App extends Component<Readonly<any>, Readonly<any>> {
+    constructor(props: any) {
+        super(props);
+        this.state = {};
+    }
 
-    return <Navigation />;
+    componentDidMount() {
+        SplashScreen.hide();
+    }
+
+    render() {
+        return <Navigation />;
+    }
 }
 
 global.googlePayService = new GooglePayService(

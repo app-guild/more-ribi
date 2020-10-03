@@ -3,6 +3,7 @@ import {ProductType} from "../../entities/ProductType";
 import Product from "../../entities/Product";
 import Restaurant from "../../entities/Restaurant";
 import Ingredient from "../../entities/Ingredient";
+import InstagramPost from "../../entities/InstagramPost";
 
 interface ProductJson {
     name: string;
@@ -15,6 +16,8 @@ interface ProductJson {
 
 type ProductsJson = Map<string, ProductJson[]>;
 
+database().setPersistenceEnabled(true);
+
 export default class RealtimeDatabaseApi {
     /**
      * Return promise with map when for each product type contains list of products
@@ -24,7 +27,9 @@ export default class RealtimeDatabaseApi {
         return database()
             .ref("/products")
             .once("value")
-            .then((snapshot) => this.parseProducts(snapshot.val()));
+            .then((snapshot) => {
+                return this.parseProducts(snapshot.val());
+            });
     }
 
     /**
@@ -38,11 +43,20 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => this.parseRestaurants(snapshot.val()));
     }
 
+    static async getInstagramPosts(): Promise<InstagramPost[]> {
+        return database()
+            .ref("/instagram")
+            .once("value")
+            .then((snapshot) => this.parseInstagramPosts(snapshot.val()));
+    }
+
     static async getPokeConstructorIngredients(): Promise<Map<string, Ingredient[]>> {
         return database()
             .ref("/constructor/poke")
             .once("value")
-            .then((snapshot) => this.parseConstructorIngredients(snapshot.val()));
+            .then((snapshot) => {
+                return this.parseConstructorIngredients(snapshot.val());
+            });
     }
 
     static async getWokConstructorIngredients(): Promise<Map<string, Ingredient[]>> {
@@ -66,6 +80,10 @@ export default class RealtimeDatabaseApi {
 
     private static parseRestaurants(response: any[]): Restaurant[] {
         return response.filter((it) => !!it).map((it) => Restaurant.parseRealtimeDatabaseJson(it));
+    }
+
+    private static parseInstagramPosts(json: any): InstagramPost[] {
+        return Object.values(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it));
     }
 
     private static parseConstructorIngredients(json: any): Map<string, Ingredient[]> {

@@ -1,17 +1,24 @@
 import React, {Component} from "react";
-import {Dimensions, StyleSheet, Text, View} from "react-native";
-import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
+import {Dimensions, StyleSheet, View} from "react-native";
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
 import {globalColors} from "../../resources/styles";
 
-const FISH_ICON_SIZE = {width: 47, height: 17};
-
 export interface ICategoriesScreenState {
     mainContainerWidth: number;
     dataProvider: DataProvider;
 }
+
+const imageSources = {
+    wok: require("../../resources/assets/drawable/categories/wok-category.jpg"),
+    desserts: require("../../resources/assets/drawable/categories/desserts-category.jpg"),
+    beverages: require("../../resources/assets/drawable/categories/beverages-category.jpg"),
+    poke: require("../../resources/assets/drawable/categories/poke-category.jpg"),
+    customPoke: require("../../resources/assets/drawable/categories/poke-constructor-category.jpg"),
+    rolls: require("../../resources/assets/drawable/categories/rolls-category.jpg"),
+    soups: require("../../resources/assets/drawable/categories/soups-category.jpg"),
+};
 
 class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScreenState>> {
     constructor(props: any) {
@@ -19,32 +26,19 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
         this.state = {
             mainContainerWidth: Dimensions.get("window").width,
             dataProvider: new DataProvider((r1, r2) => {
-                return r1.value !== r2.value;
+                return r1.text !== r2.text;
             }).cloneWithRows([
                 {
-                    text: ProductType.translateCategoryName(ProductType.Rolls),
-                    value: ProductType.Rolls,
+                    text: "Конструктор поке",
+                    additionalText: "Собери свой идеальный поке!",
+                    imageSource: imageSources.customPoke,
                 },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Poke),
-                    value: ProductType.Poke,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Wok),
-                    value: ProductType.Wok,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Beverages),
-                    value: ProductType.Beverages,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Deserts),
-                    value: ProductType.Deserts,
-                },
-                {
-                    text: ProductType.translateCategoryName(ProductType.Soups),
-                    value: ProductType.Soups,
-                },
+                {text: ProductType.Rolls, imageSource: imageSources.rolls},
+                {text: ProductType.Poke, imageSource: imageSources.poke},
+                {text: ProductType.Wok, imageSource: imageSources.wok},
+                {text: ProductType.Beverages, imageSource: imageSources.beverages},
+                {text: ProductType.Deserts, imageSource: imageSources.desserts},
+                {text: ProductType.Soups, imageSource: imageSources.soups},
             ]),
         };
         this._rowRenderer = this._rowRenderer.bind(this);
@@ -52,68 +46,50 @@ class CategoriesScreen extends Component<Readonly<any>, Readonly<ICategoriesScre
 
     private layoutProvider = new LayoutProvider(
         (index) => {
-            return index % 2;
+            return index === 0 ? "pokeConstructor" : "column" + ((index + 1) % 2);
         },
         (type, dim) => {
             switch (type) {
-                case 0:
-                case 1:
+                case "column0":
+                case "column1":
                     dim.width = this.state.mainContainerWidth / 2 - 0.0001;
-                    dim.height =
-                        (this.state.mainContainerWidth -
-                            2 * stylesheet.containerPadding.padding -
-                            stylesheet.columnMargin.margin) /
-                            2 +
-                        stylesheet.columnMargin.margin;
+                    dim.height = this.state.mainContainerWidth / 2 - 0.0001;
                     break;
+                case "pokeConstructor":
+                    dim.width = this.state.mainContainerWidth;
+                    dim.height = this.state.mainContainerWidth / 4;
             }
         },
     );
 
     _rowRenderer(type: any, data: any) {
         switch (type) {
-            case 0:
+            case "column0":
+            case "column1":
                 return (
-                    <View
-                        style={{
-                            marginLeft: stylesheet.containerPadding.padding,
-                        }}>
+                    <View style={type === "column0" ? stylesheet.leftCard : stylesheet.rightCard}>
                         <CategoryCard
-                            size={
-                                (this.state.mainContainerWidth -
-                                    2 * stylesheet.containerPadding.padding -
-                                    stylesheet.columnMargin.margin) /
-                                2
-                            }
-                            text={data.text}
+                            width={"100%"}
+                            imageSource={data.imageSource}
+                            text={ProductType.translateCategoryName(data.text)}
                             onTouchEnd={() =>
                                 this.props.navigation.navigate("Main", {
-                                    category: data.value,
+                                    category: data.text,
                                 })
                             }
                         />
                     </View>
                 );
-            case 1:
+            case "pokeConstructor":
                 return (
-                    <View
-                        style={{
-                            alignItems: "flex-end",
-                            marginRight: stylesheet.containerPadding.padding,
-                        }}>
+                    <View style={stylesheet.fullWidthCard}>
                         <CategoryCard
-                            size={
-                                (this.state.mainContainerWidth -
-                                    2 * stylesheet.containerPadding.padding -
-                                    stylesheet.columnMargin.margin) /
-                                2
-                            }
+                            width={"100%"}
+                            height={"100%"}
+                            imageSource={data.imageSource}
                             text={data.text}
-                            onTouchEnd={() =>
-                                this.props.navigation.navigate("Main", {
-                                    category: data.value,
-                                })
-                            }
+                            additionalText={data.additionalText}
+                            onTouchEnd={() => this.props.navigation.navigate("PokeConstructor")}
                         />
                     </View>
                 );
@@ -145,6 +121,38 @@ export const stylesheet = StyleSheet.create({
     },
     containerPadding: {
         padding: 26,
+    },
+    headerContainer: {
+        paddingVertical: 24,
+        paddingHorizontal: 26,
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    headerText: {
+        fontFamily: "Muli",
+        fontStyle: "normal",
+        fontWeight: "bold",
+        fontSize: 16,
+        lineHeight: 20,
+        color: globalColors.primaryColor,
+    },
+    headerFishBackButton: {
+        position: "absolute",
+        left: 0,
+    },
+    leftCard: {
+        padding: 5,
+        paddingLeft: 26,
+    },
+    rightCard: {
+        padding: 5,
+        paddingRight: 26,
+    },
+    fullWidthCard: {
+        padding: 5,
+        paddingHorizontal: 26,
     },
 });
 

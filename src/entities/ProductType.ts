@@ -5,6 +5,7 @@ export enum ProductType {
     Deserts = "deserts",
     Beverages = "beverages",
     Poke = "poke",
+    CustomPoke = "customPoke",
     Rolls = "rolls",
     Soups = "soups",
     None = "",
@@ -25,6 +26,8 @@ export namespace ProductType {
                 return ProductType.Rolls;
             case ProductType.Soups:
                 return ProductType.Soups;
+            case ProductType.CustomPoke:
+                return ProductType.CustomPoke;
             default:
                 return ProductType.None;
         }
@@ -40,6 +43,8 @@ export namespace ProductType {
                 return "Напитки";
             case ProductType.Poke:
                 return "Поке";
+            case ProductType.CustomPoke:
+                return "Конструктор поке";
             case ProductType.Rolls:
                 return "Роллы";
             case ProductType.Soups:
