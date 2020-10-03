@@ -16,7 +16,7 @@ export default function PromotionsScreenNavigator(props: any) {
                     header: ({navigation}) => (
                         <Header
                             headerText={"Море рыбы"}
-                            subheaderText={"Новости и акции"}
+                            subheaderText={"Новости"}
                             stackNavigation={navigation}
                             drawerNavigation={props.navigation}
                         />
