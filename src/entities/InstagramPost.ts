@@ -1,27 +1,19 @@
-import {News} from "./News";
-import {ImageData} from "./ImageData";
+export default class InstagramPost {
+    constructor(private _link: string, private _text: string, private _imageUrl: string) {}
 
-export class InstagramPost extends News {
-    private _postUrl: string;
-    private _likesCount: number;
-
-    constructor(
-        date: Date,
-        text: string | null,
-        image: ImageData,
-        postUrl: string,
-        likesCount: number,
-    ) {
-        super(date, text, image);
-        this._postUrl = postUrl;
-        this._likesCount = likesCount;
+    get link(): string {
+        return this._link;
     }
 
-    get postUrl(): string {
-        return this._postUrl;
+    get text(): string {
+        return this._text;
     }
 
-    get likesCount(): number {
-        return this._likesCount;
+    get imageUrl(): string {
+        return this._imageUrl;
+    }
+
+    static parseRealtimeDatabaseJson(json: any): InstagramPost {
+        return new InstagramPost(json.linkToRecord, json.text, json.mediaUrl);
     }
 }
