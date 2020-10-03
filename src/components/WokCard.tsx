@@ -6,6 +6,9 @@ import {IProductCardProps, IProductCardState, stylesheet as productCardStyleshee
 import renderPrice from "./PriceButton";
 import {Picker} from "@react-native-community/picker";
 import ProductCard from "./ProductCard";
+import DatabaseApi from "../utils/database/DatabaseApi";
+import Product from "../entities/Product";
+import {ProductType} from "../entities/ProductType";
 
 export interface IWokCardProps extends IProductCardProps {
     baseIngredients: Ingredient[];
@@ -24,6 +27,25 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
             basePicker: props.baseIngredients[0] ? props.baseIngredients[0].name : "",
             saucePicker: props.sauceIngredients[0] ? props.sauceIngredients[0].name : "",
         };
+    }
+
+    protected async addToCart() {
+        const {product} = this.props;
+        if (this.state.countInCart === 0) {
+            return DatabaseApi.addProductToCart(
+                new Product(
+                    product.name,
+                    product.type,
+                    product.price,
+                    product.discountPrice,
+                    product.isAvailable,
+                    product.image,
+                    this.state.basePicker + ", " + this.state.saucePicker,
+                ),
+            );
+        } else {
+            return DatabaseApi.updateProductCount(this.props.product, this.state.countInCart + 1);
+        }
     }
 
     render() {
