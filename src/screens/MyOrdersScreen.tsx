@@ -4,59 +4,27 @@ import {Divider} from "react-native-paper";
 import {globalColors} from "../../resources/styles";
 import Moment from "react-moment";
 import Order from "../entities/Order";
-import Product from "../entities/Product";
-import {ProductType} from "../entities/ProductType";
 import OrderCheckModal from "../components/OrderCheckModal";
+import DatabaseApi from "../utils/database/DatabaseApi";
 
-interface IMyOrdersScreenState {}
+interface IMyOrdersScreenState {
+    orders: Order[];
+}
 
 export default class MyOrdersScreen extends Component<Readonly<any>, Readonly<IMyOrdersScreenState>> {
     private _modal = React.createRef<OrderCheckModal>();
 
-    private data = [
-        new Order(
-            0,
-            new Map([
-                [new Product("Вок с курицей Вок с курицей Вок с курицей ", ProductType.Wok, 300, undefined, true, "", ""), 1],
-                [new Product("Вок с говядиной", ProductType.Wok, 250, undefined, true, "", ""), 2],
-                [new Product("Вок с курицей Вок с курицей Вок с курицей ", ProductType.Wok, 300, undefined, true, "", ""), 3],
-                [new Product("Вок с говядиной", ProductType.Wok, 250, undefined, true, "", ""), 2],
-                [new Product("Вок с курицей Вок с курицей Вок с курицей ", ProductType.Wok, 300, undefined, true, "", ""), 1],
-                [new Product("Вок с говядиной", ProductType.Wok, 250, 200, true, "", ""), 5],
-                [new Product("Вок с говядиной", ProductType.Wok, 250, undefined, true, "", ""), 2],
-            ]),
-            new Date(Date.now()),
-            "Ярославль, ул.Свободы 52, кв. 30",
-            "Хачю кушать, дайте быстрее пожрать",
-            "Картой курьеру",
-        ),
-        new Order(
-            0,
-            new Map([
-                [new Product("Вок с курицей", ProductType.Wok, 300, undefined, true, "", ""), 1],
-                [new Product("Вок с говядиной", ProductType.Wok, 250, undefined, true, "", ""), 2],
-            ]),
-            new Date(Date.now()),
-            "Ярославль, ул.Свободы 52, кв. 30",
-            "Хачю кушать, дайте быстрее пожрать",
-            "Картой на сайте",
-        ),
-        new Order(
-            0,
-            new Map([
-                [new Product("Вок с курицей", ProductType.Wok, 300, undefined, true, "", ""), 1],
-                [new Product("Вок с говядиной", ProductType.Wok, 250, undefined, true, "", ""), 2],
-            ]),
-            new Date(Date.now()),
-            "Ярославль, ул.Свободы 52, кв. 30",
-            "Хачю кушать, дайте быстрее пожрать",
-            "Наличными",
-        ),
-    ];
-
     constructor(props: any) {
         super(props);
-        this.state = {};
+        this.state = {
+            orders: [],
+        };
+    }
+
+    componentDidMount() {
+        return DatabaseApi.getOrders().then((orders) => {
+            this.setState({orders});
+        });
     }
 
     private _renderItem = ({item}: {item: Order}) => {
@@ -78,14 +46,21 @@ export default class MyOrdersScreen extends Component<Readonly<any>, Readonly<IM
             <>
                 <FlatList
                     contentContainerStyle={stylesheet.container}
-                    data={this.data}
+                    data={this.state.orders}
                     initialNumToRender={15}
                     maxToRenderPerBatch={10}
                     renderItem={this._renderItem}
                     ItemSeparatorComponent={() => <Divider style={stylesheet.divider} />}
                     keyExtractor={(item, index) => String(index)}
-                    ListHeaderComponent={() => <Divider style={stylesheet.divider} />}
-                    ListFooterComponent={() => <Divider style={stylesheet.divider} />}
+                    ListHeaderComponent={() =>
+                        this.state.orders.length ? <Divider style={stylesheet.divider} /> : null
+                    }
+                    ListFooterComponent={() =>
+                        this.state.orders.length ? <Divider style={stylesheet.divider} /> : null
+                    }
+                    ListEmptyComponent={() => (
+                        <Text style={{alignSelf: "center"}}>Вы еще не сделали ни одного заказа!</Text>
+                    )}
                 />
 
                 <OrderCheckModal ref={this._modal} />
