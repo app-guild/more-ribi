@@ -4,6 +4,8 @@ import {globalColors, globalStylesheet} from "../../resources/styles";
 import {Divider} from "react-native-paper";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import KeyValueStorage from "../utils/KeyValueStorage";
+import EmailService from "../utils/email/EmailService";
+import Toast from "react-native-simple-toast";
 
 export interface IFeedbackScreenState {
     enabledButton: boolean;
@@ -54,11 +56,24 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
     };
 
     private _onPressSend = () => {
-        if (this.state.enabledButton) {
-            this.setState({comment: "", enabledButton: false});
-            KeyValueStorage.setUserName(this.state.name);
-            // TODO send comment
-        }
+        return new Promise((resolve) => {
+            if (this.state.enabledButton) {
+                this.setState({comment: "", enabledButton: false});
+                KeyValueStorage.setUserName(this.state.name)
+                    .then(() => EmailService.sendFeedback(this.state.name, this.state.comment))
+                    .then((response) => {
+                        if (response.data !== "Success!") {
+                            Toast.show(
+                                "Не удалось отправить отзыв. Пожалуйста, проверьте соединение с интернетом.",
+                                Toast.LONG,
+                            );
+                        }
+                        resolve();
+                    });
+            } else {
+                resolve();
+            }
+        });
     };
 
     private _checkButtonState(): void {

@@ -1,26 +1,17 @@
-import sendEmail from "react-native-email";
-import SimpleToast from "react-native-simple-toast";
 import Address from "../../entities/Address";
 import Cart from "../../entities/Cart";
 import {PaymentsMethods} from "../payment/PaymentsMethods";
+import {firebase, FirebaseFunctionsTypes} from "@react-native-firebase/functions";
 
-const TARGET_EMAIL = "applications.guild@gmail.com";
+const SHOP_EMAIL = "smouk.chayz@gmail.com";
 
 export default class EmailService {
-    public static async sendEmail(to: string | string[], subject: string, body: string, errorMessage?: string) {
-        return sendEmail(to, {subject, body}).catch(() => {
-            if (errorMessage) {
-                SimpleToast.show(errorMessage);
-            }
-        });
-    }
-
     public static async sendDeliveryOrder(
         cart: Cart,
         paymentMethod: PaymentsMethods,
         address: Address,
         comment?: string,
-    ) {
+    ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
         const subject = "Заказ из мобильного приложения";
         let body = "";
         if (comment) {
@@ -37,22 +28,24 @@ export default class EmailService {
         body = body + `Итого: ${cart.totalPrice}\n`;
         body = body + `Способ оплаты: ${paymentMethod}\n`;
 
-        return this.sendEmail(
-            TARGET_EMAIL,
+        return firebase.functions().httpsCallable("sendEmail")({
+            emailTo: SHOP_EMAIL,
             subject,
             body,
-            "Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.",
-        );
+        });
     }
 
-    public static async sendFeedback(name: string, comment: string) {
+    public static async sendFeedback(
+        name: string,
+        comment: string,
+    ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
         const subject = "Отзыв (мобильное приложение)";
         let body = `Имя: ${name}\nОтзыв: ${comment}\n`;
-        return this.sendEmail(
-            TARGET_EMAIL,
+
+        return firebase.functions().httpsCallable("sendEmail")({
+            emailTo: SHOP_EMAIL,
             subject,
             body,
-            "Не удалось отправить отзыв. Пожалуйста, проверьте соединение с интернетом.",
-        );
+        });
     }
 }

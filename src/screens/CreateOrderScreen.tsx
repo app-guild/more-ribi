@@ -13,6 +13,7 @@ import RNGooglePayButton from "react-native-gpay-button";
 import EmailService from "../utils/email/EmailService";
 import {IPaymentTransaction} from "../utils/payment/GooglePayService";
 import {Currency} from "../utils/payment/Currency";
+import Toast from "react-native-simple-toast";
 
 export interface ICreateOrderScreenState {
     availablePaymentMethods: Set<PaymentsMethods>;
@@ -116,14 +117,24 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     }
 
     private async sendOrder() {
-        return DatabaseApi.getCart()
+        return KeyValueStorage.setAddress(this.state.address)
+            .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
+            .then(() => KeyValueStorage.setUserName(this.state.name))
+            .then(() => DatabaseApi.getCart())
             .then((cart) =>
                 EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, this.state.address, this.state.comment),
             )
-            .then(() => DatabaseApi.createOrderFromCart(JSON.stringify(this.state.address), this.state.comment))
-            .then(() => KeyValueStorage.setAddress(this.state.address))
-            .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
-            .then(() => KeyValueStorage.setUserName(this.state.name));
+            .then((response) => {
+                if (response.data !== "Success!") {
+                    Toast.show("Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.", Toast.LONG);
+                    return null;
+                }
+                return DatabaseApi.createOrderFromCart(
+                    JSON.stringify(this.state.address),
+                    this.state.comment,
+                    this.state.paymentMethod,
+                );
+            });
     }
 
     private renderPayButton() {
