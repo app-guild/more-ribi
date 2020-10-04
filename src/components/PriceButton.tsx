@@ -64,7 +64,7 @@ export default function PriceButton(props: IPriceButtonProps) {
     return result;
 }
 
-export const stylesheet = StyleSheet.create({
+const stylesheet = StyleSheet.create({
     shoppingCartPriceContainer: {
         marginRight: 10,
         flexDirection: "column",
