@@ -2,6 +2,8 @@ import SQLite from "react-native-sqlite-storage";
 import Product from "../../entities/Product";
 import Cart from "../../entities/Cart";
 import Order from "../../entities/Order";
+import WokProduct from "../../entities/WokProduct";
+import {ProductType} from "../../entities/ProductType";
 
 SQLite.DEBUG = true;
 
@@ -176,12 +178,17 @@ export default class DatabaseApi {
         if (!json) {
             return new Map<Product, number>();
         }
-
         const jsonProducts = JSON.parse(json);
         const result = new Map();
         jsonProducts
             .filter((it) => it.count && !isNaN(Number(it.count)))
-            .forEach((it) => result.set(Product.parseDatabaseJson(it), Number(it.count)));
+            .forEach((it) => {
+                if (it.type === ProductType.Wok) {
+                    result.set(WokProduct.parseDatabaseJson(it), Number(it.count));
+                } else {
+                    result.set(Product.parseDatabaseJson(it), Number(it.count));
+                }
+            });
         return result;
     }
 
