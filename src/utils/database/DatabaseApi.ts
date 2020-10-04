@@ -146,13 +146,14 @@ export default class DatabaseApi {
      * Create order from cart and create new cart
      * @void
      */
-    static createOrderFromCart(address: string, comment: string): Promise<Cart> {
+    static createOrderFromCart(address: string, comment: string, paymentMethod: string): Promise<Cart> {
         return this.getCart().then((cart) => {
             const sql = `
                 UPDATE Orders SET 
                     date=datetime('now','localtime'), 
-                    address=${address}, 
-                    comment=${comment} 
+                    address=${address},
+                    comment=${comment},
+                    paymentMethod=${paymentMethod} 
                 WHERE id=${cart.id};
             `;
             return this.executeQuery(sql).then(() => this.createCart());

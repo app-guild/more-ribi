@@ -4,11 +4,11 @@ import {createStackNavigator} from "@react-navigation/stack";
 import Header from "../../components/Header";
 import MainBackground from "../../components/MainBackground";
 import {globalColors} from "../../../resources/styles";
-import PromotionsScreen from "../PromotionsScreen";
+import MyOrdersScreen from "../MyOrdersScreen";
 
 const Stack = createStackNavigator();
 
-export default function PromotionsScreenNavigator(props: any) {
+export default function MyOrdersScreenNavigator(props: any) {
     return (
         <NavigationContainer independent={true}>
             <Stack.Navigator
@@ -16,7 +16,7 @@ export default function PromotionsScreenNavigator(props: any) {
                     header: ({navigation}) => (
                         <Header
                             headerText={"Море рыбы"}
-                            subheaderText={"Новости"}
+                            subheaderText={"Мои заказы"}
                             stackNavigation={navigation}
                             drawerNavigation={props.navigation}
                         />
@@ -25,9 +25,9 @@ export default function PromotionsScreenNavigator(props: any) {
                     cardStyle: {backgroundColor: globalColors.transparent},
                     cardOverlay: () => <MainBackground />,
                 }}
-                initialRouteName="PromotionsScreen"
+                initialRouteName="MyOrdersScreen"
                 headerMode={"screen"}>
-                <Stack.Screen name="PromotionsScreen" component={PromotionsScreen} />
+                <Stack.Screen name="MyOrdersScreen" component={MyOrdersScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
