@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Keyboard, Picker, Platform, StyleSheet, Text, TextInput, View} from "react-native";
+import {Dimensions, Keyboard, Picker, PixelRatio, Platform, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {PaymentsMethods} from "../utils/payment/PaymentsMethods";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -9,6 +9,10 @@ import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import Address from "../entities/Address";
 import KeyValueStorage from "../utils/KeyValueStorage";
 import TextInputMask from "react-native-text-input-mask";
+import RNGooglePayButton from "react-native-gpay-button";
+import EmailService from "../utils/email/EmailService";
+import {IPaymentTransaction} from "../utils/payment/GooglePayService";
+import {Currency} from "../utils/payment/Currency";
 
 export interface ICreateOrderScreenState {
     availablePaymentMethods: Set<PaymentsMethods>;
@@ -55,8 +59,8 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     }
 
     private async getModifiedPaymentsMethods(): Promise<{
-        availablePaymentMethods: Set<PaymentsMethods>,
-        paymentMethod: PaymentsMethods,
+        availablePaymentMethods: Set<PaymentsMethods>;
+        paymentMethod: PaymentsMethods;
     }> {
         return new Promise(async (resolve) => {
             if (Platform.OS === "ios") {
@@ -100,7 +104,29 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         });
     }
 
-    render() {
+    private async payWithGoogle() {
+        const transaction: IPaymentTransaction = {
+            totalPrice: this.state.totalPrice.toString(),
+            totalPriceStatus: "FINAL",
+            currencyCode: Currency.RUB,
+        };
+        return global.googlePayService
+            .doPaymentRequest(transaction, (token: string) => console.log(token))
+            .then(this.sendOrder);
+    }
+
+    private async sendOrder() {
+        return DatabaseApi.getCart()
+            .then((cart) =>
+                EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, this.state.address, this.state.comment),
+            )
+            .then(() => DatabaseApi.createOrderFromCart(JSON.stringify(this.state.address), this.state.comment))
+            .then(() => KeyValueStorage.setAddress(this.state.address))
+            .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
+            .then(() => KeyValueStorage.setUserName(this.state.name));
+    }
+
+    private renderPayButton() {
         const buttonColor =
             this.state.name &&
             this.state.phone.length === 18 &&
@@ -109,6 +135,52 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 ? globalColors.primaryColor
                 : globalColors.fadePrimaryColor;
 
+        const buttonSize = {
+            width: Dimensions.get("window").width - PixelRatio.getPixelSizeForLayoutSize(16),
+            height: PixelRatio.getPixelSizeForLayoutSize(21),
+        };
+
+        let button = null;
+        if (this.state.buttonVisible) {
+            switch (this.state.paymentMethod) {
+                case PaymentsMethods.GooglePay: {
+                    button = (
+                        <RNGooglePayButton
+                            style={{...buttonSize, ...stylesheet.orderGoogleButton}}
+                            onTouch={() => this.payWithGoogle()}
+                        />
+                    );
+                    break;
+                }
+                case PaymentsMethods.ApplePay: {
+                    button = null;
+                    break;
+                }
+                default: {
+                    button = (
+                        <TouchableOpacity
+                            style={{...stylesheet.orderButton, backgroundColor: buttonColor}}
+                            onPress={() => this.sendOrder()}>
+                            <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
+                        </TouchableOpacity>
+                    );
+                }
+            }
+
+            return (
+                <View>
+                    <View style={stylesheet.totalPriceContainer}>
+                        <Text style={stylesheet.totalPriceText}>Сумма заказа: </Text>
+                        <Text style={stylesheet.totalPriceText}>{this.state.totalPrice + " ₽"}</Text>
+                    </View>
+                    {button}
+                </View>
+            );
+        }
+        return null;
+    }
+
+    render() {
         return (
             <View style={{flex: 1, justifyContent: "space-between"}}>
                 <KeyboardAwareScrollView>
@@ -209,19 +281,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                         </View>
                     </View>
                 </KeyboardAwareScrollView>
-                {this.state.buttonVisible ? (
-                    <View>
-                        <View style={stylesheet.totalPriceContainer}>
-                            <Text style={stylesheet.totalPriceText}>Сумма заказа: </Text>
-                            <Text style={stylesheet.totalPriceText}>{this.state.totalPrice + " ₽"}</Text>
-                        </View>
-                        <TouchableOpacity
-                            style={{...stylesheet.orderButton, backgroundColor: buttonColor}}
-                            onPress={() => this.props.navigation.navigate("CreateOrderScreen")}>
-                            <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
-                        </TouchableOpacity>
-                    </View>
-                ) : null}
+                {this.renderPayButton()}
             </View>
         );
     }
@@ -275,6 +335,10 @@ const stylesheet = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: globalColors.primaryColor,
+    },
+    orderGoogleButton: {
+        marginHorizontal: PixelRatio.getPixelSizeForLayoutSize(8),
+        marginBottom: PixelRatio.getPixelSizeForLayoutSize(8),
     },
     orderButtonText: {
         ...globalStylesheet.primaryText,

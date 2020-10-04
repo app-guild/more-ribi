@@ -70,20 +70,13 @@ export class GooglePayService {
             merchantName: this.merchantName,
             transaction: transaction,
         };
-
-        return this.isReadyToPay().then((ready) => {
-            if (ready) {
-                // Request payment token
-                return GooglePay.requestPayment(paymentRequest)
-                    .then((token: string) => {
-                        // Send a token to your payment gateway
-                        if (tokenCallback) {
-                            tokenCallback(token);
-                        }
-                    })
-                    .catch((error) => console.log(error.code, error.message));
-            }
-            return;
-        });
+        return GooglePay.requestPayment(paymentRequest)
+            .then((token: string) => {
+                // Send a token to your payment gateway
+                if (tokenCallback) {
+                    tokenCallback(token);
+                }
+            })
+            .catch((error) => console.log(error.code, error.message));
     }
 }
