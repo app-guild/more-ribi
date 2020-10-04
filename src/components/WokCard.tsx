@@ -3,12 +3,11 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Ingredient from "../entities/Ingredient";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {IProductCardProps, IProductCardState, stylesheet as productCardStylesheet} from "./ProductCard";
-import renderPrice from "./PriceButton";
 import {Picker} from "@react-native-community/picker";
 import ProductCard from "./ProductCard";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
-import {ProductType} from "../entities/ProductType";
+import PriceButton from "./PriceButton";
 
 export interface IWokCardProps extends IProductCardProps {
     baseIngredients: Ingredient[];
@@ -97,7 +96,11 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
                         </View>
                         <View style={productCardStylesheet.shoppingCartButtonContainer}>
                             <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
-                                {renderPrice(product.price, this.state.countInCart, product.discountPrice)}
+                                <PriceButton
+                                    price={product.price}
+                                    countInCart={this.state.countInCart}
+                                    discountPrice={product.discountPrice}
+                                />
                             </TouchableOpacity>
                         </View>
                     </View>

@@ -4,7 +4,7 @@ import {globalColors, globalStylesheet} from "../../resources/styles";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Cart from "../entities/Cart";
-import renderPrice from "./PriceButton";
+import PriceButton from "./PriceButton";
 
 export interface IProductCardState {
     countInCart: number;
@@ -86,7 +86,11 @@ class ProductCard<P extends IProductCardProps, S extends IProductCardState> exte
                         </Text>
                         <View style={stylesheet.shoppingCartButtonContainer}>
                             <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
-                                {renderPrice(product.price, this.state.countInCart, product.discountPrice)}
+                                <PriceButton
+                                    price={product.price}
+                                    countInCart={this.state.countInCart}
+                                    discountPrice={product.discountPrice}
+                                />
                             </TouchableOpacity>
                         </View>
                     </View>

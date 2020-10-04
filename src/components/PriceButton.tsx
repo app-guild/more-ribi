@@ -2,8 +2,15 @@ import {globalColors, globalStylesheet} from "../../resources/styles";
 import {StyleSheet, Text, View} from "react-native";
 import React from "react";
 
-export function renderPrice(price: number, countInCart: number, discountPrice?: number | null) {
+export interface IPriceButtonProps {
+    price: number;
+    countInCart: number;
+    discountPrice?: number | null;
+}
+
+export default function PriceButton(props: IPriceButtonProps) {
     let result: any;
+    const {price, countInCart, discountPrice} = props;
     let styleForMainPrice = stylesheet.shoppingCartMainPrice;
     if (countInCart > 0) {
         styleForMainPrice = stylesheet.shoppingCartMainPriceSelected;
@@ -87,5 +94,3 @@ export const stylesheet = StyleSheet.create({
         width: "100%",
     },
 });
-
-export default renderPrice;
