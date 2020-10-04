@@ -1,5 +1,8 @@
 {
   "react-native": {
     "database_persistence_enabled": true
+  },
+  "functions": {
+    "source": "functions"
   }
 }

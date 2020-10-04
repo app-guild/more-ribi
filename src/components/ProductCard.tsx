@@ -11,7 +11,6 @@ export interface IProductCardState {
 
 export interface IProductCardProps {
     product: Product;
-    countInCart: number;
     onClick: (product: Product) => any;
 }
 
@@ -19,7 +18,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
     constructor(props: IProductCardProps) {
         super(props);
         this.state = {
-            countInCart: props.countInCart,
+            countInCart: 0,
         };
         this.addToCart = this.addToCart.bind(this);
         this.setCountInCart = this.setCountInCart.bind(this);
