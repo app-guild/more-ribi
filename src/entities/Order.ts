@@ -40,7 +40,7 @@ export default class Order extends Cart {
         return new Order(
             response.id,
             products,
-            new Date(response.date * 1000),
+            new Date(response.date),
             JSON.parse(response.address),
             response.comment,
             response.paymentMethod,

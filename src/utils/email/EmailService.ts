@@ -2,6 +2,7 @@ import Address from "../../entities/Address";
 import Cart from "../../entities/Cart";
 import {PaymentsMethods} from "../payment/PaymentsMethods";
 import {firebase, FirebaseFunctionsTypes} from "@react-native-firebase/functions";
+import Restaurant from "../../entities/Restaurant";
 
 const SHOP_EMAIL = "smouk.chayz@gmail.com";
 
@@ -9,7 +10,7 @@ export default class EmailService {
     public static async sendDeliveryOrder(
         cart: Cart,
         paymentMethod: PaymentsMethods,
-        address: Address,
+        address: Address | Restaurant,
         comment?: string,
     ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
         const subject = "Заказ из мобильного приложения";
@@ -17,7 +18,11 @@ export default class EmailService {
         if (comment) {
             body = body + `Комментарий к заказу: ${comment}\n`;
         }
-        body = `Адрес: ${address} \n`;
+        if (address instanceof Address) {
+            body = `Адрес: ${Address.print(address)} \n`;
+        } else {
+            body = `САМОВЫВОЗ с адреса: ${address.address} \n`;
+        }
         body = body + `Заказ: \n`;
         cart.products.forEach((prod) => {
             const price = prod.discountPrice ? prod.discountPrice : prod.price;

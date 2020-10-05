@@ -6,6 +6,7 @@ import DatabaseApi from "../utils/database/DatabaseApi";
 import CartItem from "../components/CartItem";
 import Product from "../entities/Product";
 import {TouchableOpacity} from "react-native-gesture-handler";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 export interface ICartScreenState {
     cart: Cart;
@@ -21,9 +22,19 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
     }
 
     componentDidMount() {
-        return DatabaseApi.getCart()
-            .then(this.updateCart)
-            .then(() => DatabaseApi.addOnCartChangeListener(this.updateCart));
+        DatabaseApi.addOnCartChangeListener(this.updateCart);
+        RealtimeDatabaseApi.addProductsChangedListener(this.removeUnavailableProductsInCart);
+        return DatabaseApi.getCart().then(this.updateCart);
+    }
+
+    removeUnavailableProductsInCart() {
+        return DatabaseApi.removeUnavailableProductsFromCart()
+            .then((unavailableProducts) => {
+                // TODO show modal window with now unavailable products
+                return;
+            })
+            .then(DatabaseApi.getCart)
+            .then(this.updateCart);
     }
 
     componentWillUnmount() {

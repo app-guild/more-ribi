@@ -1,5 +1,16 @@
-import React, {Component} from "react";
-import {Dimensions, Keyboard, Picker, PixelRatio, Platform, StyleSheet, Text, TextInput, View} from "react-native";
+import React, {Component, createRef} from "react";
+import {
+    Animated,
+    Dimensions,
+    Keyboard,
+    Picker,
+    PixelRatio,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    View
+} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {parsePaymentsMethods, PaymentsMethods} from "../utils/payment/PaymentsMethods";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -14,8 +25,13 @@ import EmailService from "../utils/email/EmailService";
 import {IPaymentTransaction} from "../utils/payment/GooglePayService";
 import {Currency} from "../utils/payment/Currency";
 import Toast from "react-native-simple-toast";
+import RadioButtonGroup from "../components/RadioButtonGroup";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
+import Restaurant from "../entities/Restaurant";
 
 export interface ICreateOrderScreenState {
+    isDelivery: boolean;
+    restaurantForPickup?: Restaurant;
     availablePaymentMethods: Set<PaymentsMethods>;
     paymentMethod: PaymentsMethods;
     totalPrice: number;
@@ -27,9 +43,13 @@ export interface ICreateOrderScreenState {
 }
 
 class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderScreenState>> {
+    deliveryOrPickupRef = createRef<RadioButtonGroup>();
+    restaurants: Restaurant[] = [];
+
     constructor(props: any) {
         super(props);
         this.state = {
+            isDelivery: true,
             comment: "",
             name: "",
             phone: "",
@@ -42,6 +62,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         this.updateTotalPrice = this.updateTotalPrice.bind(this);
         this.sendOrder = this.sendOrder.bind(this);
         this.payWithGoogle = this.payWithGoogle.bind(this);
+        this.onTakeWayChanged = this.onTakeWayChanged.bind(this);
         Keyboard.addListener("keyboardDidShow", this._keyboardDidShow);
         Keyboard.addListener("keyboardDidHide", this._keyboardDidHide);
     }
@@ -49,6 +70,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     componentDidMount() {
         return this.getModifiedPaymentsMethods()
             .then(async (modifiedPaymentsMethods) => {
+                this.restaurants = await RealtimeDatabaseApi.getRestaurants();
                 const cart = await DatabaseApi.getCart();
                 let address = await KeyValueStorage.getAddress();
                 const name = await KeyValueStorage.getUserName();
@@ -63,7 +85,14 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                         modifiedPaymentsMethods.paymentMethod = lastPaymentMethod;
                     }
                 }
-                this.setState({...modifiedPaymentsMethods, totalPrice: cart.totalPrice, address, name, phone});
+                this.setState({
+                    ...modifiedPaymentsMethods,
+                    restaurantForPickup: this.restaurants[0],
+                    totalPrice: cart.totalPrice,
+                    address,
+                    name,
+                    phone,
+                });
             })
             .then(() => DatabaseApi.addOnCartChangeListener(this.updateTotalPrice));
     }
@@ -123,6 +152,13 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         });
     }
 
+    private renderRestaurantsPickerItems() {
+        return this.restaurants.map((rest) => {
+            const label = rest.address.split(";").slice(1).join(" ");
+            return <Picker.Item label={label} value={rest} key={rest.address} />;
+        });
+    }
+
     private async payWithGoogle() {
         const transaction: IPaymentTransaction = {
             totalPrice: this.state.totalPrice.toString(),
@@ -142,20 +178,27 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 .then(() => KeyValueStorage.setUserName(this.state.name))
                 .then(() => KeyValueStorage.setLastPaymentMethod(this.state.paymentMethod))
                 .then(() => DatabaseApi.getCart())
-                // .then((cart) =>
-                //     EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, this.state.address, this.state.comment),
-                // )
+                // .then((cart) => {
+                //     let address: Address | Restaurant = this.state.address;
+                //     if (!this.state.isDelivery && this.state.restaurantForPickup) {
+                //         address = this.state.restaurantForPickup;
+                //     }
+                //     EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, address, this.state.comment);
+                // })
                 .then((response) => {
                     // if (response.data !== "Success!") {
                     //     Toast.show("Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.", Toast.LONG);
                     //     return null;
                     // }
-                    console.log("sendOrder");
+                    let address: Address = this.state.address;
+                    if (!this.state.isDelivery && this.state.restaurantForPickup) {
+                        address = new Address(`Самовывоз: ${this.state.restaurantForPickup.address}`);
+                    }
                     return DatabaseApi.createOrderFromCart(
-                        JSON.stringify(this.state.address),
+                        JSON.stringify(address),
                         this.state.comment,
                         this.state.paymentMethod,
-                    );
+                    ).then(() => this.props.navigation.navigate("Main"));
                 })
         );
     }
@@ -221,6 +264,86 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         return null;
     }
 
+    private onTakeWayChanged(isChanged: boolean) {
+        if (isChanged) {
+            const deliveryOrPickup = this.deliveryOrPickupRef.current;
+            if (deliveryOrPickup) {
+                const isDelivery = deliveryOrPickup.getCheckedNumber() === 0;
+                this.setState({isDelivery});
+            }
+        }
+    }
+
+    private renderFields() {
+        return this.state.isDelivery ? (
+            <View>
+                <View style={stylesheet.row}>
+                    <TextInput
+                        style={stylesheet.rowText}
+                        value={this.state.address.street}
+                        onChangeText={(street: string) => {
+                            this.state.address.street = street;
+                            this.setState({address: this.state.address});
+                        }}
+                        placeholder={"Улица"}
+                    />
+                </View>
+                <View style={stylesheet.row}>
+                    <TextInput
+                        style={stylesheet.rowText}
+                        value={this.state.address.buildingNumber}
+                        onChangeText={(buildingNumber: string) => {
+                            this.state.address.buildingNumber = buildingNumber;
+                            this.setState({address: this.state.address});
+                        }}
+                        placeholder={"Дом"}
+                    />
+                    <TextInput
+                        style={stylesheet.rowText}
+                        value={this.state.address.entrance}
+                        onChangeText={(entrance: string) => {
+                            this.state.address.entrance = entrance;
+                            this.setState({address: this.state.address});
+                        }}
+                        placeholder={"Подъезд"}
+                    />
+                </View>
+                <View style={stylesheet.row}>
+                    <TextInput
+                        style={stylesheet.rowText}
+                        value={this.state.address.flor}
+                        onChangeText={(flor: string) => {
+                            this.state.address.flor = flor;
+                            this.setState({address: this.state.address});
+                        }}
+                        placeholder={"Этаж"}
+                    />
+                    <TextInput
+                        style={stylesheet.rowText}
+                        value={this.state.address.apartment}
+                        onChangeText={(apartment: string) => {
+                            this.state.address.apartment = apartment;
+                            this.setState({address: this.state.address});
+                        }}
+                        placeholder={"Квартира/офис"}
+                    />
+                </View>
+            </View>
+        ) : (
+            <View>
+                <View style={stylesheet.row}>
+                    <View style={stylesheet.rowText}>
+                        <Picker
+                            onValueChange={(itemValue) => this.setState({restaurantForPickup: itemValue})}
+                            style={stylesheet.rowText}>
+                            {this.renderRestaurantsPickerItems()}
+                        </Picker>
+                    </View>
+                </View>
+            </View>
+        );
+    }
+
     render() {
         return (
             <View style={{flex: 1, justifyContent: "space-between"}}>
@@ -248,56 +371,14 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <Text style={stylesheet.rowHeader}>Доставка</Text>
                         </View>
                         <View style={stylesheet.row}>
-                            <TextInput
-                                style={stylesheet.rowText}
-                                value={this.state.address.street}
-                                onChangeText={(street: string) => {
-                                    this.state.address.street = street;
-                                    this.setState({address: this.state.address});
-                                }}
-                                placeholder={"Улица"}
+                            <RadioButtonGroup
+                                ref={this.deliveryOrPickupRef}
+                                onClick={this.onTakeWayChanged}
+                                choices={[{name: "Доставить по адресу"}, {name: "Самовывоз"}]}
+                                labelStyle={globalStylesheet.headerText}
                             />
                         </View>
-                        <View style={stylesheet.row}>
-                            <TextInput
-                                style={stylesheet.rowText}
-                                value={this.state.address.buildingNumber}
-                                onChangeText={(buildingNumber: string) => {
-                                    this.state.address.buildingNumber = buildingNumber;
-                                    this.setState({address: this.state.address});
-                                }}
-                                placeholder={"Дом"}
-                            />
-                            <TextInput
-                                style={stylesheet.rowText}
-                                value={this.state.address.entrance}
-                                onChangeText={(entrance: string) => {
-                                    this.state.address.entrance = entrance;
-                                    this.setState({address: this.state.address});
-                                }}
-                                placeholder={"Подъезд"}
-                            />
-                        </View>
-                        <View style={stylesheet.row}>
-                            <TextInput
-                                style={stylesheet.rowText}
-                                value={this.state.address.flor}
-                                onChangeText={(flor: string) => {
-                                    this.state.address.flor = flor;
-                                    this.setState({address: this.state.address});
-                                }}
-                                placeholder={"Этаж"}
-                            />
-                            <TextInput
-                                style={stylesheet.rowText}
-                                value={this.state.address.apartment}
-                                onChangeText={(apartment: string) => {
-                                    this.state.address.apartment = apartment;
-                                    this.setState({address: this.state.address});
-                                }}
-                                placeholder={"Квартира/офис"}
-                            />
-                        </View>
+                        {this.renderFields()}
                         <View style={stylesheet.row}>
                             <TextInput
                                 style={{...stylesheet.rowText, ...stylesheet.rowTextMultiline}}

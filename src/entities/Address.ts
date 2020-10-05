@@ -7,16 +7,22 @@ export default class Address {
         private _apartment: string = "",
     ) {}
 
-    toString(): string {
-        let result = `${this.street}, дом №${this.buildingNumber}`;
-        if (this.entrance) {
-            result = result + `, подъезд №${this.entrance}`;
+    public static print(address: Address): string {
+        let result = "";
+        if (address.street) {
+            result = result + `${address.street}`;
         }
-        if (this.flor) {
-            result = result + `, ${this.flor} этаж`;
+        if (address.buildingNumber) {
+            result = result + `, дом №${address.buildingNumber}`;
         }
-        if (this.apartment) {
-            result = result + `, квартира/офис №${this.apartment}`;
+        if (address.entrance) {
+            result = result + `, подъезд №${address.entrance}`;
+        }
+        if (address.flor) {
+            result = result + `, ${address.flor} этаж`;
+        }
+        if (address.apartment) {
+            result = result + `, квартира/офис №${address.apartment}`;
         }
         return result;
     }

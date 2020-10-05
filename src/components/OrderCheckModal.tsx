@@ -4,6 +4,7 @@ import {View, Text, StyleSheet, ScrollView} from "react-native";
 import Modal from "react-native-modal";
 import Moment from "react-moment";
 import {Divider} from "react-native-paper";
+import Address from "../entities/Address";
 
 interface ICheckModalState {
     modalVisible: boolean;
@@ -78,7 +79,7 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                     onBackdropPress={() => this.setState({modalVisible: false})}
                     onBackButtonPress={() => this.setState({modalVisible: false})}>
                     <ScrollView style={stylesheet.scroll} contentContainerStyle={stylesheet.container}>
-                        <Text style={{marginBottom: 10}}>{this.state.order.address}</Text>
+                        <Text style={{marginBottom: 10}}>{Address.print(this.state.order.address)}</Text>
                         <Moment format={"DD.MM.YYYY HH:MM"} element={Text}>
                             {this.state.order.date}
                         </Moment>

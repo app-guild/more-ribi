@@ -16,12 +16,10 @@ export default class Cart {
         return this._id;
     }
 
-    popUnavailableProducts(): Map<Product, number> {
-        const unavailableProducts = Array.from(this._products.entries()).filter(
-            (prod) => prod[0].isAvailable === false,
-        );
+    popUnavailableProducts(): Product[] {
+        const unavailableProducts = Array.from(this._products.entries()).filter((prod) => prod[0].available === false);
         unavailableProducts.forEach((prod) => this._products.delete(prod[0]));
-        return new Map<Product, number>(unavailableProducts);
+        return unavailableProducts.map((pair) => pair[0]);
     }
 
     addProduct(product: Product, count?: number): void {
@@ -66,7 +64,10 @@ export default class Cart {
 
     getProductCount(product: Product): number {
         const originalProduct = this.getProductById(product.id);
-        return this._products.get(originalProduct) || 0;
+        if (originalProduct) {
+            return this._products.get(originalProduct) || 0;
+        }
+        return 0;
     }
 
     getJsonProducts(): string {
