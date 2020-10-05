@@ -4,6 +4,7 @@ import Product from "../../entities/Product";
 import Restaurant from "../../entities/Restaurant";
 import Ingredient from "../../entities/Ingredient";
 import InstagramPost from "../../entities/InstagramPost";
+import DatabaseApi from "../../utils/database/DatabaseApi";
 
 interface ProductJson {
     name: string;
@@ -18,7 +19,62 @@ type ProductsJson = Map<string, ProductJson[]>;
 
 database().setPersistenceEnabled(true);
 
+// Нужно подписываться на каждый тип продуктов.
+// Если подписаться на products, то при изменении одного продукта firebase посчитает,
+// что изменилась группа и вернет все ее продукты
+for (let productType in ProductType) {
+    productType = productType.toLowerCase();
+    database()
+        .ref("/products/" + productType)
+        .on("child_changed", (snapshot: any) => {
+            let response = snapshot.val();
+            // Если изменился один элемент, то вернется объект измененного элемента,
+            // а если изменилось несколько элементво, то будет массив. Работаем всегда с массивом
+            if (!(response instanceof Array)) {
+                response = [response];
+            }
+
+            const changedProducts = response.map((productJson: ProductJson) =>
+                Product.parseRealtimeDatabaseJson(productJson, ProductType.parse(productType)),
+            );
+
+            // обновляем продукты в корзине
+            DatabaseApi.getCart().then((cart) => {
+                const productsFromCart = cart.products;
+                changedProducts.forEach((changedProduct: Product) => {
+                    const cartProduct = productsFromCart.find((it) => it.id === changedProduct.id);
+                    if (cartProduct) {
+                        cart.replaceProduct(cartProduct, changedProduct);
+                    }
+                });
+
+                DatabaseApi.updateProductsInCart(cart);
+            });
+
+            RealtimeDatabaseApi.callProductsChangedListeners(changedProducts);
+        });
+}
+
 export default class RealtimeDatabaseApi {
+    private static _onProductsChangedListeners: Function[] = [];
+
+    static addProductsChangedListener(listener: (newProducts: Product[]) => void) {
+        this._onProductsChangedListeners.push(listener);
+    }
+
+    static removeProductsChangedListener(listener: (newProducts: Product[]) => void) {
+        const index = this._onProductsChangedListeners.indexOf(listener);
+        if (index !== undefined) {
+            this._onProductsChangedListeners.splice(index, 1);
+        }
+    }
+
+    static callProductsChangedListeners(newProducts: Product[]): void {
+        this._onProductsChangedListeners.forEach((listener) => {
+            listener(newProducts);
+        });
+    }
+
     /**
      * Return promise with map when for each product type contains list of products
      * @return {Promise<Map<ProductType, Product[]>>}
@@ -66,7 +122,7 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => this.parseConstructorIngredients(snapshot.val()));
     }
 
-    private static parseProducts(productsJson: ProductsJson): Map<ProductType, Product[]> {
+    static parseProducts(productsJson: ProductsJson): Map<ProductType, Product[]> {
         const map = ProductType.map();
         for (const [type, products] of Object.entries(productsJson)) {
             const parsedType = ProductType.parse(type);
