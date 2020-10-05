@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Dimensions, Keyboard, Picker, PixelRatio, Platform, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
-import {PaymentsMethods} from "../utils/payment/PaymentsMethods";
+import {parsePaymentsMethods, PaymentsMethods} from "../utils/payment/PaymentsMethods";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
@@ -40,6 +40,8 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             paymentMethod: PaymentsMethods.CardToCourier,
         };
         this.updateTotalPrice = this.updateTotalPrice.bind(this);
+        this.sendOrder = this.sendOrder.bind(this);
+        this.payWithGoogle = this.payWithGoogle.bind(this);
         Keyboard.addListener("keyboardDidShow", this._keyboardDidShow);
         Keyboard.addListener("keyboardDidHide", this._keyboardDidHide);
     }
@@ -51,12 +53,28 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 let address = await KeyValueStorage.getAddress();
                 const name = await KeyValueStorage.getUserName();
                 const phone = await KeyValueStorage.getPhoneNumber();
+                let lastPaymentMethod = await KeyValueStorage.getLastPaymentMethod();
                 if (!address) {
                     address = new Address();
+                }
+                if (lastPaymentMethod) {
+                    lastPaymentMethod = parsePaymentsMethods(lastPaymentMethod);
+                    if (lastPaymentMethod) {
+                        modifiedPaymentsMethods.paymentMethod = lastPaymentMethod;
+                    }
                 }
                 this.setState({...modifiedPaymentsMethods, totalPrice: cart.totalPrice, address, name, phone});
             })
             .then(() => DatabaseApi.addOnCartChangeListener(this.updateTotalPrice));
+    }
+
+    private isButtonEnable(): boolean {
+        return !!(
+            this.state.name &&
+            this.state.phone.length === 18 &&
+            this.state.address.street &&
+            this.state.address.buildingNumber
+        );
     }
 
     private async getModifiedPaymentsMethods(): Promise<{
@@ -111,40 +129,39 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             totalPriceStatus: "FINAL",
             currencyCode: Currency.RUB,
         };
+        console.log("GOOGLE payWithGoogle");
         return global.googlePayService
             .doPaymentRequest(transaction, (token: string) => console.log(token))
             .then(this.sendOrder);
     }
 
     private async sendOrder() {
-        return KeyValueStorage.setAddress(this.state.address)
-            .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
-            .then(() => KeyValueStorage.setUserName(this.state.name))
-            .then(() => DatabaseApi.getCart())
-            .then((cart) =>
-                EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, this.state.address, this.state.comment),
-            )
-            .then((response) => {
-                if (response.data !== "Success!") {
-                    Toast.show("Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.", Toast.LONG);
-                    return null;
-                }
-                return DatabaseApi.createOrderFromCart(
-                    JSON.stringify(this.state.address),
-                    this.state.comment,
-                    this.state.paymentMethod,
-                );
-            });
+        return (
+            KeyValueStorage.setAddress(this.state.address)
+                .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
+                .then(() => KeyValueStorage.setUserName(this.state.name))
+                .then(() => KeyValueStorage.setLastPaymentMethod(this.state.paymentMethod))
+                .then(() => DatabaseApi.getCart())
+                // .then((cart) =>
+                //     EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, this.state.address, this.state.comment),
+                // )
+                .then((response) => {
+                    // if (response.data !== "Success!") {
+                    //     Toast.show("Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.", Toast.LONG);
+                    //     return null;
+                    // }
+                    console.log("sendOrder");
+                    return DatabaseApi.createOrderFromCart(
+                        JSON.stringify(this.state.address),
+                        this.state.comment,
+                        this.state.paymentMethod,
+                    );
+                })
+        );
     }
 
     private renderPayButton() {
-        const buttonColor =
-            this.state.name &&
-            this.state.phone.length === 18 &&
-            this.state.address.street &&
-            this.state.address.buildingNumber
-                ? globalColors.primaryColor
-                : globalColors.fadePrimaryColor;
+        const buttonColor = this.isButtonEnable() ? globalColors.primaryColor : globalColors.fadePrimaryColor;
 
         const buttonSize = {
             width: Dimensions.get("window").width - PixelRatio.getPixelSizeForLayoutSize(16),
@@ -155,12 +172,20 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         if (this.state.buttonVisible) {
             switch (this.state.paymentMethod) {
                 case PaymentsMethods.GooglePay: {
-                    button = (
-                        <RNGooglePayButton
-                            style={{...buttonSize, ...stylesheet.orderGoogleButton}}
-                            onTouch={() => this.payWithGoogle()}
-                        />
-                    );
+                    if (this.isButtonEnable()) {
+                        button = (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    console.log("GOOGLE ON TOUCH");
+                                    if (this.isButtonEnable()) {
+                                        return this.payWithGoogle();
+                                    }
+                                    return null;
+                                }}>
+                                <RNGooglePayButton style={{...buttonSize, ...stylesheet.orderButton}} />
+                            </TouchableOpacity>
+                        );
+                    }
                     break;
                 }
                 case PaymentsMethods.ApplePay: {
@@ -170,8 +195,13 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 default: {
                     button = (
                         <TouchableOpacity
-                            style={{...stylesheet.orderButton, backgroundColor: buttonColor}}
-                            onPress={() => this.sendOrder()}>
+                            style={{...buttonSize, ...stylesheet.orderButton, backgroundColor: buttonColor}}
+                            onPress={() => {
+                                if (this.isButtonEnable()) {
+                                    return this.sendOrder();
+                                }
+                                return null;
+                            }}>
                             <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
                         </TouchableOpacity>
                     );
@@ -208,10 +238,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <TextInputMask
                                 style={stylesheet.rowText}
                                 value={this.state.phone}
-                                onChangeText={(phone: string) => {
-                                    console.log(phone);
-                                    this.setState({phone});
-                                }}
+                                onChangeText={(phone: string) => this.setState({phone})}
                                 keyboardType="phone-pad"
                                 placeholder={"Телефон"}
                                 mask={"+7 ([000]) [000] [00] [00]"}
@@ -341,18 +368,16 @@ const stylesheet = StyleSheet.create({
         color: globalColors.primaryColor,
     },
     orderButton: {
-        width: "100%",
         paddingVertical: 22,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: globalColors.primaryColor,
-    },
-    orderGoogleButton: {
+        alignSelf: "center",
+        borderRadius: 5,
         marginHorizontal: PixelRatio.getPixelSizeForLayoutSize(8),
         marginBottom: PixelRatio.getPixelSizeForLayoutSize(8),
     },
     orderButtonText: {
-        ...globalStylesheet.primaryText,
+        ...globalStylesheet.headerText,
         color: globalColors.mainBackgroundColor,
     },
 });

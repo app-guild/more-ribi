@@ -53,6 +53,13 @@ export default class DatabaseApi {
         });
     }
 
+    static async removeUnavailableProductsFromCart(): Promise<Map<Product, number>> {
+        return this.getCart().then((cart) => {
+            const unavailable = cart.popUnavailableProducts();
+            return this.updateProducts(cart).then(() => unavailable);
+        });
+    }
+
     // region Cart
 
     /**
@@ -147,17 +154,21 @@ export default class DatabaseApi {
      * @void
      */
     static createOrderFromCart(address: string, comment: string, paymentMethod: string): Promise<Cart> {
-        return this.getCart().then((cart) => {
-            const sql = `
-                UPDATE Orders SET 
-                    date=datetime('now','localtime'), 
-                    address=${address},
-                    comment=${comment},
-                    paymentMethod=${paymentMethod} 
-                WHERE id=${cart.id};
-            `;
-            return this.executeQuery(sql).then(() => this.createCart());
-        });
+        return this.getCart()
+            .then((cart) => {
+                const sql = `
+                    UPDATE Orders SET 
+                        date=datetime('now','localtime'), 
+                        address='${address}',
+                        comment='${comment}',
+                        paymentMethod='${paymentMethod}' 
+                    WHERE id=${cart.id};
+                `;
+                console.log(sql);
+                return sql;
+            })
+            .then((sql) => this.executeQuery(sql))
+            .then(() => this.createCart());
     }
 
     // endregion
@@ -181,19 +192,16 @@ export default class DatabaseApi {
         const jsonProducts = JSON.parse(json);
         const result = new Map();
         jsonProducts
-            .filter((it) => it.count && !isNaN(Number(it.count)))
-            .forEach((it) => result.set(Product.parseDatabaseJson(it), Number(it.count)));
+            .filter((it: any) => it.count && !isNaN(Number(it.count)))
+            .forEach((it: any) => result.set(Product.parseDatabaseJson(it), Number(it.count)));
         return result;
     }
 
     private static createCart(): Promise<Cart> {
-        const sql = `
-            INSERT INTO Orders DEFAULT VALUES;
-            SELECT * FROM Orders WHERE date IS NULL       
-        `;
+        const sql = `INSERT INTO Orders DEFAULT VALUES;`;
 
         return this.executeQuery(sql)
-            .then((key) => new Cart(key.rows.raw()[0]?.id, new Map()))
+            .then(this.getCart)
             .then((cart) => {
                 this.callOnCartChangeListeners(cart);
                 return cart;
@@ -217,7 +225,7 @@ export default class DatabaseApi {
                 trans.executeSql(
                     sql,
                     [],
-                    (trans: any, results: IResults) => {
+                    (tran: any, results: IResults) => {
                         resolve(results);
                     },
                     (error: any) => {

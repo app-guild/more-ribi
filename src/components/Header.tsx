@@ -39,7 +39,9 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
 
     componentDidMount() {
         DatabaseApi.addOnCartChangeListener(this.updateCart);
-        return DatabaseApi.getCart().then(this.updateCart);
+        return DatabaseApi.getCart()
+            .then(this.updateCart)
+            ;
     }
 
     componentWillUnmount() {

@@ -16,6 +16,14 @@ export default class Cart {
         return this._id;
     }
 
+    popUnavailableProducts(): Map<Product, number> {
+        const unavailableProducts = Array.from(this._products.entries()).filter(
+            (prod) => prod[0].isAvailable === false,
+        );
+        unavailableProducts.forEach((prod) => this._products.delete(prod[0]));
+        return new Map<Product, number>(unavailableProducts);
+    }
+
     addProduct(product: Product, count?: number): void {
         if (this.getProductById(product.id)) {
             return;
