@@ -27,7 +27,7 @@ export default class Product {
         return this._type;
     }
 
-    get isAvailable(): boolean {
+    get available(): boolean {
         return this._available;
     }
 
