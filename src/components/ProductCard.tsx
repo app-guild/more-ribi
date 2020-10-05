@@ -4,6 +4,7 @@ import {globalColors, globalStylesheet} from "../../resources/styles";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Cart from "../entities/Cart";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 export interface IProductCardState {
     countInCart: number;
@@ -26,11 +27,13 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     componentDidMount() {
         DatabaseApi.addOnCartChangeListener(this.setCountInCart);
+        RealtimeDatabaseApi.addProductsChangedListener(this._onProductsChanged);
         return DatabaseApi.getCart().then(this.setCountInCart);
     }
 
     componentWillUnmount() {
         DatabaseApi.removeOnCartChangeListener(this.setCountInCart);
+        RealtimeDatabaseApi.removeProductsChangedListener(this._onProductsChanged);
     }
 
     componentDidUpdate(prevProps: Readonly<Readonly<IProductCardProps>>) {
@@ -38,6 +41,14 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
             DatabaseApi.getCart().then(this.setCountInCart);
         }
     }
+
+    private _onProductsChanged = (newProducts: Product[]) => {
+        const currentProductInChanged = newProducts.find((it) => this.props.product.id === it.id);
+        if (currentProductInChanged) {
+            Object.assign(this.props.product, currentProductInChanged);
+            this.forceUpdate();
+        }
+    };
 
     private setCountInCart(cart: Cart) {
         this.setState({countInCart: cart.getProductCount(this.props.product)});
@@ -53,7 +64,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
 
     private renderPrice(price: number, discountPrice?: number | null) {
         let result: any;
-        let styleForMainPrice = stylesheet.shoppingCartMainPrice;
+        let styleForMainPrice: object = stylesheet.shoppingCartMainPrice;
         if (this.state.countInCart > 0) {
             styleForMainPrice = stylesheet.shoppingCartMainPriceSelected;
         }

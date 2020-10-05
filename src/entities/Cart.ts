@@ -40,6 +40,14 @@ export default class Cart {
         this._products.delete(originalProduct);
     }
 
+    replaceProduct(oldProduct: Product, newProduct: Product): void {
+        const count = this._products.get(oldProduct) || 0;
+        if (count) {
+            this._products.delete(oldProduct);
+            this._products.set(newProduct, count);
+        }
+    }
+
     updateCount(product: Product, count: number): void {
         if (!count) {
             this.removeProduct(product);
