@@ -134,6 +134,7 @@ export const stylesheet = StyleSheet.create({
         padding: 0,
         margin: 0,
         color: globalColors.additionalTextColor,
+        backgroundColor: globalColors.almostTransparent,
     },
     pickers: {
         width: "50%",
