@@ -45,9 +45,15 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     componentDidMount() {
-        DatabaseApi.getCart().then((cart) => {
-            const count = cart.products.filter((prod) => prod.id === this.props.product?.id).length;
-            this.setState({productCount: count});
+        return DatabaseApi.getCart().then((cart) => {
+            if (this.props.product) {
+                const productCount = cart.getProductCount(this.props.product);
+                this.setState({productCount}, () => {
+                    if (productCount > 0) {
+                        this.replaceButtonWithCounter();
+                    }
+                });
+            }
         });
     }
 
@@ -87,19 +93,6 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
             toValue: 1,
             duration: REPLACE_DELAY,
         }).start();
-
-        timer.setTimeout(
-            this,
-            "fadeOut",
-            () => {
-                Animated.timing(this.mainAnimValue, {
-                    useNativeDriver: false,
-                    toValue: 0,
-                    duration: REPLACE_DELAY,
-                }).start();
-            },
-            REPLACE_DURATION,
-        );
     }
 
     private refreshFadeOutTimer() {
@@ -131,7 +124,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
 
     render() {
         const {width, product} = this.props;
-        const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
+        const heightWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
         const image = product?.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return product !== null ? (
@@ -139,15 +132,15 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                 <Image
                     source={image}
                     style={{
-                        width: widthWithoutPadding,
-                        maxHeight: widthWithoutPadding,
+                        width: heightWithoutPadding,
+                        maxHeight: heightWithoutPadding,
                         flex: 1,
                         resizeMode: "cover",
                         borderRadius: 10,
                     }}
                 />
                 <Text style={stylesheet.title}>{product.name}</Text>
-                <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>{product.composition}</Text>
+                <Text style={{...stylesheet.composition, maxWidth: heightWithoutPadding}}>{product.composition}</Text>
                 {this.renderPrice(product.price, product.discountPrice)}
                 <View style={stylesheet.addToCartContainer}>
                     <Animated.View
