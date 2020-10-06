@@ -14,6 +14,15 @@ export default class WokProduct extends Product {
         protected _sauce: string,
     ) {
         super(_name, _type, _price, _discountPrice, _available, _image, _composition);
+        this._id = this._type + "_" + this._name + "_" + this._base + "_" + this._sauce;
+    }
+
+    get base(): string {
+        return this._base;
+    }
+
+    get sauce(): string {
+        return this._sauce;
     }
 
     static parseDatabaseJson(json: any): WokProduct {

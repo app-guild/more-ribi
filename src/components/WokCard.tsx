@@ -8,6 +8,7 @@ import ProductCard from "./ProductCard";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import PriceButton from "./PriceButton";
 import WokProduct from "../entities/WokProduct";
+import Cart from "../entities/Cart";
 
 export interface IWokCardProps extends IProductCardProps {
     baseIngredients: Ingredient[];
@@ -26,27 +27,44 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
             basePicker: props.baseIngredients[0] ? props.baseIngredients[0].name : "",
             saucePicker: props.sauceIngredients[0] ? props.sauceIngredients[0].name : "",
         };
+        this.addToCart = this.addToCart.bind(this);
+        this.setCountInCart = this.setCountInCart.bind(this);
     }
 
     protected async addToCart() {
         const {product} = this.props;
-        if (this.state.countInCart === 0) {
-            return DatabaseApi.addProductToCart(
-                new WokProduct(
-                    product.name,
-                    product.type,
-                    product.price,
-                    product.discountPrice,
-                    product.isAvailable,
-                    product.image,
-                    "",
-                    this.state.basePicker,
-                    this.state.saucePicker,
-                ),
-            );
-        } else {
-            return DatabaseApi.updateProductCount(this.props.product, this.state.countInCart + 1);
-        }
+        const currentProduct = new WokProduct(
+            product.name,
+            product.type,
+            product.price,
+            product.discountPrice,
+            product.isAvailable,
+            product.image,
+            product.composition,
+            this.state.basePicker ? this.state.basePicker : this.props.baseIngredients[0].name,
+            this.state.saucePicker ? this.state.saucePicker : this.props.sauceIngredients[0].name,
+        );
+        DatabaseApi.getCart().then((cart) => {
+            const productCount = cart.getProductCount(currentProduct);
+            if (productCount === 0) {
+                console.log("ADD", currentProduct.base, currentProduct.sauce);
+                return DatabaseApi.addProductToCart(currentProduct);
+            } else {
+                console.log("UPDATE", currentProduct.base, currentProduct.sauce);
+                return DatabaseApi.updateProductCount(currentProduct, productCount + 1);
+            }
+        });
+    }
+
+    protected setCountInCart(cart: Cart) {
+        let result = 0;
+        const {product} = this.props;
+        cart.products.forEach((value) => {
+            if (value.name === product.name && value.type === product.type) {
+                result += cart.getProductCount(value);
+            }
+        });
+        this.setState({countInCart: result});
     }
 
     render() {
@@ -131,6 +149,7 @@ export const stylesheet = StyleSheet.create({
     pricker: {
         width: "140%",
         height: 20,
+        paddingVertical: 10,
         padding: 0,
         margin: 0,
         color: globalColors.additionalTextColor,
