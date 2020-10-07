@@ -261,7 +261,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
             if (productIndex === -1) {
                 return DatabaseApi.addProductToCart(
                     new Product(
-                        "Идеальный поке" + (cartCount === 0 ? "" : " №" + (cartCount + 1)),
+                        "Идеальный поке" + ` (${ingredients})`,
                         ProductType.CustomPoke,
                         price,
                         undefined,

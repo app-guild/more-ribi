@@ -21,9 +21,9 @@ function Row(props: IRowProps) {
     return (
         <View style={stylesheet.rowContainer}>
             <Text style={{flex: 5}}>{props.name}</Text>
-            <Text style={{flex: 2, textAlign: "center"}}>{props.price}</Text>
+            <Text style={{flex: 2, textAlign: "center"}}>{props.price + " ₽"}</Text>
             <Text style={{flex: 1, textAlign: "center"}}>{props.count}</Text>
-            <Text style={{flex: 2, textAlign: "right"}}>{props.price * props.count}</Text>
+            <Text style={{flex: 2, textAlign: "right"}}>{props.price * props.count + " ₽"}</Text>
         </View>
     );
 }
@@ -95,7 +95,7 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                         <View style={stylesheet.resultContainer}>
                             <Text style={stylesheet.resultText}>ИТОГО:</Text>
                             <Text style={{...stylesheet.resultText, textAlign: "right"}}>
-                                {this.state.order.totalPrice}
+                                {this.state.order.totalPrice + " ₽"}
                             </Text>
                         </View>
 
