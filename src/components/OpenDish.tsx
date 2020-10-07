@@ -54,9 +54,15 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     componentDidMount() {
-        DatabaseApi.getCart().then((cart) => {
-            const count = cart.products.filter((prod) => prod.id === this.props.product?.id).length;
-            this.setState({productCount: count});
+        return DatabaseApi.getCart().then((cart) => {
+            if (this.props.product) {
+                const productCount = cart.getProductCount(this.props.product);
+                this.setState({productCount}, () => {
+                    if (productCount > 0) {
+                        this.replaceButtonWithCounter();
+                    }
+                });
+            }
         });
     }
 
@@ -98,19 +104,6 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
             toValue: 1,
             duration: REPLACE_DELAY,
         }).start();
-
-        timer.setTimeout(
-            this,
-            "fadeOut",
-            () => {
-                Animated.timing(this.mainAnimValue, {
-                    useNativeDriver: false,
-                    toValue: 0,
-                    duration: REPLACE_DELAY,
-                }).start();
-            },
-            REPLACE_DURATION,
-        );
     }
 
     private refreshFadeOutTimer() {
