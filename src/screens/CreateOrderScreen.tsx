@@ -1,16 +1,5 @@
 import React, {Component, createRef} from "react";
-import {
-    Animated,
-    Dimensions,
-    Keyboard,
-    Picker,
-    PixelRatio,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
-} from "react-native";
+import {Dimensions, Keyboard, Picker, PixelRatio, Platform, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {parsePaymentsMethods, PaymentsMethods} from "../utils/payment/PaymentsMethods";
 import {TouchableOpacity} from "react-native-gesture-handler";
@@ -21,13 +10,13 @@ import Address from "../entities/Address";
 import KeyValueStorage from "../utils/KeyValueStorage";
 import TextInputMask from "react-native-text-input-mask";
 import RNGooglePayButton from "react-native-gpay-button";
-import EmailService from "../utils/email/EmailService";
 import {IPaymentTransaction} from "../utils/payment/GooglePayService";
 import {Currency} from "../utils/payment/Currency";
-import Toast from "react-native-simple-toast";
 import RadioButtonGroup from "../components/RadioButtonGroup";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Restaurant from "../entities/Restaurant";
+import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService";
+import ApplePayButton from "react-native-apple-pay-button";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -97,13 +86,16 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             .then(() => DatabaseApi.addOnCartChangeListener(this.updateTotalPrice));
     }
 
+    componentWillUnmount(): void {
+        DatabaseApi.removeOnCartChangeListener(this.updateTotalPrice);
+    }
+
     private isButtonEnable(): boolean {
-        return !!(
-            this.state.name &&
-            this.state.phone.length === 18 &&
-            this.state.address.street &&
-            this.state.address.buildingNumber
-        );
+        if (this.state.isDelivery) {
+            return !!(this.state.name && this.state.phone.length === 18 && this.state.address.mainAddress);
+        } else {
+            return !!(this.state.name && this.state.phone.length === 18 && this.state.restaurantForPickup);
+        }
     }
 
     private async getModifiedPaymentsMethods(): Promise<{
@@ -112,9 +104,11 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     }> {
         return new Promise(async (resolve) => {
             if (Platform.OS === "ios") {
-                // Todo добавить проверку для Apple Pay
-                let availablePaymentMethods = this.state.availablePaymentMethods;
-                let paymentMethod = this.state.paymentMethod;
+                let availablePaymentMethods = new Set([
+                    ...this.state.availablePaymentMethods,
+                    PaymentsMethods.ApplePay,
+                ]);
+                let paymentMethod = PaymentsMethods.ApplePay;
 
                 resolve({availablePaymentMethods, paymentMethod});
             } else {
@@ -165,10 +159,30 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             totalPriceStatus: "FINAL",
             currencyCode: Currency.RUB,
         };
-        console.log("GOOGLE payWithGoogle");
         return global.googlePayService
             .doPaymentRequest(transaction, (token: string) => console.log(token))
-            .then(this.sendOrder);
+            .then((success: boolean) => {
+                if (success) {
+                    return this.sendOrder();
+                }
+                return;
+            });
+    }
+
+    private async payWithApple() {
+        const transaction: IPaymentDetails = {
+            total: {
+                label: "Заказ из Много Рыбы",
+                amount: {
+                    currency: Currency.RUB,
+                    value: this.state.totalPrice.toString(),
+                },
+            },
+        };
+        const paymentRequest = global.applePayService.getPaymentRequest(transaction);
+        return ApplePayService.processPayment(paymentRequest, (paymentDetails) => console.log(paymentDetails)).then(
+            this.sendOrder,
+        );
     }
 
     private async sendOrder() {
@@ -215,11 +229,10 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         if (this.state.buttonVisible) {
             switch (this.state.paymentMethod) {
                 case PaymentsMethods.GooglePay: {
-                    if (this.isButtonEnable()) {
+                    if (Platform.OS === "android" && this.isButtonEnable()) {
                         button = (
                             <TouchableOpacity
                                 onPress={() => {
-                                    console.log("GOOGLE ON TOUCH");
                                     if (this.isButtonEnable()) {
                                         return this.payWithGoogle();
                                     }
@@ -232,7 +245,21 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     break;
                 }
                 case PaymentsMethods.ApplePay: {
-                    button = null;
+                    if (Platform.OS === "ios" && this.isButtonEnable()) {
+                        button = (
+                            <ApplePayButton
+                                buttonStyle="whiteOutline"
+                                type="buy"
+                                style={{...buttonSize, ...stylesheet.orderButton}}
+                                onPress={() => {
+                                    if (this.isButtonEnable()) {
+                                        return this.payWithApple();
+                                    }
+                                    return null;
+                                }}
+                            />
+                        );
+                    }
                     break;
                 }
                 default: {
@@ -280,24 +307,15 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 <View style={stylesheet.row}>
                     <TextInput
                         style={stylesheet.rowText}
-                        value={this.state.address.street}
-                        onChangeText={(street: string) => {
-                            this.state.address.street = street;
+                        value={this.state.address.mainAddress}
+                        onChangeText={(address: string) => {
+                            this.state.address.mainAddress = address;
                             this.setState({address: this.state.address});
                         }}
-                        placeholder={"Улица"}
+                        placeholder={"Адрес"}
                     />
                 </View>
                 <View style={stylesheet.row}>
-                    <TextInput
-                        style={stylesheet.rowText}
-                        value={this.state.address.buildingNumber}
-                        onChangeText={(buildingNumber: string) => {
-                            this.state.address.buildingNumber = buildingNumber;
-                            this.setState({address: this.state.address});
-                        }}
-                        placeholder={"Дом"}
-                    />
                     <TextInput
                         style={stylesheet.rowText}
                         value={this.state.address.entrance}
@@ -307,8 +325,6 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                         }}
                         placeholder={"Подъезд"}
                     />
-                </View>
-                <View style={stylesheet.row}>
                     <TextInput
                         style={stylesheet.rowText}
                         value={this.state.address.flor}

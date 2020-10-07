@@ -9,6 +9,7 @@ declare namespace NodeJS {
     export interface Global {
         db: any;
         googlePayService: any;
+        applePayService: any;
     }
 }
 

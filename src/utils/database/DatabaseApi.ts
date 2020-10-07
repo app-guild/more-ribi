@@ -23,6 +23,7 @@ interface IResults {
 
 export default class DatabaseApi {
     private static onCartChangeListeners: Array<(cart: Cart) => void> = [];
+    private static onOrdersChangeListeners: Array<(orders: Order[]) => void> = [];
     private static cart: Cart | null = null;
     private static getCartPromise: Promise<Cart> | null = null;
 
@@ -35,6 +36,29 @@ export default class DatabaseApi {
         if (index !== undefined) {
             DatabaseApi.onCartChangeListeners.splice(index, 1);
         }
+    }
+
+    private static callOnCartChangeListeners(cart: Cart): void {
+        DatabaseApi.onCartChangeListeners.forEach((listener) => {
+            listener(cart);
+        });
+    }
+
+    static addOnOrdersChangeListener(listener: (orders: Order[]) => void) {
+        DatabaseApi.onOrdersChangeListeners.push(listener);
+    }
+
+    static removeOnOrdersChangeListener(listener: (orders: Order[]) => void) {
+        const index = DatabaseApi.onOrdersChangeListeners.indexOf(listener);
+        if (index !== undefined) {
+            DatabaseApi.onOrdersChangeListeners.splice(index, 1);
+        }
+    }
+
+    private static callOnOrdersChangeListeners(orders: Order[]): void {
+        DatabaseApi.onOrdersChangeListeners.forEach((listener) => {
+            listener(orders);
+        });
     }
 
     /**
@@ -164,7 +188,6 @@ export default class DatabaseApi {
                         paymentMethod='${paymentMethod}' 
                     WHERE id=${cart.id};
                 `;
-                console.log(sql);
                 return sql;
             })
             .then(DatabaseApi.executeQuery)
@@ -172,6 +195,8 @@ export default class DatabaseApi {
                 DatabaseApi.cart = null;
                 DatabaseApi.getCartPromise = null;
             })
+            .then(() => DatabaseApi.getOrders())
+            .then((orders) => DatabaseApi.callOnOrdersChangeListeners(orders))
             .then(() => DatabaseApi.createCart());
     }
 
@@ -210,12 +235,6 @@ export default class DatabaseApi {
                 DatabaseApi.callOnCartChangeListeners(cart);
                 return cart;
             });
-    }
-
-    private static callOnCartChangeListeners(cart: Cart): void {
-        DatabaseApi.onCartChangeListeners.forEach((listener) => {
-            listener(cart);
-        });
     }
 
     /**

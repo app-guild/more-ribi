@@ -15,6 +15,7 @@ export interface ICartItemProps {
 }
 
 const CLOSE_ICON_SIZE = 15;
+const NUMERIC_INPUT_HEIGHT = 35;
 
 class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemState>> {
     constructor(props: any) {
@@ -70,6 +71,7 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
                     iconStyle={{
                         color: globalColors.cardBackgroundColor,
                     }}
+                    totalHeight={NUMERIC_INPUT_HEIGHT}
                     leftButtonBackgroundColor={globalColors.fadePrimaryColor}
                     rightButtonBackgroundColor={globalColors.fadePrimaryColor}
                     textColor={globalColors.cardBackgroundColor}

@@ -27,6 +27,7 @@ const globalStylesheet = StyleSheet.create({
         position: "relative",
         height: "100%",
         display: "flex",
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },

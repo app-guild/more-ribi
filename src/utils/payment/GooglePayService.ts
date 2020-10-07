@@ -64,7 +64,7 @@ export class GooglePayService {
     public async doPaymentRequest(
         transaction: IPaymentTransaction,
         tokenCallback?: (token: string) => void,
-    ): Promise<void> {
+    ): Promise<boolean> {
         const paymentRequest: ICardPaymentRequest = {
             cardPaymentMethod: this.cardPaymentMethodMap,
             merchantName: this.merchantName,
@@ -78,7 +78,12 @@ export class GooglePayService {
                 if (tokenCallback) {
                     tokenCallback(token);
                 }
+
+                return true;
             })
-            .catch((error) => console.log(error.code, error.message));
+            .catch((error) => {
+                console.log(error.code, error.message);
+                return false;
+            });
     }
 }

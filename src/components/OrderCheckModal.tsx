@@ -79,7 +79,9 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                     onBackdropPress={() => this.setState({modalVisible: false})}
                     onBackButtonPress={() => this.setState({modalVisible: false})}>
                     <ScrollView style={stylesheet.scroll} contentContainerStyle={stylesheet.container}>
-                        <Text style={{marginBottom: 10}}>{Address.print(this.state.order.address)}</Text>
+                        <Text style={{marginBottom: 10, textAlign: "center"}}>
+                            {Address.print(this.state.order.address)}
+                        </Text>
                         <Moment format={"DD.MM.YYYY HH:MM"} element={Text}>
                             {this.state.order.date}
                         </Moment>
@@ -100,7 +102,9 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                         <Text style={{...stylesheet.additionalText, marginTop: 30}}>
                             {"Способ оплаты: " + this.state.order.paymentMethod.toLowerCase()}
                         </Text>
-                        <Text style={stylesheet.additionalText}>{"Комментарий: " + this.state.order.comment}</Text>
+                        {this.state.order.comment ? (
+                            <Text style={stylesheet.additionalText}>{"Комментарий: " + this.state.order.comment}</Text>
+                        ) : null}
                     </ScrollView>
                 </Modal>
             );

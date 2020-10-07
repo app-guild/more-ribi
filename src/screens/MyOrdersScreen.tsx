@@ -20,13 +20,16 @@ export default class MyOrdersScreen extends Component<Readonly<any>, Readonly<IM
         this.state = {
             orders: [],
         };
+        this.updateOrders = this.updateOrders.bind(this);
     }
 
     componentDidMount() {
-        return DatabaseApi.getOrders().then((orders) => {
-            console.log(orders);
-            this.setState({orders});
-        });
+        DatabaseApi.addOnOrdersChangeListener(this.updateOrders);
+        return DatabaseApi.getOrders().then(this.updateOrders);
+    }
+
+    updateOrders(orders: Order[]) {
+        this.setState({orders});
     }
 
     private _renderItem = ({item}: {item: Order}) => {
