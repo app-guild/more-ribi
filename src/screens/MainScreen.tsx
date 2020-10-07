@@ -61,14 +61,17 @@ class MainScreen extends Component<any, IMainScreenState> {
     }
 
     componentDidMount() {
-        return RealtimeDatabaseApi.getProducts().then((splitProducts) => {
+        RealtimeDatabaseApi.addProductsChangedListener(this._onProductsChanged);
+
+        return RealtimeDatabaseApi.getProducts().then((products) => {
             RealtimeDatabaseApi.getWokConstructorIngredients().then((ingredients) => {
                 this.wokIngredients = ingredients;
             });
-            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, splitProducts);
+            this._filterAvailableProducts(products);
+            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, products);
 
             this.setState({
-                currentCategory: ProductType.translateCategoryName(Array.from(splitProducts.keys())[0]),
+                currentCategory: ProductType.translateCategoryName(Array.from(products.keys())[0]),
                 dataProvider: providers.dataProvider,
                 layoutProvider: providers.layoutProvider,
             });
@@ -81,8 +84,34 @@ class MainScreen extends Component<any, IMainScreenState> {
         }
     }
 
+    componentWillUnmount() {
+        RealtimeDatabaseApi.removeProductsChangedListener(this._onProductsChanged);
+    }
+
     onCategoryCross(category: string) {
         this.setState({currentCategory: ProductType.translateCategoryName(category)});
+    }
+
+    private _onProductsChanged = (newProducts: Product[]) => {
+        const data = this.state.dataProvider.getAllData();
+        newProducts.forEach((newProduct) => {
+            const foundItem = data.find((item) => item.item?.id === newProduct.id);
+            if (foundItem) {
+                foundItem.item = newProduct;
+            }
+        });
+
+        const newDataProvider = this.state.dataProvider.cloneWithRows(data);
+        this.setState({
+            dataProvider: newDataProvider,
+        });
+    };
+
+    private _filterAvailableProducts(products: Map<ProductType, Product[]>): void {
+        products.forEach((value, type) => {
+            const filteredProducts = value.filter((it) => it.available);
+            products.set(type, filteredProducts);
+        });
     }
 
     private onCardClick(product: Product) {

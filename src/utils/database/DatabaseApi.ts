@@ -103,7 +103,7 @@ export default class DatabaseApi {
     static addProductToCart(product: Product, count?: number): Promise<void> {
         return this.getCart().then((cart) => {
             cart.addProduct(product, count);
-            return this.updateProducts(cart);
+            return this.updateProductsInCart(cart);
         });
     }
 
@@ -116,7 +116,7 @@ export default class DatabaseApi {
     static updateProductCount(product: Product, count: number): Promise<void> {
         return this.getCart().then((cart) => {
             cart.updateCount(product, count);
-            return this.updateProducts(cart);
+            return this.updateProductsInCart(cart);
         });
     }
 
@@ -128,7 +128,7 @@ export default class DatabaseApi {
     static removeProductFromCart(product: Product): Promise<void> {
         return this.getCart().then((cart) => {
             cart.removeProduct(product);
-            return this.updateProducts(cart);
+            return this.updateProductsInCart(cart);
         });
     }
 
@@ -140,7 +140,7 @@ export default class DatabaseApi {
     static clearCart(): Promise<void> {
         return this.getCart().then((cart) => {
             cart.clear();
-            return this.updateProducts(cart);
+            return this.updateProductsInCart(cart);
         });
     }
 
@@ -148,25 +148,26 @@ export default class DatabaseApi {
      * Create order from cart and create new cart
      * @void
      */
-    static createOrderFromCart(address: string, comment: string): Promise<Cart> {
+    static createOrderFromCart(address: string, comment: string, paymentMethod: string): Promise<Cart> {
         return this.getCart().then((cart) => {
             const sql = `
                 UPDATE Orders SET 
                     date=datetime('now','localtime'), 
-                    address=${address}, 
-                    comment=${comment} 
+                    address=${address},
+                    comment=${comment},
+                    paymentMethod=${paymentMethod} 
                 WHERE id=${cart.id};
             `;
             return this.executeQuery(sql).then(() => this.createCart());
         });
     }
 
-    // endregion
-
-    private static updateProducts(cart: Cart): Promise<void> {
+    static updateProductsInCart(cart: Cart): Promise<void> {
         const sql = `UPDATE Orders SET products='${cart.getJsonProducts()}' WHERE id = ${cart.id}`;
         return this.executeQuery(sql).then(() => this.callOnCartChangeListeners(cart));
     }
+
+    // endregion
 
     /**
      * Parse products from order.

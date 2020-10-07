@@ -5,6 +5,7 @@ import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Cart from "../entities/Cart";
 import PriceButton from "./PriceButton";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 export interface IProductCardState {
     countInCart: number;
@@ -31,11 +32,13 @@ class ProductCard<
 
     componentDidMount() {
         DatabaseApi.addOnCartChangeListener(this.setCountInCart);
+        RealtimeDatabaseApi.addProductsChangedListener(this._onProductsChanged);
         return DatabaseApi.getCart().then(this.setCountInCart);
     }
 
     componentWillUnmount() {
         DatabaseApi.removeOnCartChangeListener(this.setCountInCart);
+        RealtimeDatabaseApi.removeProductsChangedListener(this._onProductsChanged);
     }
 
     componentDidUpdate(prevProps: Readonly<P>) {
@@ -43,6 +46,14 @@ class ProductCard<
             DatabaseApi.getCart().then(this.setCountInCart);
         }
     }
+
+    private _onProductsChanged = (newProducts: Product[]) => {
+        const currentProductInChanged = newProducts.find((it) => this.props.product.id === it.id);
+        if (currentProductInChanged) {
+            Object.assign(this.props.product, currentProductInChanged);
+            this.forceUpdate();
+        }
+    };
 
     protected setCountInCart(cart: Cart) {
         this.setState({countInCart: cart.getProductCount(this.props.product)});
