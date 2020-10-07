@@ -124,7 +124,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
 
     render() {
         const {width, product} = this.props;
-        const heightWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
+        const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
         const image = product?.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return product !== null ? (
@@ -132,15 +132,15 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                 <Image
                     source={image}
                     style={{
-                        width: heightWithoutPadding,
-                        maxHeight: heightWithoutPadding,
+                        width: widthWithoutPadding,
+                        maxHeight: widthWithoutPadding,
                         flex: 1,
                         resizeMode: "cover",
                         borderRadius: 10,
                     }}
                 />
                 <Text style={stylesheet.title}>{product.name}</Text>
-                <Text style={{...stylesheet.composition, maxWidth: heightWithoutPadding}}>{product.composition}</Text>
+                <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>{product.composition}</Text>
                 {this.renderPrice(product.price, product.discountPrice)}
                 <View style={stylesheet.addToCartContainer}>
                     <Animated.View
