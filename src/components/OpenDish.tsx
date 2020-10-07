@@ -4,6 +4,11 @@ import {globalColors, globalStylesheet} from "../../resources/styles";
 import Product from "../entities/Product";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import NumericInput from "react-native-numeric-input";
+import {ProductType} from "../entities/ProductType";
+import {Picker} from "@react-native-community/picker";
+import Ingredient from "../entities/Ingredient";
+import WokCard from "./WokCard";
+
 const timer = require("react-native-timer");
 
 const REPLACE_DURATION = 3000;
@@ -11,11 +16,15 @@ const REPLACE_DELAY = 700;
 
 export interface IOpenDishState {
     productCount: number;
+    basePicker?: string;
+    saucePicker?: string;
 }
 export interface IOpenDishProps {
     width: number;
     height: number;
     product: Product | null;
+    baseIngredients?: Ingredient[];
+    sauceIngredients?: Ingredient[];
 }
 
 class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishState>> {
@@ -52,7 +61,9 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     }
 
     private async addToCartFromButton(product: Product) {
-        this.replaceButtonWithCounter();
+        if (product.type !== ProductType.Wok) {
+            this.replaceButtonWithCounter();
+        }
         return this.updateProductCount(product, this.state.productCount + 1);
     }
 
@@ -131,6 +142,17 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
 
     render() {
         const {width, product} = this.props;
+        const baseIngredients = this.props.baseIngredients ? this.props.baseIngredients : [];
+        const sauceIngredients = this.props.sauceIngredients ? this.props.sauceIngredients : [];
+        const wokProduct =
+            product?.type === ProductType.Wok
+                ? WokCard.createWokProduct(
+                      product,
+                      this.state.basePicker ? this.state.basePicker : "",
+                      this.state.saucePicker ? this.state.saucePicker : "",
+                  )
+                : undefined;
+
         const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
         const image = product?.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
@@ -147,7 +169,37 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                     }}
                 />
                 <Text style={stylesheet.title}>{product.name}</Text>
-                <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>{product.composition}</Text>
+
+                {product.type === ProductType.Wok ? (
+                    <View style={stylesheet.pickers}>
+                        <View style={stylesheet.pickerContainer}>
+                            <Picker
+                                mode={"dropdown"}
+                                selectedValue={this.state.basePicker}
+                                style={stylesheet.pricker}
+                                onValueChange={(itemValue) => this.setState({basePicker: itemValue.toString()})}>
+                                {baseIngredients.map((value, i) => (
+                                    <Picker.Item key={i} label={value.name} value={value.name} />
+                                ))}
+                            </Picker>
+                        </View>
+                        <View style={stylesheet.pickerContainer}>
+                            <Picker
+                                mode={"dropdown"}
+                                selectedValue={this.state.saucePicker}
+                                style={stylesheet.pricker}
+                                onValueChange={(itemValue) => this.setState({saucePicker: itemValue.toString()})}>
+                                {sauceIngredients.map((value, i) => (
+                                    <Picker.Item key={i} label={value.name} value={value.name} />
+                                ))}
+                            </Picker>
+                        </View>
+                    </View>
+                ) : (
+                    <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>
+                        {product.composition}
+                    </Text>
+                )}
                 {this.renderPrice(product.price, product.discountPrice)}
                 <View style={stylesheet.addToCartContainer}>
                     <Animated.View
@@ -158,7 +210,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                         }}>
                         <TouchableOpacity
                             style={stylesheet.addToCartButton}
-                            onPress={async () => this.addToCartFromButton(product)}
+                            onPress={async () => this.addToCartFromButton(wokProduct ? wokProduct : product)}
                             activeOpacity={0.5}>
                             <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
                         </TouchableOpacity>
@@ -286,6 +338,25 @@ export const stylesheet = StyleSheet.create({
         fontSize: 14,
         lineHeight: 17,
         color: globalColors.whiteTextColor,
+    },
+    pickerContainer: {
+        width: "50%",
+        marginTop: 5,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: globalColors.primaryColor,
+    },
+    pricker: {
+        width: "140%",
+        height: 20,
+        paddingVertical: 10,
+        padding: 0,
+        margin: 0,
+        color: globalColors.additionalTextColor,
+        backgroundColor: globalColors.almostTransparent,
+    },
+    pickers: {
+        alignItems: "center",
     },
 });
 

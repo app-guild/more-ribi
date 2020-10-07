@@ -28,7 +28,7 @@ const FISH_ICON_SIZE = {width: 47, height: 17};
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
     private layoutSize: Dimension[];
-    private wokIngredients: Map<string, Ingredient[]>;
+    private wokIngredients: Map<string, Ingredient[]> = new Map();
 
     constructor(props: any) {
         super(props);
@@ -124,6 +124,8 @@ class MainScreen extends Component<any, IMainScreenState> {
     }
 
     render() {
+        const baseIngredients = this.wokIngredients.get("base");
+        const sauceIngredients = this.wokIngredients.get("souce");
         return (
             <View style={{flex: 1}}>
                 <View style={{alignSelf: "flex-start"}} onTouchEnd={() => this.props.navigation.navigate("Categories")}>
@@ -161,6 +163,12 @@ class MainScreen extends Component<any, IMainScreenState> {
                                 width={windowSize.width - 2 * stylesheet.openDishModal.paddingHorizontal}
                                 height={windowSize.height - 2 * stylesheet.openDishModal.paddingVertical}
                                 product={this.state.currentProduct}
+                                baseIngredients={
+                                    this.state.currentProduct?.type === ProductType.Wok ? baseIngredients : undefined
+                                }
+                                sauceIngredients={
+                                    this.state.currentProduct?.type === ProductType.Wok ? sauceIngredients : undefined
+                                }
                             />
                         </View>
                     </Modal>

@@ -9,6 +9,7 @@ import DatabaseApi from "../utils/database/DatabaseApi";
 import PriceButton from "./PriceButton";
 import WokProduct from "../entities/WokProduct";
 import Cart from "../entities/Cart";
+import Product from "../entities/Product";
 
 export interface IWokCardProps extends IProductCardProps {
     baseIngredients: Ingredient[];
@@ -32,25 +33,16 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
     }
 
     protected async addToCart() {
-        const {product} = this.props;
-        const currentProduct = new WokProduct(
-            product.name,
-            product.type,
-            product.price,
-            product.discountPrice,
-            product.isAvailable,
-            product.image,
-            product.composition,
-            this.state.basePicker ? this.state.basePicker : this.props.baseIngredients[0].name,
-            this.state.saucePicker ? this.state.saucePicker : this.props.sauceIngredients[0].name,
+        const currentProduct = WokCard.createWokProduct(
+            this.props.product,
+            this.state.basePicker,
+            this.state.saucePicker,
         );
         DatabaseApi.getCart().then((cart) => {
             const productCount = cart.getProductCount(currentProduct);
             if (productCount === 0) {
-                console.log("ADD", currentProduct.base, currentProduct.sauce);
                 return DatabaseApi.addProductToCart(currentProduct);
             } else {
-                console.log("UPDATE", currentProduct.base, currentProduct.sauce);
                 return DatabaseApi.updateProductCount(currentProduct, productCount + 1);
             }
         });
@@ -67,8 +59,24 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
         this.setState({countInCart: result});
     }
 
+    public static createWokProduct(product: Product, base: string, sauce: string): WokProduct {
+        return new WokProduct(
+            product.name,
+            product.type,
+            product.price,
+            product.discountPrice,
+            product.isAvailable,
+            product.image,
+            product.composition,
+            base,
+            sauce,
+        );
+    }
+
     render() {
-        const {product, onClick, baseIngredients, sauceIngredients} = this.props;
+        const {onClick, baseIngredients, sauceIngredients} = this.props;
+        const product = WokCard.createWokProduct(this.props.product, this.state.basePicker, this.state.saucePicker);
+
         const image = product.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return (
