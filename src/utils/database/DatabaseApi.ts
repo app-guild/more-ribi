@@ -60,11 +60,6 @@ export default class DatabaseApi {
      * @return {Promise<Cart>} Promise contains cart
      */
     static getCart(): Promise<Cart> {
-        let sql = `
-            SELECT * FROM Orders 
-            WHERE date IS NULL
-        `;
-
         if (this.cart) {
             return Promise.resolve(this.cart);
         } else {
@@ -72,23 +67,20 @@ export default class DatabaseApi {
                 return this.getCartPromise;
             }
 
-            this.getCartPromise = this.executeQuery(sql)
-                .then((results) => {
-                    const rawData = results.rows.raw();
-                    if (!rawData.length) {
-                        return this.createCart();
-                    }
+            const sql = `
+                SELECT * FROM Orders 
+                WHERE date IS NULL
+            `;
 
-                    const cartJson = rawData[0];
-                    const productMap = this.parseProducts(cartJson.products);
+            this.getCartPromise = this.executeQuery(sql).then((results) => {
+                const rawData = results.rows.raw();
+                const cartJson = rawData[0];
+                const productMap = this.parseProducts(cartJson.products);
 
-                    return new Cart(cartJson.id, productMap);
-                })
-                .then((cart) => {
-                    this.cart = cart;
-                    this.getCartPromise = null;
-                    return this.cart;
-                });
+                this.cart = new Cart(cartJson.id, productMap);
+                this.getCartPromise = null;
+                return this.cart;
+            });
             return this.getCartPromise;
         }
     }
@@ -96,6 +88,7 @@ export default class DatabaseApi {
     /**
      * Add product to cart and return new cart price
      * @param {Product} product
+     * @param {number} count
      * @void
      */
     static addProductToCart(product: Product, count?: number): Promise<void> {
@@ -181,8 +174,8 @@ export default class DatabaseApi {
         const jsonProducts = JSON.parse(json);
         const result = new Map();
         jsonProducts
-            .filter((it) => it.count && !isNaN(Number(it.count)))
-            .forEach((it) => result.set(Product.parseDatabaseJson(it), Number(it.count)));
+            .filter((it: any) => it.count && !isNaN(Number(it.count)))
+            .forEach((it: any) => result.set(Product.parseDatabaseJson(it), Number(it.count)));
         return result;
     }
 
@@ -193,7 +186,7 @@ export default class DatabaseApi {
         `;
 
         return this.executeQuery(sql)
-            .then((key) => new Cart(key.rows.raw()[0]?.id, new Map()))
+            .then((result) => new Cart(result.rows.raw()[0]?.id, new Map()))
             .then((cart) => {
                 this.callOnCartChangeListeners(cart);
                 return cart;
