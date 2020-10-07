@@ -25,6 +25,20 @@ export default class WokProduct extends Product {
         return this._sauce;
     }
 
+    toObject(): object {
+        return {
+            name: this._name,
+            type: this._type,
+            price: this._price,
+            discountPrice: this._discountPrice,
+            composition: this._composition,
+            image: this.image,
+            available: this._available,
+            base: this.base,
+            sauce: this.sauce,
+        };
+    }
+
     static parseDatabaseJson(json: any): WokProduct {
         return new WokProduct(
             json.name,
