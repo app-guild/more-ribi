@@ -61,6 +61,7 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
                     containerStyle={{
                         ...stylesheet.column,
                         flex: 0.9,
+                        marginHorizontal: 10,
                         borderColor: globalColors.fadePrimaryColor,
                         borderRadius: 20,
                         backgroundColor: globalColors.fadePrimaryColor,
