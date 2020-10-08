@@ -38,7 +38,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.onCardClick = this.onCardClick.bind(this);
         const cardLayoutSize = {
             width: windowSize.width,
-            height: windowSize.height * 0.15,
+            height: windowSize.height * 0.2,
         };
         this.layoutSize = [
             {
@@ -64,17 +64,20 @@ class MainScreen extends Component<any, IMainScreenState> {
         RealtimeDatabaseApi.addProductsChangedListener(this._onProductsChanged);
 
         return RealtimeDatabaseApi.getProducts().then((products) => {
-            RealtimeDatabaseApi.getWokConstructorIngredients().then((ingredients) => {
-                this.wokIngredients = ingredients;
-            });
-            this._filterAvailableProducts(products);
-            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, products);
+            return RealtimeDatabaseApi.getWokConstructorIngredients()
+                .then((ingredients) => {
+                    this.wokIngredients = ingredients;
+                })
+                .then(() => {
+                    this._filterAvailableProducts(products);
+                    const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, products);
 
-            this.setState({
-                currentCategory: ProductType.translateCategoryName(Array.from(products.keys())[0]),
-                dataProvider: providers.dataProvider,
-                layoutProvider: providers.layoutProvider,
-            });
+                    this.setState({
+                        currentCategory: ProductType.translateCategoryName(Array.from(products.keys())[0]),
+                        dataProvider: providers.dataProvider,
+                        layoutProvider: providers.layoutProvider,
+                    });
+                });
         });
     }
 

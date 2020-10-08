@@ -46,11 +46,19 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
         outputRange: [50, -5, 0],
     });
 
-    constructor(props: any) {
+    constructor(props: IOpenDishProps) {
         super(props);
         this.state = {
             productCount: 0,
         };
+        if (props.product?.type === ProductType.Wok) {
+            this.state = {
+                productCount: 0,
+                basePicker: props.baseIngredients[0] ? props.baseIngredients[0].name : "",
+                saucePicker: props.sauceIngredients[0] ? props.sauceIngredients[0].name : "",
+            };
+        }
+        this.addToCartFromButton = this.addToCartFromButton.bind(this);
     }
 
     componentDidMount() {
@@ -58,7 +66,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
             if (this.props.product) {
                 const productCount = cart.getProductCount(this.props.product);
                 this.setState({productCount}, () => {
-                    if (productCount > 0) {
+                    if (productCount > 0 && this.props.product.type !== ProductType.Wok) {
                         this.replaceButtonWithCounter();
                     }
                 });
@@ -92,7 +100,6 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
             } else if (count === 0) {
                 resolve(DatabaseApi.removeProductFromCart(product));
             }
-            return;
         }).then(() => {
             this.setState({productCount: count});
         });
@@ -164,28 +171,33 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                 <Text style={stylesheet.title}>{product.name}</Text>
 
                 {product.type === ProductType.Wok ? (
-                    <View style={stylesheet.pickers}>
-                        <View style={stylesheet.pickerContainer}>
-                            <Picker
-                                mode={"dropdown"}
-                                selectedValue={this.state.basePicker}
-                                style={stylesheet.pricker}
-                                onValueChange={(itemValue) => this.setState({basePicker: itemValue.toString()})}>
-                                {baseIngredients.map((value, i) => (
-                                    <Picker.Item key={i} label={value.name} value={value.name} />
-                                ))}
-                            </Picker>
-                        </View>
-                        <View style={stylesheet.pickerContainer}>
-                            <Picker
-                                mode={"dropdown"}
-                                selectedValue={this.state.saucePicker}
-                                style={stylesheet.pricker}
-                                onValueChange={(itemValue) => this.setState({saucePicker: itemValue.toString()})}>
-                                {sauceIngredients.map((value, i) => (
-                                    <Picker.Item key={i} label={value.name} value={value.name} />
-                                ))}
-                            </Picker>
+                    <View>
+                        <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding, textAlign: "center"}}>
+                            Выберите основу и соус:
+                        </Text>
+                        <View style={stylesheet.pickers}>
+                            <View style={stylesheet.pickerContainer}>
+                                <Picker
+                                    mode={"dropdown"}
+                                    selectedValue={this.state.basePicker}
+                                    style={stylesheet.pricker}
+                                    onValueChange={(itemValue) => this.setState({basePicker: itemValue.toString()})}>
+                                    {baseIngredients.map((value, i) => (
+                                        <Picker.Item key={i} label={value.name} value={value.name} />
+                                    ))}
+                                </Picker>
+                            </View>
+                            <View style={stylesheet.pickerContainer}>
+                                <Picker
+                                    mode={"dropdown"}
+                                    selectedValue={this.state.saucePicker}
+                                    style={stylesheet.pricker}
+                                    onValueChange={(itemValue) => this.setState({saucePicker: itemValue.toString()})}>
+                                    {sauceIngredients.map((value, i) => (
+                                        <Picker.Item key={i} label={value.name} value={value.name} />
+                                    ))}
+                                </Picker>
+                            </View>
                         </View>
                     </View>
                 ) : (
@@ -341,7 +353,7 @@ export const stylesheet = StyleSheet.create({
     },
     pricker: {
         width: "140%",
-        height: 20,
+        height: 30,
         paddingVertical: 10,
         padding: 0,
         margin: 0,
@@ -349,6 +361,7 @@ export const stylesheet = StyleSheet.create({
         backgroundColor: globalColors.almostTransparent,
     },
     pickers: {
+        marginTop: 10,
         alignItems: "center",
     },
 });

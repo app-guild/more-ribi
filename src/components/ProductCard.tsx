@@ -156,7 +156,7 @@ export const stylesheet = StyleSheet.create({
         height: "100%",
     },
     shoppingCartImage: {
-        height: "100%",
+        height: "75%",
         aspectRatio: 1,
         borderRadius: 20,
     },

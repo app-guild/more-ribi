@@ -97,6 +97,7 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
                         }}>
                         {product.name}
                     </Text>
+                    <Text style={globalStylesheet.secondaryText}>Выберите основу и соус:</Text>
                     <View style={productCardStylesheet.shoppingCardSubContainer}>
                         <View style={stylesheet.pickers}>
                             <View style={stylesheet.pickerContainer}>
@@ -156,7 +157,7 @@ export const stylesheet = StyleSheet.create({
     },
     pricker: {
         width: "140%",
-        height: 20,
+        height: 30,
         paddingVertical: 10,
         padding: 0,
         margin: 0,
