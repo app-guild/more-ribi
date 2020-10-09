@@ -18,6 +18,7 @@ const globalColors = {
     orangeColor: "#ffc11e",
     unloadedCard: "lightgrey",
     redBlinkColor: "rgba(255, 0, 0, 0.35)",
+    aboutUsBackground: "#009966",
 };
 
 const globalStylesheet = StyleSheet.create({
