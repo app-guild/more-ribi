@@ -18,7 +18,6 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
             <View style={globalStylesheet.centerBody}>
                 <Text>Cart Screen</Text>
                 <Button title={"Clear cart"} onPress={async () => DatabaseApi.clearCart()} />
-                <Button title={"Get Cart"} onPress={() => DatabaseApi.getCart().then((cart) => console.log(cart))} />
             </View>
         );
     }
