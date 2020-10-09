@@ -193,9 +193,7 @@ export const stylesheet = StyleSheet.create({
         marginTop: 15,
     },
     categoryText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "bold",
+        fontFamily: "Mulish-Bold",
         fontSize: 14,
         lineHeight: 17,
         color: globalColors.primaryColor,
@@ -217,9 +215,7 @@ export const stylesheet = StyleSheet.create({
         marginTop: 10,
     },
     subTitle: {
-        fontFamily: "Muli",
-        fontStyle: "normal",
-        fontWeight: "bold",
+        fontFamily: "Mulish-Bold",
         fontSize: 16,
         lineHeight: 20,
         color: globalColors.primaryColor,

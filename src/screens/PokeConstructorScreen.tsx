@@ -320,7 +320,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         ...stylesheet.toggleButtonBlockContainer,
                         paddingHorizontal: stylesheet.container.paddingHorizontal,
                     }}>
-                    <Text style={{...stylesheet.mainText, marginBottom: 20}}>Выполняем наполнители и топпинг</Text>
+                    <Text style={{...stylesheet.mainText, marginBottom: 20}}>Выбираем наполнители и топпинг</Text>
                     <View style={stylesheet.toggleButtonContainer}>
                         <View
                             onTouchEnd={() => {
@@ -454,7 +454,7 @@ export const stylesheet = StyleSheet.create({
         paddingHorizontal: 20,
     },
     topText: {
-        fontFamily: "Montserrat",
+        fontFamily: "Montserrat-Regular",
         fontStyle: "normal",
         fontWeight: "300",
         fontSize: 28,
@@ -464,34 +464,26 @@ export const stylesheet = StyleSheet.create({
         textAlign: "center",
     },
     titleText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "bold",
+        fontFamily: "Montserrat-Bold",
         fontSize: 24,
         color: globalColors.mainTextColor,
         paddingTop: 20,
         textAlign: "center",
     },
     mainText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
+        fontFamily: "Montserrat-Light",
         fontSize: 18,
         color: globalColors.mainTextColor,
         paddingHorizontal: 20,
         textAlign: "center",
     },
     text: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
+        fontFamily: "Montserrat-SemiBold",
         fontSize: 14,
         color: globalColors.mainTextColor,
     },
     subTitleText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "bold",
+        fontFamily: "Mulish-Bold",
         fontSize: 23,
         color: globalColors.mainTextColor,
     },
@@ -527,9 +519,7 @@ export const stylesheet = StyleSheet.create({
         fontSize: 20,
     },
     addIngredientText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "bold",
+        fontFamily: "Mulish-Black",
         fontSize: 20,
         marginTop: 40,
         marginBottom: 40,
@@ -556,14 +546,6 @@ export const stylesheet = StyleSheet.create({
     orText: {
         paddingHorizontal: 10,
     },
-    additionalText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "300",
-        fontSize: 20,
-        lineHeight: 28,
-        color: globalColors.additionalTextColor,
-    },
     addIngredientsContainer: {
         alignItems: "center",
         alignSelf: "center",
@@ -576,8 +558,7 @@ export const stylesheet = StyleSheet.create({
         height: 76,
     },
     compositionText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
+        fontFamily: "Montserrat-Regular",
         fontSize: 14,
         textAlign: "center",
     },

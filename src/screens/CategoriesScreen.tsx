@@ -130,14 +130,6 @@ export const stylesheet = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
     },
-    headerText: {
-        fontFamily: "Muli",
-        fontStyle: "normal",
-        fontWeight: "bold",
-        fontSize: 16,
-        lineHeight: 20,
-        color: globalColors.primaryColor,
-    },
     headerFishBackButton: {
         position: "absolute",
         left: 0,

@@ -58,7 +58,6 @@ const stylesheet = StyleSheet.create({
     },
     address: {
         fontFamily: "Muli",
-        fontStyle: "normal",
         fontWeight: "bold",
         fontSize: 22,
         lineHeight: 30,
@@ -66,14 +65,12 @@ const stylesheet = StyleSheet.create({
     },
     region: {
         fontFamily: "Muli",
-        fontStyle: "normal",
         fontSize: 16,
         lineHeight: 25,
         color: globalColors.mainTextColor,
     },
     phone: {
         fontFamily: "Muli",
-        fontStyle: "normal",
         fontSize: 20,
         lineHeight: 40,
         color: globalColors.additionalTextColor,

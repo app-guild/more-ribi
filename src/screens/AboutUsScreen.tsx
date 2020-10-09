@@ -22,7 +22,7 @@ class AboutUsScreen extends Component<Readonly<any>, Readonly<any>> {
                     source={require("../../resources/assets/drawable/categories/poke-category.jpg")}
                 />
                 <View style={stylesheet.subContainer}>
-                    <Text style={{...stylesheet.text, ...stylesheet.title}}>О "Много рыбы"</Text>
+                    <Text style={{...stylesheet.text, ...stylesheet.title}}>О "Море рыбы"</Text>
                     <View style={stylesheet.separator} />
                     <Text style={stylesheet.text}>{aboutUsText}</Text>
                 </View>
@@ -51,13 +51,13 @@ const stylesheet = StyleSheet.create({
         backgroundColor: globalColors.whiteTextColor,
     },
     text: {
-        fontFamily: "Mulish",
+        fontFamily: "Mulish-Light",
         fontSize: 12,
         fontWeight: "300",
         color: globalColors.whiteTextColor,
     },
     title: {
-        fontFamily: "Montserrat",
+        fontFamily: "Montserrat-Black",
         fontSize: 24,
     },
 });

@@ -273,9 +273,7 @@ export const stylesheet = StyleSheet.create({
         justifyContent: "center",
     },
     addToCartText: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "bold",
+        fontFamily: "Montserrat-Bold",
         fontSize: 14,
         lineHeight: 17,
         color: globalColors.whiteTextColor,
