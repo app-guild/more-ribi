@@ -8,6 +8,7 @@ import {ProductType} from "../entities/ProductType";
 import {Picker} from "@react-native-community/picker";
 import Ingredient from "../entities/Ingredient";
 import WokCard from "./WokCard";
+import Cart from "../entities/Cart";
 
 const timer = require("react-native-timer");
 
@@ -77,8 +78,13 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
     private async addToCartFromButton(product: Product) {
         if (product.type !== ProductType.Wok) {
             this.replaceButtonWithCounter();
+            return this.updateProductCount(product, this.state.productCount + 1);
+        } else {
+            return DatabaseApi.getCart().then((cart: Cart) => {
+                const count = cart.getProductCount(product);
+                return this.updateProductCount(product, count + 1);
+            });
         }
-        return this.updateProductCount(product, this.state.productCount + 1);
     }
 
     private async addToCartFromCounter(product: Product, count: number) {

@@ -49,13 +49,8 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
     }
 
     protected setCountInCart(cart: Cart) {
-        let result = 0;
         const {product} = this.props;
-        cart.products.forEach((value) => {
-            if (value.name === product.name && value.type === product.type) {
-                result += cart.getProductCount(value);
-            }
-        });
+        const result = cart.getWokCount(product);
         this.setState({countInCart: result});
     }
 
