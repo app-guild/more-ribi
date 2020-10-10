@@ -19,6 +19,7 @@ const globalColors = {
     orangeColor: "#ffc11e",
     unloadedCard: "lightgrey",
     redBlinkColor: "rgba(255, 0, 0, 0.35)",
+    aboutUsBackground: "#009966",
     almostTransparent: "rgba(255, 255, 255, 0.0001)",
 };
 
@@ -33,32 +34,24 @@ const globalStylesheet = StyleSheet.create({
         alignItems: "center",
     },
     primaryText: {
-        fontFamily: "Muli",
-        fontStyle: "normal",
-        fontWeight: "bold",
+        fontFamily: "Muli-Bold",
         fontSize: 14,
         lineHeight: 18,
         color: globalColors.mainTextColor,
     },
     secondaryText: {
         fontFamily: "Muli",
-        fontStyle: "normal",
-        fontWeight: "300",
         fontSize: 10,
         lineHeight: 13,
         color: globalColors.additionalTextColor,
     },
     price: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "normal",
+        fontFamily: "Muli",
         fontSize: 14,
         color: globalColors.primaryColor,
     },
     crossedOutPrice: {
-        fontFamily: "Montserrat",
-        fontStyle: "normal",
-        fontWeight: "normal",
+        fontFamily: "Muli",
         fontSize: 12,
         color: globalColors.crossedOutPriceColor,
         textDecorationLine: "line-through",
@@ -73,8 +66,6 @@ const globalStylesheet = StyleSheet.create({
     },
     headerText: {
         fontFamily: "Muli",
-        fontStyle: "normal",
-        fontWeight: "bold",
         fontSize: 18,
         lineHeight: 23,
         color: globalColors.primaryColor,
