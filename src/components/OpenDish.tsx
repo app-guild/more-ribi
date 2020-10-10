@@ -8,7 +8,7 @@ import {ProductType} from "../entities/ProductType";
 import {Picker} from "@react-native-community/picker";
 import Ingredient from "../entities/Ingredient";
 import WokCard from "./WokCard";
-import Cart from "../entities/Cart";
+import WokProduct from "../entities/WokProduct";
 
 const timer = require("react-native-timer");
 
@@ -60,14 +60,20 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
             };
         }
         this.addToCartFromButton = this.addToCartFromButton.bind(this);
+        this.onWokRecipeUpdate = this.onWokRecipeUpdate.bind(this);
     }
 
     componentDidMount() {
         return DatabaseApi.getCart().then((cart) => {
             if (this.props.product) {
-                const productCount = cart.getProductCount(this.props.product);
+                let productCount = 0;
+                if (this.props.product.type !== ProductType.Wok) {
+                    productCount = cart.getProductCount(this.props.product);
+                } else if (this.props.product instanceof WokProduct) {
+                    productCount = cart.getProductCount(this.getWokProduct(this.props.product));
+                }
                 this.setState({productCount}, () => {
-                    if (productCount > 0 && this.props.product.type !== ProductType.Wok) {
+                    if (productCount > 0) {
                         this.replaceButtonWithCounter();
                     }
                 });
@@ -75,16 +81,36 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
         });
     }
 
-    private async addToCartFromButton(product: Product) {
-        if (product.type !== ProductType.Wok) {
-            this.replaceButtonWithCounter();
-            return this.updateProductCount(product, this.state.productCount + 1);
-        } else {
-            return DatabaseApi.getCart().then((cart: Cart) => {
-                const count = cart.getProductCount(product);
-                return this.updateProductCount(product, count + 1);
-            });
+    private async onWokRecipeUpdate(basePicker?: string, saucePicker?: string) {
+        this.setState({
+            basePicker: basePicker ? basePicker : this.state.basePicker,
+            saucePicker: saucePicker ? saucePicker : this.state.saucePicker,
+        });
+        const prod = this.props.product;
+        if (prod && prod instanceof WokProduct) {
+            const wokProduct = this.getWokProduct(prod, basePicker, saucePicker);
+            return DatabaseApi.getCart()
+                .then((cart) => cart.getProductCount(wokProduct))
+                .then((count) => {
+                    if (count === 0) {
+                        this.replaceCounterWithButton();
+                    } else {
+                        this.replaceButtonWithCounter();
+                    }
+                    this.setState({productCount: count});
+                });
         }
+    }
+
+    private getWokProduct(product: Product, basePicker?: string, saucePicker?: string): WokProduct {
+        const base = basePicker ? basePicker : this.state.basePicker;
+        const sauce = saucePicker ? saucePicker : this.state.saucePicker;
+        return WokCard.createWokProduct(product, base ? base : "", sauce ? sauce : "");
+    }
+
+    private async addToCartFromButton(product: Product) {
+        this.replaceButtonWithCounter();
+        return this.updateProductCount(product, this.state.productCount + 1);
     }
 
     private async addToCartFromCounter(product: Product, count: number) {
@@ -115,6 +141,14 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
         Animated.timing(this.mainAnimValue, {
             useNativeDriver: false,
             toValue: 1,
+            duration: REPLACE_DELAY,
+        }).start();
+    }
+
+    private replaceCounterWithButton() {
+        Animated.timing(this.mainAnimValue, {
+            useNativeDriver: false,
+            toValue: 0,
             duration: REPLACE_DELAY,
         }).start();
     }
@@ -150,14 +184,6 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
         const {width, product} = this.props;
         const baseIngredients = this.props.baseIngredients ? this.props.baseIngredients : [];
         const sauceIngredients = this.props.sauceIngredients ? this.props.sauceIngredients : [];
-        const wokProduct =
-            product?.type === ProductType.Wok
-                ? WokCard.createWokProduct(
-                      product,
-                      this.state.basePicker ? this.state.basePicker : "",
-                      this.state.saucePicker ? this.state.saucePicker : "",
-                  )
-                : undefined;
 
         const widthWithoutPadding = width - 2 * stylesheet.container.paddingHorizontal;
         const image = product?.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
@@ -187,7 +213,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                                     mode={"dropdown"}
                                     selectedValue={this.state.basePicker}
                                     style={stylesheet.pricker}
-                                    onValueChange={(itemValue) => this.setState({basePicker: itemValue.toString()})}>
+                                    onValueChange={(itemValue: any) => this.onWokRecipeUpdate(itemValue.toString())}>
                                     {baseIngredients.map((value, i) => (
                                         <Picker.Item key={i} label={value.name} value={value.name} />
                                     ))}
@@ -198,7 +224,9 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                                     mode={"dropdown"}
                                     selectedValue={this.state.saucePicker}
                                     style={stylesheet.pricker}
-                                    onValueChange={(itemValue) => this.setState({saucePicker: itemValue.toString()})}>
+                                    onValueChange={(itemValue: any) =>
+                                        this.onWokRecipeUpdate(undefined, itemValue.toString())
+                                    }>
                                     {sauceIngredients.map((value, i) => (
                                         <Picker.Item key={i} label={value.name} value={value.name} />
                                     ))}
@@ -221,7 +249,11 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                         }}>
                         <TouchableOpacity
                             style={stylesheet.addToCartButton}
-                            onPress={async () => this.addToCartFromButton(wokProduct ? wokProduct : product)}
+                            onPress={async () =>
+                                this.addToCartFromButton(
+                                    product.type === ProductType.Wok ? this.getWokProduct(product) : product,
+                                )
+                            }
                             activeOpacity={0.5}>
                             <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
                         </TouchableOpacity>
@@ -250,9 +282,15 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                             initValue={this.state.productCount}
                             onChange={async (value) => {
                                 if (value > this.state.productCount) {
-                                    return this.addToCartFromCounter(product, value);
+                                    return this.addToCartFromCounter(
+                                        product.type === ProductType.Wok ? this.getWokProduct(product) : product,
+                                        value,
+                                    );
                                 } else if (value < this.state.productCount) {
-                                    return this.removeFromCartFromCounter(product, value);
+                                    return this.removeFromCartFromCounter(
+                                        product.type === ProductType.Wok ? this.getWokProduct(product) : product,
+                                        value,
+                                    );
                                 }
                                 return;
                             }}
