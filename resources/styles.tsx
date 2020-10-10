@@ -19,6 +19,7 @@ const globalColors = {
     unloadedCard: "lightgrey",
     redBlinkColor: "rgba(255, 0, 0, 0.35)",
     aboutUsBackground: "#009966",
+    almostTransparent: "rgba(255, 255, 255, 0.0001)",
 };
 
 const globalStylesheet = StyleSheet.create({
