@@ -146,8 +146,7 @@ const stylesheet = StyleSheet.create({
     buttonText: {
         textAlignVertical: "center",
         height: "100%",
-        fontFamily: "Mulish",
-        fontWeight: "700",
+        fontFamily: "Mulish-Bold",
         fontSize: 18,
         color: "#FFFFFF",
     },
