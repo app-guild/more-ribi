@@ -99,7 +99,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                         <MenuIcon
                             width={MENU_ICON_SIZE}
                             height={MENU_ICON_SIZE}
-                            onTouchEnd={this.props.drawerNavigation.openDrawer}
+                            onTouchEnd={() => this.props.drawerNavigation.openDrawer()}
                         />
                         <Text style={stylesheet.title}>{this.props.headerText}</Text>
                     </View>

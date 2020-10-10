@@ -1,18 +1,18 @@
 import {ProductType} from "./ProductType";
 
 export default class Product {
-    private readonly _id: string;
+    protected _id: string;
 
     constructor(
-        private _name: string,
-        private _type: ProductType,
-        private _price: number,
-        private _discountPrice: number | undefined,
-        private _available: boolean,
-        private _image: string,
-        private _composition: string,
+        protected _name: string,
+        protected _type: ProductType,
+        protected _price: number,
+        protected _discountPrice: number | undefined,
+        protected _available: boolean,
+        protected _image: string,
+        protected _composition: string,
     ) {
-        this._id = this._type + this._name;
+        this._id = this._type + "_" + this._name;
     }
 
     get id(): string {

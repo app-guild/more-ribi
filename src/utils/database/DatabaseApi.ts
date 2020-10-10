@@ -2,6 +2,8 @@ import SQLite from "react-native-sqlite-storage";
 import Product from "../../entities/Product";
 import Cart from "../../entities/Cart";
 import Order from "../../entities/Order";
+import WokProduct from "../../entities/WokProduct";
+import {ProductType} from "../../entities/ProductType";
 
 SQLite.DEBUG = true;
 
@@ -91,11 +93,6 @@ export default class DatabaseApi {
      * @return {Promise<Cart>} Promise contains cart
      */
     static getCart(): Promise<Cart> {
-        let sql = `
-            SELECT * FROM Orders 
-            WHERE date IS NULL
-        `;
-
         if (DatabaseApi.cart) {
             return Promise.resolve(DatabaseApi.cart);
         } else {
@@ -103,23 +100,20 @@ export default class DatabaseApi {
                 return DatabaseApi.getCartPromise;
             }
 
-            DatabaseApi.getCartPromise = DatabaseApi.executeQuery(sql)
-                .then((results) => {
-                    const rawData = results.rows.raw();
-                    if (!rawData.length) {
-                        return DatabaseApi.createCart();
-                    }
+            const sql = `
+                SELECT * FROM Orders 
+                WHERE date IS NULL
+            `;
 
-                    const cartJson = rawData[0];
-                    const productMap = DatabaseApi.parseProducts(cartJson.products);
+            this.getCartPromise = DatabaseApi.executeQuery(sql).then((results) => {
+                const rawData = results.rows.raw();
+                const cartJson = rawData[0];
+                const productMap = DatabaseApi.parseProducts(cartJson.products);
 
-                    return new Cart(cartJson.id, productMap);
-                })
-                .then((cart) => {
-                    DatabaseApi.cart = cart;
-                    DatabaseApi.getCartPromise = null;
-                    return DatabaseApi.cart;
-                });
+                DatabaseApi.cart = new Cart(cartJson.id, productMap);
+                DatabaseApi.getCartPromise = null;
+                return DatabaseApi.cart;
+            });
             return DatabaseApi.getCartPromise;
         }
     }
@@ -127,6 +121,7 @@ export default class DatabaseApi {
     /**
      * Add product to cart and return new cart price
      * @param {Product} product
+     * @param {number} count
      * @void
      */
     static addProductToCart(product: Product, count?: number): Promise<void> {
@@ -222,7 +217,12 @@ export default class DatabaseApi {
         const result = new Map();
         jsonProducts
             .filter((it: any) => it.count && !isNaN(Number(it.count)))
-            .forEach((it: any) => result.set(Product.parseDatabaseJson(it), Number(it.count)));
+            .forEach((it: any) =>
+                result.set(
+                    it.type === ProductType.Wok ? WokProduct.parseDatabaseJson(it) : Product.parseDatabaseJson(it),
+                    Number(it.count),
+                ),
+            );
         return result;
     }
 
@@ -252,7 +252,6 @@ export default class DatabaseApi {
                         resolve(results);
                     },
                     (error: any) => {
-                        console.log(error);
                         reject(error);
                     },
                 );
