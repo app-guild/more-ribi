@@ -4,6 +4,7 @@ import {globalColors, globalStylesheet} from "../../resources/styles";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import Product from "../entities/Product";
 import Cart from "../entities/Cart";
+import PriceButton from "./PriceButton";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 export interface IProductCardState {
@@ -16,8 +17,11 @@ export interface IProductCardProps {
     onClick: (product: Product) => any;
 }
 
-class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProductCardState>> {
-    constructor(props: IProductCardProps) {
+class ProductCard<
+    P extends IProductCardProps = IProductCardProps,
+    S extends IProductCardState = IProductCardState
+> extends Component<P, S> {
+    constructor(props: P) {
         super(props);
         this.state = {
             countInCart: props.countInCart,
@@ -37,7 +41,7 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         RealtimeDatabaseApi.removeProductsChangedListener(this._onProductsChanged);
     }
 
-    componentDidUpdate(prevProps: Readonly<Readonly<IProductCardProps>>) {
+    componentDidUpdate(prevProps: Readonly<P>) {
         if (prevProps.product !== this.props.product) {
             DatabaseApi.getCart().then(this.setCountInCart);
         }
@@ -51,71 +55,16 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
         }
     };
 
-    private setCountInCart(cart: Cart) {
+    protected setCountInCart(cart: Cart) {
         this.setState({countInCart: cart.getProductCount(this.props.product)});
     }
 
-    private async addToCart() {
+    protected async addToCart() {
         if (this.state.countInCart === 0) {
             return DatabaseApi.addProductToCart(this.props.product);
         } else {
             return DatabaseApi.updateProductCount(this.props.product, this.state.countInCart + 1);
         }
-    }
-
-    private renderPrice(price: number, discountPrice?: number | null) {
-        let result: any;
-        let styleForMainPrice: object = stylesheet.shoppingCartMainPrice;
-        if (this.state.countInCart > 0) {
-            styleForMainPrice = stylesheet.shoppingCartMainPriceSelected;
-        }
-        let displayCountOfSelected = "";
-        if (this.state.countInCart > 1) {
-            displayCountOfSelected = `  X ${this.state.countInCart}`;
-        }
-
-        if (discountPrice || discountPrice === 0) {
-            let mainPriceTextColor = globalColors.headerUnderlineColor;
-            if (this.state.countInCart > 0) {
-                mainPriceTextColor = globalColors.backgroundOverlay;
-            }
-            result = (
-                <View style={stylesheet.shoppingCartPriceContainer}>
-                    <Text
-                        numberOfLines={1}
-                        style={{
-                            ...globalStylesheet.crossedOutPrice,
-                            marginLeft: stylesheet.shoppingCartMainPrice.padding,
-                        }}>
-                        {price + " ₽"}
-                    </Text>
-                    <View style={{display: "flex", flexDirection: "row"}}>
-                        <View style={styleForMainPrice}>
-                            <Text numberOfLines={1} style={{...globalStylesheet.price, color: mainPriceTextColor}}>
-                                {discountPrice + " ₽" + displayCountOfSelected}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-            );
-        } else {
-            let mainPriceTextColor = globalColors.crossedOutPriceColor;
-            if (this.state.countInCart > 0) {
-                mainPriceTextColor = globalColors.backgroundOverlay;
-            }
-            result = (
-                <View style={stylesheet.shoppingCartPriceContainer}>
-                    <View style={{display: "flex", flexDirection: "row"}}>
-                        <View style={styleForMainPrice}>
-                            <Text numberOfLines={1} style={{...globalStylesheet.price, color: mainPriceTextColor}}>
-                                {price + " ₽" + displayCountOfSelected}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-            );
-        }
-        return result;
     }
 
     render() {
@@ -151,7 +100,11 @@ class ProductCard extends Component<Readonly<IProductCardProps>, Readonly<IProdu
                         </Text>
                         <View style={stylesheet.shoppingCartButtonContainer}>
                             <TouchableOpacity activeOpacity={0.85} onPress={this.addToCart}>
-                                {this.renderPrice(product.price, product.discountPrice)}
+                                <PriceButton
+                                    price={product.price}
+                                    countInCart={this.state.countInCart}
+                                    discountPrice={product.discountPrice}
+                                />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -203,35 +156,9 @@ export const stylesheet = StyleSheet.create({
         height: "100%",
     },
     shoppingCartImage: {
-        height: "100%",
+        height: "75%",
         aspectRatio: 1,
         borderRadius: 20,
-    },
-    shoppingCartPriceContainer: {
-        marginRight: 10,
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        width: "100%",
-    },
-    shoppingCartMainPrice: {
-        borderColor: globalColors.accentColor,
-        borderWidth: 1,
-        borderTopLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 5,
-        width: "100%",
-    },
-    shoppingCartMainPriceSelected: {
-        backgroundColor: globalColors.headerUnderlineColor,
-        borderTopLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 5,
-        width: "100%",
     },
 });
 

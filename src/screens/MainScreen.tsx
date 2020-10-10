@@ -10,6 +10,8 @@ import Product from "../entities/Product";
 import Modal from "react-native-modal";
 import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
+import WokCard from "../components/WokCard";
+import Ingredient from "../entities/Ingredient";
 
 export interface IMainScreenState {
     productCardSize: Dimension;
@@ -26,6 +28,7 @@ const FISH_ICON_SIZE = {width: 47, height: 17};
 class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
     private layoutSize: Dimension[];
+    private wokIngredients: Map<string, Ingredient[]> = new Map();
 
     constructor(props: any) {
         super(props);
@@ -35,7 +38,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.onCardClick = this.onCardClick.bind(this);
         const cardLayoutSize = {
             width: windowSize.width,
-            height: windowSize.height * 0.15,
+            height: windowSize.height * 0.2,
         };
         this.layoutSize = [
             {
@@ -61,14 +64,20 @@ class MainScreen extends Component<any, IMainScreenState> {
         RealtimeDatabaseApi.addProductsChangedListener(this._onProductsChanged);
 
         return RealtimeDatabaseApi.getProducts().then((products) => {
-            this._filterAvailableProducts(products);
-            const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, products);
+            return RealtimeDatabaseApi.getWokConstructorIngredients()
+                .then((ingredients) => {
+                    this.wokIngredients = ingredients;
+                })
+                .then(() => {
+                    this._filterAvailableProducts(products);
+                    const providers = CategorizedRecyclerListView.buildProviders(this.layoutSize, products);
 
-            this.setState({
-                currentCategory: ProductType.translateCategoryName(Array.from(products.keys())[0]),
-                dataProvider: providers.dataProvider,
-                layoutProvider: providers.layoutProvider,
-            });
+                    this.setState({
+                        currentCategory: ProductType.translateCategoryName(Array.from(products.keys())[0]),
+                        dataProvider: providers.dataProvider,
+                        layoutProvider: providers.layoutProvider,
+                    });
+                });
         });
     }
 
@@ -127,13 +136,28 @@ class MainScreen extends Component<any, IMainScreenState> {
                     </View>
                 );
             case "column0":
-                return <ProductCard product={data.item} onClick={this.onCardClick} />;
+                if (data.item.type === ProductType.Wok) {
+                    const baseIngredients = this.wokIngredients.get("base");
+                    const sauceIngredients = this.wokIngredients.get("souce");
+                    return (
+                        <WokCard
+                            product={data.item}
+                            onClick={this.onCardClick}
+                            baseIngredients={baseIngredients ? baseIngredients : []}
+                            sauceIngredients={sauceIngredients ? sauceIngredients : []}
+                        />
+                    );
+                } else {
+                    return <ProductCard product={data.item} onClick={this.onCardClick} />;
+                }
             default:
                 return null;
         }
     }
 
     render() {
+        const baseIngredients = this.wokIngredients.get("base");
+        const sauceIngredients = this.wokIngredients.get("souce");
         return (
             <View style={{flex: 1}}>
                 <View style={{alignSelf: "flex-start"}} onTouchEnd={() => this.props.navigation.navigate("Categories")}>
@@ -171,6 +195,12 @@ class MainScreen extends Component<any, IMainScreenState> {
                                 width={windowSize.width - 2 * stylesheet.openDishModal.paddingHorizontal}
                                 height={windowSize.height - 2 * stylesheet.openDishModal.paddingVertical}
                                 product={this.state.currentProduct}
+                                baseIngredients={
+                                    this.state.currentProduct?.type === ProductType.Wok ? baseIngredients : undefined
+                                }
+                                sauceIngredients={
+                                    this.state.currentProduct?.type === ProductType.Wok ? sauceIngredients : undefined
+                                }
                             />
                         </View>
                     </Modal>

@@ -1,5 +1,6 @@
 import Product from "./Product";
 import {TKey} from "../utils/database/DatabaseApi";
+import {ProductType} from "./ProductType";
 
 export default class Cart {
     constructor(protected _id: TKey, protected _products: Map<Product, number>) {}
@@ -49,11 +50,30 @@ export default class Cart {
         const originalProduct = this.getProductById(product.id);
         if (originalProduct) {
             this._products.set(originalProduct, count);
+        } else {
+            this.addProduct(product, count);
         }
     }
 
     clear() {
         this._products.clear();
+    }
+
+    getWokCount(product: Product): number {
+        if (product.type === ProductType.Wok) {
+            const woks = this.getProductsByTypeAndName(product.type, product.name);
+            if (woks.length === 0) {
+                return 0;
+            } else {
+                let count = 0;
+                woks.forEach((it) => {
+                    count += this._products.get(it) || 0;
+                });
+                return count;
+            }
+        } else {
+            return this.getProductCount(product);
+        }
     }
 
     getProductCount(product: Product): number {
@@ -83,5 +103,9 @@ export default class Cart {
 
     private getProductById(productId: TKey): Product | undefined {
         return Array.from(this._products.keys()).find((it) => it.id === productId);
+    }
+
+    private getProductsByTypeAndName(productType: ProductType, productName: string): Product[] {
+        return Array.from(this._products.keys()).filter((it) => it.type === productType && it.name === productName);
     }
 }
