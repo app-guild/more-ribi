@@ -6,7 +6,6 @@ import {createStackNavigator} from "@react-navigation/stack";
 import Header from "../../components/Header";
 import MainBackground from "../../components/MainBackground";
 import {globalColors} from "../../../resources/styles";
-import CartScreen from "../CartScreen";
 import PokeConstructorScreen from "../PokeConstructorScreen";
 
 const Stack = createStackNavigator();
@@ -31,9 +30,12 @@ export default function MainScreenNavigator(props: any) {
                 }}
                 initialRouteName="Main"
                 headerMode={"screen"}>
-                <Stack.Screen name="Main" options={{showBackButton: false}} component={MainScreen} />
-                <Stack.Screen name="Categories" options={{subheaderText: "Разделы"}} component={CategoriesScreen} />
-                <Stack.Screen name="CartScreen" component={CartScreen} />
+                <Stack.Screen name="Main" component={MainScreen} />
+                <Stack.Screen
+                    name="Categories"
+                    options={{subheaderText: "Разделы", showBackButton: true}}
+                    component={CategoriesScreen}
+                />
                 <Stack.Screen name="PokeConstructor" component={PokeConstructorScreen} />
             </Stack.Navigator>
         </NavigationContainer>
