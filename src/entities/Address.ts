@@ -1,25 +1,64 @@
+import {Json} from "../utils/database/DatabaseApi";
+
 export default class Address {
     constructor(
-        public mainAddress: string = "",
-        public entrance: string = "",
-        public flor: string = "",
-        public apartment: string = "",
+        public _mainAddress: string = "",
+        public _entrance: string = "",
+        public _flor: string = "",
+        public _apartment: string = "",
     ) {}
 
-    public static print(address: Address): string {
+    public toString(): string {
         let result = "";
-        if (address.mainAddress) {
-            result = result + `${address.mainAddress}`;
+        if (this.mainAddress) {
+            result = result + `${this.mainAddress}`;
         }
-        if (address.entrance) {
-            result = result + `, подъезд №${address.entrance}`;
+        if (this.entrance) {
+            result = result + `, подъезд №${this.entrance}`;
         }
-        if (address.flor) {
-            result = result + `, ${address.flor} этаж`;
+        if (this.flor) {
+            result = result + `, ${this.flor} этаж`;
         }
-        if (address.apartment) {
-            result = result + `, квартира/офис №${address.apartment}`;
+        if (this.apartment) {
+            result = result + `, квартира/офис №${this.apartment}`;
         }
         return result;
+    }
+
+    get mainAddress(): string {
+        return this._mainAddress;
+    }
+
+    set mainAddress(value: string) {
+        this._mainAddress = value;
+    }
+
+    get entrance(): string {
+        return this._entrance;
+    }
+
+    set entrance(value: string) {
+        this._entrance = value;
+    }
+
+    get flor(): string {
+        return this._flor;
+    }
+
+    set flor(value: string) {
+        this._flor = value;
+    }
+
+    get apartment(): string {
+        return this._apartment;
+    }
+
+    set apartment(value: string) {
+        this._apartment = value;
+    }
+
+    static parseDatabaseAddress(address: Json): Address {
+        let addres = new Address(address._mainAddress, address._entrance, address._flor, address._apartment);
+        return addres;
     }
 }

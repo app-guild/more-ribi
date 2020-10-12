@@ -19,9 +19,9 @@ export default class EmailService {
             body = body + `Комментарий к заказу: ${comment}\n`;
         }
         if (address instanceof Address) {
-            body = `Адрес: ${Address.print(address)} \n`;
+            body = `Адрес: ${address} \n`;
         } else {
-            body = `САМОВЫВОЗ с адреса: ${address.address} \n`;
+            body = `САМОВЫВОЗ с адреса: ${address.address.toString()} \n`;
         }
         body = body + `Заказ: \n`;
         cart.products.forEach((prod) => {

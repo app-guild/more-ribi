@@ -190,6 +190,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             KeyValueStorage.setAddress(this.state.address)
                 .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
                 .then(() => KeyValueStorage.setUserName(this.state.name))
+                .then(() => KeyValueStorage.setAddress(this.state.address))
                 .then(() => KeyValueStorage.setLastPaymentMethod(this.state.paymentMethod))
                 .then(() => DatabaseApi.getCart())
                 // .then((cart) => {

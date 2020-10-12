@@ -41,7 +41,7 @@ export default class Order extends Cart {
             response.id,
             products,
             new Date(response.date),
-            JSON.parse(response.address),
+            Address.parseDatabaseAddress(JSON.parse(response.address)),
             response.comment,
             response.paymentMethod,
         );

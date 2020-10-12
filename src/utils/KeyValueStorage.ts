@@ -30,7 +30,9 @@ export default class KeyValueStorage {
     }
 
     static getAddress(): Promise<Address | null> {
-        return AsyncStorage.getItem("address").then((address) => (address ? JSON.parse(address) : null));
+        return AsyncStorage.getItem("address").then((address) =>
+            address ? Address.parseDatabaseAddress(JSON.parse(address)) : null,
+        );
     }
 
     static setAddress(address: Address): Promise<void> {

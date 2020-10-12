@@ -105,7 +105,7 @@ export default class DatabaseApi {
                 WHERE date IS NULL
             `;
 
-            this.getCartPromise = DatabaseApi.executeQuery(sql).then((results) => {
+            DatabaseApi.getCartPromise = DatabaseApi.executeQuery(sql).then((results) => {
                 const rawData = results.rows.raw();
                 const cartJson = rawData[0];
                 const productMap = DatabaseApi.parseProducts(cartJson.products);

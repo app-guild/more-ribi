@@ -80,7 +80,7 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                     onBackButtonPress={() => this.setState({modalVisible: false})}>
                     <ScrollView style={stylesheet.scroll} contentContainerStyle={stylesheet.container}>
                         <Text style={{marginBottom: 10, textAlign: "center"}}>
-                            {Address.print(this.state.order.address)}
+                            {this.state.order.address.toString()}
                         </Text>
                         <Moment format={"DD.MM.YYYY HH:MM"} element={Text}>
                             {this.state.order.date}

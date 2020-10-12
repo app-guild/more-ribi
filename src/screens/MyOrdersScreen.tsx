@@ -35,7 +35,7 @@ export default class MyOrdersScreen extends Component<Readonly<any>, Readonly<IM
     private _renderItem = ({item}: {item: Order}) => {
         return (
             <TouchableOpacity style={stylesheet.itemContainer} onPress={() => this._modal.current?.show(item)}>
-                <Text style={stylesheet.addressText}>{Address.print(item.address)}</Text>
+                <Text style={stylesheet.addressText}>{item.address.toString()}</Text>
                 <View style={stylesheet.datePriceContainer}>
                     <Moment format={"D MMMM YYYY HH:MM"} element={Text}>
                         {item.date}
