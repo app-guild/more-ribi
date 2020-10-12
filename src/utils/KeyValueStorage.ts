@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import Address from "../entities/Address";
-import {parsePaymentsMethods, PaymentsMethods} from "./payment/PaymentsMethods";
+import {PaymentsMethods} from "./payment/PaymentsMethods";
 
 export default class KeyValueStorage {
     static getUserName(): Promise<string> {
@@ -13,7 +13,7 @@ export default class KeyValueStorage {
 
     static getLastPaymentMethod(): Promise<PaymentsMethods | null> {
         return AsyncStorage.getItem("payment_method").then((paymentMethod) =>
-            paymentMethod ? parsePaymentsMethods(paymentMethod) : null,
+            paymentMethod ? PaymentsMethods.parse(paymentMethod) : null,
         );
     }
 

@@ -56,7 +56,7 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
     };
 
     private _onPressSend = () => {
-        return new Promise((resolve) => {
+        return new Promise(() => {
             if (this.state.enabledButton) {
                 this.setState({comment: "", enabledButton: false});
                 KeyValueStorage.setUserName(this.state.name)
@@ -68,10 +68,7 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
                                 Toast.LONG,
                             );
                         }
-                        resolve();
                     });
-            } else {
-                resolve();
             }
         });
     };

@@ -45,8 +45,7 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
         this.setState({cart});
     }
 
-    // @ts-ignore
-    private renderItem({item}) {
+    private renderItem({item}: any) {
         if (item instanceof Product) {
             return <CartItem product={item} />;
         } else {

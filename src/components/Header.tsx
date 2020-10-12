@@ -9,7 +9,6 @@ import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import {StackNavigationProp} from "@react-navigation/stack";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
-import Product from "../entities/Product";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 const MENU_ICON_SIZE = 40;
@@ -18,7 +17,7 @@ const FISH_ICON_SIZE = {width: 47, height: 17};
 const TRASH_ICON_SIZE = 30;
 
 export interface IHeaderState {
-    cart: Cart;
+    totalPrice: number;
 }
 export interface IHeaderProps {
     headerText: string;
@@ -33,7 +32,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
     constructor(props: any) {
         super(props);
         this.state = {
-            cart: new Cart(-1, new Map<Product, number>()),
+            totalPrice: 0,
         };
         this.updateCart = this.updateCart.bind(this);
     }
@@ -53,7 +52,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
     }
 
     updateCart(cart: Cart) {
-        this.setState({cart});
+        this.setState({totalPrice: cart.totalPrice});
     }
 
     removeUnavailableProductsInCart() {
@@ -78,14 +77,14 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                 );
                 break;
             default:
-                if (this.state.cart.totalPrice > 0) {
+                if (this.state.totalPrice > 0) {
                     actionIcon = (
                         <View
                             style={stylesheet.topContainer}
                             onTouchEnd={() => this.props.stackNavigation.navigate("CartScreen")}>
                             <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
                             <Text numberOfLines={1} style={stylesheet.priceText}>
-                                {Math.round(this.state.cart.totalPrice)}
+                                {Math.round(this.state.totalPrice)}
                             </Text>
                         </View>
                     );

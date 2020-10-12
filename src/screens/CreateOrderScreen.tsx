@@ -69,10 +69,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     address = new Address();
                 }
                 if (lastPaymentMethod) {
-                    lastPaymentMethod = parsePaymentsMethods(lastPaymentMethod);
-                    if (lastPaymentMethod) {
-                        modifiedPaymentsMethods.paymentMethod = lastPaymentMethod;
-                    }
+                    modifiedPaymentsMethods.paymentMethod = lastPaymentMethod;
                 }
                 this.setState({
                     ...modifiedPaymentsMethods,
@@ -128,7 +125,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         });
     }
 
-    updateTotalPrice(cart: Cart) {
+    private updateTotalPrice(cart: Cart) {
         this.setState({totalPrice: cart.totalPrice});
     }
 

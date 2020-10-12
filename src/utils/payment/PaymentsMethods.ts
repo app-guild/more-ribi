@@ -5,17 +5,20 @@ export enum PaymentsMethods {
     CashToCourier = "Наличными курьеру",
 }
 
-export function parsePaymentsMethods(value: string): PaymentsMethods | null {
-    switch (value) {
-        case PaymentsMethods.ApplePay:
-            return PaymentsMethods.ApplePay;
-        case PaymentsMethods.GooglePay:
-            return PaymentsMethods.GooglePay;
-        case PaymentsMethods.CardToCourier:
-            return PaymentsMethods.CardToCourier;
-        case PaymentsMethods.CashToCourier:
-            return PaymentsMethods.CashToCourier;
-        default:
-            return null;
+export namespace PaymentsMethods {
+    export function parse(value: string): PaymentsMethods | null {
+        switch (value) {
+            case PaymentsMethods.ApplePay:
+                return PaymentsMethods.ApplePay;
+            case PaymentsMethods.GooglePay:
+                return PaymentsMethods.GooglePay;
+            case PaymentsMethods.CardToCourier:
+                return PaymentsMethods.CardToCourier;
+            case PaymentsMethods.CashToCourier:
+                return PaymentsMethods.CashToCourier;
+            default:
+                return null;
+        }
     }
 }
+
