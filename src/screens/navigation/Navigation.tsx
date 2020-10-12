@@ -13,22 +13,6 @@ import MyOrdersScreenNavigator from "./MyOrdersScreenNavigator";
 import AboutUsScreenNavigator from "./AboutUsScreenNavigator";
 import CartScreen from "../CartScreen";
 
-const screens: {
-    name: string,
-    value: string,
-    component: React.ComponentClass<any, any> | React.FunctionComponent<any>,
-}[] = [
-    {name: "Меню доставки", value: "MainScreen", component: MainScreenNavigator},
-    {name: "Мои заказы", value: "MyOrders", component: MyOrdersScreenNavigator},
-    {name: "Рестораны", value: "Restaurants", component: RestaurantsScreen},
-    {name: "Новости", value: "Promotions", component: PromotionsScreenNavigator},
-    {name: "Условия доставки", value: "DeliveryConditions", component: DeliveryConditionsScreenNavigator},
-    {name: "Обратная связь", value: "Feedback", component: FeedbackScreenNavigator},
-    {name: "О приложении", value: "AboutUs", component: AboutUsScreenNavigator},
-
-    {name: "CartScreen", value: "CartScreen", component: CartScreen},
-];
-
 function DrawerContent(props: any) {
     const {
         state,
@@ -76,9 +60,6 @@ function DrawerContent(props: any) {
 const Drawer = createDrawerNavigator();
 
 export default function Navigation() {
-    const drawerScreens = screens.map((value, i) => (
-        <Drawer.Screen key={i} name={value.name} component={value.component} />
-    ));
     return (
         <NavigationContainer>
             <Drawer.Navigator
@@ -91,7 +72,14 @@ export default function Navigation() {
                 backBehavior={"history"}
                 initialRouteName="Меню доставки"
                 edgeWidth={Dimensions.get("window").width / 3}>
-                {drawerScreens}
+                <Drawer.Screen name={"Меню доставки"} component={MainScreenNavigator} />
+                <Drawer.Screen name={"Мои заказы"} component={MyOrdersScreenNavigator} />
+                <Drawer.Screen name={"Рестораны"} component={RestaurantsScreen} />
+                <Drawer.Screen name={"Новости"} component={PromotionsScreenNavigator} />
+                <Drawer.Screen name={"Условия доставки"} component={DeliveryConditionsScreenNavigator} />
+                <Drawer.Screen name={"Обратная связь"} component={FeedbackScreenNavigator} />
+                <Drawer.Screen name={"О приложении"} component={AboutUsScreenNavigator} />
+                <Drawer.Screen name={"CartScreen"} component={CartScreen} />
             </Drawer.Navigator>
         </NavigationContainer>
     );

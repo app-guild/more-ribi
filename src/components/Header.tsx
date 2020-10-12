@@ -19,7 +19,7 @@ export interface IHeaderState {
 export interface IHeaderProps {
     headerText: string;
     drawerNavigation: DrawerNavigationProp<any>;
-    stackNavigation: StackNavigationProp<any>;
+    stackNavigation?: StackNavigationProp<any>;
     showBackButton?: boolean;
     subheaderText?: string;
 }
@@ -81,7 +81,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                                 style={{flex: 1}}
                                 width={FISH_ICON_SIZE.width}
                                 height={FISH_ICON_SIZE.height}
-                                onTouchEnd={() => this.props.stackNavigation.goBack()}
+                                onTouchEnd={() => this.props.stackNavigation?.goBack()}
                             />
                         ) : null}
                         {this.props.subheaderText ? (

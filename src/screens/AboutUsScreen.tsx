@@ -34,7 +34,7 @@ class AboutUsScreen extends Component<Readonly<any>, Readonly<any>> {
 const stylesheet = StyleSheet.create({
     container: {
         width: "100%",
-        height: "100%",
+        flex: 1,
         paddingHorizontal: 25,
         paddingBottom: 25,
     },
