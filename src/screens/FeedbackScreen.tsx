@@ -5,7 +5,7 @@ import {Divider} from "react-native-paper";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import KeyValueStorage from "../utils/KeyValueStorage";
 import EmailService from "../utils/email/EmailService";
-import Toast from "react-native-simple-toast";
+import SimpleToast from "react-native-simple-toast";
 
 export interface IFeedbackScreenState {
     enabledButton: boolean;
@@ -63,9 +63,9 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
                     .then(() => EmailService.sendFeedback(this.state.name, this.state.comment))
                     .then((response) => {
                         if (response.data !== "Success!") {
-                            Toast.show(
+                            SimpleToast.show(
                                 "Не удалось отправить отзыв. Пожалуйста, проверьте соединение с интернетом.",
-                                Toast.LONG,
+                                SimpleToast.LONG,
                             );
                         }
                     });

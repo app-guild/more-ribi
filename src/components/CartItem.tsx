@@ -5,6 +5,8 @@ import Product from "../entities/Product";
 import NumericInput from "react-native-numeric-input";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import CloseIcon from "../../resources/assets/drawable/cross_icon.svg";
+import {ProductType} from "../entities/ProductType";
+import WokProduct from "../entities/WokProduct";
 
 export interface ICartItemState {
     productCount: number;
@@ -53,10 +55,14 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
         const {product} = this.props;
         let price = product.discountPrice === undefined ? product.price : product.discountPrice;
         const textPrice = price + " ₽";
+        let productName = this.props.product.name;
+        if (product.type === ProductType.Wok && product instanceof WokProduct) {
+            productName = product.toString();
+        }
 
         return (
             <View style={stylesheet.container}>
-                <Text style={stylesheet.column}>{this.props.product.name}</Text>
+                <Text style={stylesheet.column}>{productName}</Text>
                 <NumericInput
                     containerStyle={{
                         ...stylesheet.column,

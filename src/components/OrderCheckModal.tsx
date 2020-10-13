@@ -5,6 +5,8 @@ import Modal from "react-native-modal";
 import Moment from "react-moment";
 import {Divider} from "react-native-paper";
 import Address from "../entities/Address";
+import {ProductType} from "../entities/ProductType";
+import WokProduct from "../entities/WokProduct";
 
 interface ICheckModalState {
     modalVisible: boolean;
@@ -60,10 +62,14 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
         if (this.state.order) {
             const rows: JSX.Element[] = [];
             this.state.order.products.forEach((count, product) => {
+                let productName = product.name;
+                if (product.type === ProductType.Wok && product instanceof WokProduct) {
+                    productName = product.toString();
+                }
                 rows.push(
                     <Row
                         key={product.id}
-                        name={product.name}
+                        name={productName}
                         price={product.discountPrice || product.price}
                         count={count}
                     />,

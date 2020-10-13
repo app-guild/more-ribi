@@ -3,10 +3,36 @@ import Cart from "../../entities/Cart";
 import {PaymentsMethods} from "../payment/PaymentsMethods";
 import {firebase, FirebaseFunctionsTypes} from "@react-native-firebase/functions";
 import Restaurant from "../../entities/Restaurant";
+import NetInfo from "@react-native-community/netinfo";
 
 const SHOP_EMAIL = "smouk.chayz@gmail.com";
+const FROM_HEADER = "Много рыбы (Мобильное приложение)";
 
 export default class EmailService {
+    private static async sendEmail(
+        from: string,
+        emailTo: string,
+        subject: string,
+        body: string,
+    ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
+        return new Promise((resolve, reject) => {
+            NetInfo.fetch().then((state) => {
+                if (state.isConnected) {
+                    resolve(
+                        firebase.functions().httpsCallable("sendEmail")({
+                            from: from,
+                            emailTo: emailTo,
+                            subject,
+                            body,
+                        }),
+                    );
+                } else {
+                    reject();
+                }
+            });
+        });
+    }
+
     public static async sendDeliveryOrder(
         cart: Cart,
         paymentMethod: PaymentsMethods,
@@ -33,11 +59,7 @@ export default class EmailService {
         body = body + `Итого: ${cart.totalPrice}\n`;
         body = body + `Способ оплаты: ${paymentMethod}\n`;
 
-        return firebase.functions().httpsCallable("sendEmail")({
-            emailTo: SHOP_EMAIL,
-            subject,
-            body,
-        });
+        return EmailService.sendEmail(FROM_HEADER, SHOP_EMAIL, subject, body);
     }
 
     public static async sendFeedback(
@@ -47,10 +69,6 @@ export default class EmailService {
         const subject = "Отзыв (мобильное приложение)";
         let body = `Имя: ${name}\nОтзыв: ${comment}\n`;
 
-        return firebase.functions().httpsCallable("sendEmail")({
-            emailTo: SHOP_EMAIL,
-            subject,
-            body,
-        });
+        return EmailService.sendEmail(FROM_HEADER, SHOP_EMAIL, subject, body);
     }
 }

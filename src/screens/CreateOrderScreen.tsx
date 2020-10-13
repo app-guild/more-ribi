@@ -1,7 +1,7 @@
 import React, {Component, createRef} from "react";
 import {Dimensions, Keyboard, Picker, PixelRatio, Platform, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
-import {parsePaymentsMethods, PaymentsMethods} from "../utils/payment/PaymentsMethods";
+import {PaymentsMethods} from "../utils/payment/PaymentsMethods";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
@@ -17,6 +17,8 @@ import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Restaurant from "../entities/Restaurant";
 import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService";
 import ApplePayButton from "react-native-apple-pay-button";
+import EmailService from "../utils/email/EmailService";
+import SimpleToast from "react-native-simple-toast";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -183,36 +185,36 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     }
 
     private async sendOrder() {
-        return (
-            KeyValueStorage.setAddress(this.state.address)
-                .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
-                .then(() => KeyValueStorage.setUserName(this.state.name))
-                .then(() => KeyValueStorage.setAddress(this.state.address))
-                .then(() => KeyValueStorage.setLastPaymentMethod(this.state.paymentMethod))
-                .then(() => DatabaseApi.getCart())
-                // .then((cart) => {
-                //     let address: Address | Restaurant = this.state.address;
-                //     if (!this.state.isDelivery && this.state.restaurantForPickup) {
-                //         address = this.state.restaurantForPickup;
-                //     }
-                //     EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, address, this.state.comment);
-                // })
-                .then((response) => {
-                    // if (response.data !== "Success!") {
-                    //     Toast.show("Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.", Toast.LONG);
-                    //     return null;
-                    // }
-                    let address: Address = this.state.address;
-                    if (!this.state.isDelivery && this.state.restaurantForPickup) {
-                        address = new Address(`Самовывоз: ${this.state.restaurantForPickup.address}`);
-                    }
-                    return DatabaseApi.createOrderFromCart(
-                        JSON.stringify(address),
-                        this.state.comment,
-                        this.state.paymentMethod,
-                    ).then(() => this.props.navigation.navigate("Main"));
-                })
-        );
+        return KeyValueStorage.setAddress(this.state.address)
+            .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
+            .then(() => KeyValueStorage.setUserName(this.state.name))
+            .then(() => KeyValueStorage.setAddress(this.state.address))
+            .then(() => KeyValueStorage.setLastPaymentMethod(this.state.paymentMethod))
+            .then(() => DatabaseApi.getCart())
+            .then((cart) => {
+                let address: Address | Restaurant = this.state.address;
+                if (!this.state.isDelivery && this.state.restaurantForPickup) {
+                    address = this.state.restaurantForPickup;
+                }
+                EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, address, this.state.comment);
+            })
+            .then(() => {
+                let address: Address = this.state.address;
+                if (!this.state.isDelivery && this.state.restaurantForPickup) {
+                    address = new Address(`Самовывоз: ${this.state.restaurantForPickup.address}`);
+                }
+                return DatabaseApi.createOrderFromCart(
+                    JSON.stringify(address),
+                    this.state.comment,
+                    this.state.paymentMethod,
+                ).then(() => this.props.navigation.navigate("Main"));
+            })
+            .catch(() => {
+                SimpleToast.show(
+                    "Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.",
+                    SimpleToast.LONG,
+                );
+            });
     }
 
     private renderPayButton() {
