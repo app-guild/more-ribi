@@ -69,7 +69,7 @@ export default function Navigation() {
                     inactiveTintColor: globalColors.primaryColor,
                 }}
                 drawerContent={(props) => <DrawerContent {...props} />}
-                backBehavior={"history"}
+                backBehavior={"initialRoute"}
                 initialRouteName="Меню доставки"
                 edgeWidth={Dimensions.get("window").width / 3}>
                 <Drawer.Screen name={"Меню доставки"} component={MainScreenNavigator} />

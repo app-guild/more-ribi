@@ -36,7 +36,11 @@ export default function MainScreenNavigator(props: any) {
                     options={{subheaderText: "Разделы", showBackButton: true}}
                     component={CategoriesScreen}
                 />
-                <Stack.Screen name="PokeConstructor" component={PokeConstructorScreen} />
+                <Stack.Screen
+                    name="PokeConstructor"
+                    component={PokeConstructorScreen}
+                    options={{showBackButton: true}}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
