@@ -327,9 +327,9 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     />
                     <TextInput
                         style={stylesheet.rowText}
-                        value={this.state.address.flor}
+                        value={this.state.address.floor}
                         onChangeText={(flor: string) => {
-                            this.state.address.flor = flor;
+                            this.state.address.floor = flor;
                             this.setState({address: this.state.address});
                         }}
                         placeholder={"Этаж"}

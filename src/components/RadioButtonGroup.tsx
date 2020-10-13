@@ -1,6 +1,5 @@
 import React, {PureComponent} from "react";
-import {StyleSheet, Text, TextStyle} from "react-native";
-import Ingredient from "../entities/Ingredient";
+import {Text, TextStyle} from "react-native";
 import {stylesheet} from "./СheckBoxGroup";
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from "react-native-simple-radio-button";
 import {globalColors} from "../../resources/styles";

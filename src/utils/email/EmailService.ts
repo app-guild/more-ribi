@@ -42,22 +42,22 @@ export default class EmailService {
         const subject = "Заказ из мобильного приложения";
         let body = "";
         if (comment) {
-            body = body + `Комментарий к заказу: ${comment}\n`;
+            body = body + `Комментарий к заказу: ${comment}<br>`;
         }
         if (address instanceof Address) {
-            body = `Адрес: ${address} \n`;
+            body = `Адрес: ${address} <br>`;
         } else {
-            body = `САМОВЫВОЗ с адреса: ${address.address.toString()} \n`;
+            body = `САМОВЫВОЗ с адреса: ${address.address.toString()} <br>`;
         }
-        body = body + `Заказ: \n`;
+        body = body + `Заказ: <br>`;
         cart.products.forEach((prod) => {
             const price = prod.discountPrice ? prod.discountPrice : prod.price;
             const count = cart.getProductCount(prod);
             const printCount = count > 1 ? `X ${count} Сумма: ${count * price}` : "";
-            body = body + `\t${prod.name} (${price} ₽) ${printCount}\n`;
+            body = body + `<p style="margin-left: 40px; ">${prod.name} (${price} ₽) ${printCount}<br></p>`;
         });
-        body = body + `Итого: ${cart.totalPrice}\n`;
-        body = body + `Способ оплаты: ${paymentMethod}\n`;
+        body = body + `Итого: ${cart.totalPrice}<br>`;
+        body = body + `Способ оплаты: ${paymentMethod}<br>`;
 
         return EmailService.sendEmail(FROM_HEADER, SHOP_EMAIL, subject, body);
     }
@@ -67,7 +67,7 @@ export default class EmailService {
         comment: string,
     ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
         const subject = "Отзыв (мобильное приложение)";
-        let body = `Имя: ${name}\nОтзыв: ${comment}\n`;
+        let body = `Имя: ${name}</p>Отзыв: ${comment}</p>`;
 
         return EmailService.sendEmail(FROM_HEADER, SHOP_EMAIL, subject, body);
     }

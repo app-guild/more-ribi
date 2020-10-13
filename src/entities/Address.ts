@@ -4,7 +4,7 @@ export default class Address {
     constructor(
         public _mainAddress: string = "",
         public _entrance: string = "",
-        public _flor: string = "",
+        public _floor: string = "",
         public _apartment: string = "",
     ) {}
 
@@ -16,8 +16,8 @@ export default class Address {
         if (this.entrance) {
             result = result + `, подъезд №${this.entrance}`;
         }
-        if (this.flor) {
-            result = result + `, ${this.flor} этаж`;
+        if (this.floor) {
+            result = result + `, ${this.floor} этаж`;
         }
         if (this.apartment) {
             result = result + `, квартира/офис №${this.apartment}`;
@@ -41,12 +41,12 @@ export default class Address {
         this._entrance = value;
     }
 
-    get flor(): string {
-        return this._flor;
+    get floor(): string {
+        return this._floor;
     }
 
-    set flor(value: string) {
-        this._flor = value;
+    set floor(value: string) {
+        this._floor = value;
     }
 
     get apartment(): string {
