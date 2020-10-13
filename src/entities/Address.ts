@@ -58,7 +58,7 @@ export default class Address {
     }
 
     static parseDatabaseAddress(address: Json): Address {
-        let addres = new Address(address._mainAddress, address._entrance, address._flor, address._apartment);
+        let addres = new Address(address._mainAddress, address._entrance, address._floor, address._apartment);
         return addres;
     }
 }

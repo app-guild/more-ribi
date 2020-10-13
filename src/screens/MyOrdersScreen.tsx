@@ -6,7 +6,6 @@ import Moment from "react-moment";
 import Order from "../entities/Order";
 import OrderCheckModal from "../components/OrderCheckModal";
 import DatabaseApi from "../utils/database/DatabaseApi";
-import Address from "../entities/Address";
 
 interface IMyOrdersScreenState {
     orders: Order[];

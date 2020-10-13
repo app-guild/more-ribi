@@ -198,6 +198,12 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 }
                 EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, address, this.state.comment);
             })
+            .catch(() => {
+                SimpleToast.show(
+                    "Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.",
+                    SimpleToast.LONG,
+                );
+            })
             .then(() => {
                 let address: Address = this.state.address;
                 if (!this.state.isDelivery && this.state.restaurantForPickup) {
@@ -208,12 +214,6 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     this.state.comment,
                     this.state.paymentMethod,
                 ).then(() => this.props.navigation.navigate("Main"));
-            })
-            .catch(() => {
-                SimpleToast.show(
-                    "Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.",
-                    SimpleToast.LONG,
-                );
             });
     }
 
@@ -328,8 +328,8 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     <TextInput
                         style={stylesheet.rowText}
                         value={this.state.address.floor}
-                        onChangeText={(flor: string) => {
-                            this.state.address.floor = flor;
+                        onChangeText={(floor: string) => {
+                            this.state.address.floor = floor;
                             this.setState({address: this.state.address});
                         }}
                         placeholder={"Этаж"}
@@ -350,6 +350,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 <View style={stylesheet.row}>
                     <View style={stylesheet.rowText}>
                         <Picker
+                            selectedValue={this.state.restaurantForPickup}
                             onValueChange={(itemValue) => this.setState({restaurantForPickup: itemValue})}
                             style={stylesheet.rowText}>
                             {this.renderRestaurantsPickerItems()}

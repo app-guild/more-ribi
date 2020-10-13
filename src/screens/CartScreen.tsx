@@ -10,6 +10,7 @@ import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 export interface ICartScreenState {
     cart: Cart;
+    buttonEnabled: boolean;
 }
 
 class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
@@ -17,6 +18,7 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
         super(props);
         this.state = {
             cart: new Cart(-1, new Map<Product, number>()),
+            buttonEnabled: false,
         };
         this.updateCart = this.updateCart.bind(this);
     }
@@ -42,7 +44,8 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
     }
 
     private updateCart(cart: Cart) {
-        this.setState({cart});
+        const isEnabled = cart.products.length > 0;
+        this.setState({cart, buttonEnabled: isEnabled});
     }
 
     private renderItem({item}: any) {
@@ -54,18 +57,30 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
     }
 
     render() {
+        const buttonColor = this.state.buttonEnabled ? globalColors.primaryColor : globalColors.fadePrimaryColor;
+
         return (
             <View style={stylesheet.container}>
                 <View style={stylesheet.bodyContainer}>
-                    <FlatList data={this.state.cart.products} renderItem={this.renderItem} />
+                    <FlatList
+                        data={this.state.cart.products}
+                        renderItem={this.renderItem}
+                        ListEmptyComponent={() => (
+                            <Text style={{alignSelf: "center"}}>В корзине пока нет ни одного товара!</Text>
+                        )}
+                    />
                     <View>
                         <View style={stylesheet.totalPriceContainer}>
                             <Text style={stylesheet.totalPriceText}>Итого: </Text>
                             <Text style={stylesheet.totalPriceText}>{this.state.cart.totalPrice + " ₽"}</Text>
                         </View>
                         <TouchableOpacity
-                            style={stylesheet.orderButton}
-                            onPress={() => this.props.navigation.navigate("CreateOrderScreen")}>
+                            style={{...stylesheet.orderButton, backgroundColor: buttonColor}}
+                            onPress={() => {
+                                if (this.state.buttonEnabled) {
+                                    this.props.navigation.navigate("CreateOrderScreen");
+                                }
+                            }}>
                             <Text style={stylesheet.orderButtonText}>ОФОРМИТЬ ЗАКАЗ</Text>
                         </TouchableOpacity>
                     </View>
