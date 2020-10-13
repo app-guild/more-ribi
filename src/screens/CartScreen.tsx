@@ -44,7 +44,7 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
     }
 
     private updateCart(cart: Cart) {
-        const isEnabled = cart.products.length > 0;
+        const isEnabled = cart.totalPrice >= 500;
         this.setState({cart, buttonEnabled: isEnabled});
     }
 
