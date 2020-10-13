@@ -21,13 +21,13 @@ export default class DeliveryConditionsScreen extends Component<
 
                 <Text style={stylesheet.bold}>Время работы:</Text>
                 <Text>
-                    Ярославль, Некрасова 52/35: <Text style={stylesheet.underline}>09:00-22:00</Text>
+                    Ярославль, Некрасова 52/35: <Text style={stylesheet.underline}>09:00-00:00</Text>
                 </Text>
                 <Text>
-                    Ярославль, Свободы 52: <Text style={stylesheet.underline}>09:00-22:00</Text>
+                    Ярославль, Свободы 52: <Text style={stylesheet.underline}>09:00-00:00</Text>
                 </Text>
                 <Text style={stylesheet.indent}>
-                    Ярославль, Комсомольская 12: <Text style={stylesheet.underline}>09:00-00:00</Text>
+                    Ярославль, Комсомольская 12: <Text style={stylesheet.underline}>11:00-00:00</Text>
                 </Text>
 
                 <Text style={{...stylesheet.indent, ...stylesheet.bold}}>Заказы принимаются с 09:00 до 00:00</Text>
