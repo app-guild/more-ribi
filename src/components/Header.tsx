@@ -23,7 +23,7 @@ export interface IHeaderProps {
     headerText: string;
     sceneName: string;
     drawerNavigation: DrawerNavigationProp<any>;
-    stackNavigation: StackNavigationProp<any>;
+    stackNavigation?: StackNavigationProp<any>;
     showBackButton?: boolean;
     subheaderText?: string;
 }
@@ -81,7 +81,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                     actionIcon = (
                         <View
                             style={stylesheet.topContainer}
-                            onTouchEnd={() => this.props.stackNavigation.navigate("CartScreen")}>
+                            onTouchEnd={() => this.props.drawerNavigation.navigate("CartScreen")}>
                             <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
                             <Text numberOfLines={1} style={stylesheet.priceText}>
                                 {Math.round(this.state.totalPrice)}
@@ -104,20 +104,20 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                     </View>
                     <View style={stylesheet.topContainer}>{actionIcon}</View>
                 </View>
-                {this.props.showBackButton !== false ? (
+                {this.props.showBackButton || this.props.subheaderText ? (
                     <View style={stylesheet.subheaderContainer}>
-                        <FishIcon
-                            style={{flex: 1}}
-                            width={FISH_ICON_SIZE.width}
-                            height={FISH_ICON_SIZE.height}
-                            onTouchEnd={() => this.props.stackNavigation.goBack()}
-                        />
-                        {this.props.subheaderText ? (
-                            <>
-                                <Text style={stylesheet.subTitle}>{this.props.subheaderText}</Text>
-                                <View style={{flex: 1}} />
-                            </>
+                        {this.props.showBackButton ? (
+                            <FishIcon
+                                style={{flex: 1}}
+                                width={FISH_ICON_SIZE.width}
+                                height={FISH_ICON_SIZE.height}
+                                onTouchEnd={() => this.props.stackNavigation?.goBack()}
+                            />
                         ) : null}
+                        {this.props.subheaderText ? (
+                            <Text style={stylesheet.subTitle}>{this.props.subheaderText}</Text>
+                        ) : null}
+                        {this.props.showBackButton ? <View style={{flex: 1}} /> : null}
                     </View>
                 ) : null}
             </>

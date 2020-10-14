@@ -6,9 +6,7 @@ import {createStackNavigator} from "@react-navigation/stack";
 import Header from "../../components/Header";
 import MainBackground from "../../components/MainBackground";
 import {globalColors} from "../../../resources/styles";
-import CartScreen from "../CartScreen";
 import PokeConstructorScreen from "../PokeConstructorScreen";
-import CreateOrderScreen from "../CreateOrderScreen";
 
 const Stack = createStackNavigator();
 
@@ -24,24 +22,25 @@ export default function MainScreenNavigator(props: any) {
                             drawerNavigation={props.navigation}
                             showBackButton={scene.descriptor.options.showBackButton}
                             subheaderText={scene.descriptor.options.subheaderText as string}
-                            sceneName={scene.route.name}
                         />
                     ),
-                    cardOverlay: () => <MainBackground />,
-                    headerStyle: {backgroundColor: globalColors.fadePrimaryColor},
+                    headerStyle: {backgroundColor: globalColors.transparent},
                     cardStyle: {backgroundColor: globalColors.transparent},
+                    cardOverlay: () => <MainBackground />,
                 }}
                 initialRouteName="Main"
                 headerMode={"screen"}>
-                <Stack.Screen name="Main" options={{showBackButton: false}} component={MainScreen} />
-                <Stack.Screen name="Categories" options={{subheaderText: "Разделы"}} component={CategoriesScreen} />
-                <Stack.Screen name="CartScreen" options={{subheaderText: "Ваш улов:"}} component={CartScreen} />
+                <Stack.Screen name="Main" component={MainScreen} />
                 <Stack.Screen
-                    name="CreateOrderScreen"
-                    options={{subheaderText: "Оформляем заказ"}}
-                    component={CreateOrderScreen}
+                    name="Categories"
+                    options={{subheaderText: "Разделы", showBackButton: true}}
+                    component={CategoriesScreen}
                 />
-                <Stack.Screen name="PokeConstructor" component={PokeConstructorScreen} />
+                <Stack.Screen
+                    name="PokeConstructor"
+                    component={PokeConstructorScreen}
+                    options={{showBackButton: true}}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
