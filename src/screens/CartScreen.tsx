@@ -7,6 +7,11 @@ import CartItem from "../components/CartItem";
 import Product from "../entities/Product";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
+import {ProductType} from "../entities/ProductType";
+
+const MIN_TOTAL_PRICE = 500;
+const DELIVERY_PRICE = 120;
+const delivery = new Product("Доставка", ProductType.None, DELIVERY_PRICE, undefined, true, "", "");
 
 export interface ICartScreenState {
     cart: Cart;
@@ -43,8 +48,23 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
         return DatabaseApi.removeOnCartChangeListener(this.updateCart);
     }
 
-    private updateCart(cart: Cart) {
-        const isEnabled = cart.totalPrice >= 500;
+    private async updateCart(cart: Cart) {
+        let isEnabled = true;
+        if (cart.products.length === 0 || (cart.products.length === 1 && cart.getProductCount(delivery) > 0)) {
+            await DatabaseApi.removeProductFromCart(delivery);
+            isEnabled = false;
+        } else {
+            let cartPrice = cart.totalPrice;
+            const deliveryCount = cart.getProductCount(delivery);
+            if (deliveryCount > 0) {
+                cartPrice = cartPrice - deliveryCount * delivery.price;
+            }
+            if (cartPrice >= MIN_TOTAL_PRICE) {
+                await DatabaseApi.removeProductFromCart(delivery);
+            } else if (deliveryCount === 0) {
+                await DatabaseApi.addProductToCart(delivery);
+            }
+        }
         this.setState({cart, buttonEnabled: isEnabled});
     }
 
@@ -70,6 +90,13 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
                         )}
                     />
                     <View>
+                        {this.state.cart.getProductCount(delivery) > 0 ? (
+                            <View style={stylesheet.totalPriceContainer}>
+                                <Text style={stylesheet.deliveryTermText}>
+                                    {`Доставка осуществляется бесплатно при заказе от ${MIN_TOTAL_PRICE}₽`}{" "}
+                                </Text>
+                            </View>
+                        ) : null}
                         <View style={stylesheet.totalPriceContainer}>
                             <Text style={stylesheet.totalPriceText}>Итого: </Text>
                             <Text style={stylesheet.totalPriceText}>{this.state.cart.totalPrice + " ₽"}</Text>
@@ -109,6 +136,10 @@ const stylesheet = StyleSheet.create({
         ...globalStylesheet.primaryText,
         fontSize: 18,
         color: globalColors.primaryColor,
+    },
+    deliveryTermText: {
+        ...globalStylesheet.primaryText,
+        fontSize: 12,
     },
     orderButton: {
         width: "100%",

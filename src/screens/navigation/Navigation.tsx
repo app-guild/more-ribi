@@ -12,6 +12,7 @@ import DeliveryConditionsScreenNavigator from "./DeliveryConditionsScreenNavigat
 import MyOrdersScreenNavigator from "./MyOrdersScreenNavigator";
 import AboutUsScreenNavigator from "./AboutUsScreenNavigator";
 import CartScreen from "../CartScreen";
+import CartScreenNavigation from "./CartNavigation";
 
 function DrawerContent(props: any) {
     const {
@@ -79,7 +80,7 @@ export default function Navigation() {
                 <Drawer.Screen name={"Условия доставки"} component={DeliveryConditionsScreenNavigator} />
                 <Drawer.Screen name={"Обратная связь"} component={FeedbackScreenNavigator} />
                 <Drawer.Screen name={"О приложении"} component={AboutUsScreenNavigator} />
-                <Drawer.Screen name={"CartScreen"} component={CartScreen} />
+                <Drawer.Screen name={"CartScreen"} component={CartScreenNavigation} />
             </Drawer.Navigator>
         </NavigationContainer>
     );

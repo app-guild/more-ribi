@@ -21,7 +21,7 @@ export interface IHeaderState {
 }
 export interface IHeaderProps {
     headerText: string;
-    sceneName: string;
+    sceneName?: string;
     drawerNavigation: DrawerNavigationProp<any>;
     stackNavigation?: StackNavigationProp<any>;
     showBackButton?: boolean;
@@ -155,7 +155,7 @@ export const stylesheet = StyleSheet.create({
         textAlignVertical: "center",
         textAlign: "center",
         height: "100%",
-        fontFamily: "Mulish-Bold",
+        fontFamily: "Montserrat-Black",
         fontSize: 18,
         color: globalColors.primaryColor,
         marginRight: 7,

@@ -19,6 +19,7 @@ import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService
 import ApplePayButton from "react-native-apple-pay-button";
 import EmailService from "../utils/email/EmailService";
 import SimpleToast from "react-native-simple-toast";
+import { StackActions } from "@react-navigation/native";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -213,7 +214,10 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     JSON.stringify(address),
                     this.state.comment,
                     this.state.paymentMethod,
-                ).then(() => this.props.navigation.navigate("Main"));
+                ).then(() => {
+                    this.props.route.params.drawerNavigation.navigate("Меню доставки");
+                    this.props.navigation.dispatch(StackActions.popToTop());
+                });
             });
     }
 

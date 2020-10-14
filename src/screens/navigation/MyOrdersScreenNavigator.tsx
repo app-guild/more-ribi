@@ -6,7 +6,7 @@ import MainBackground from "../../components/MainBackground";
 export default function MyOrdersScreenNavigator(props: any) {
     return (
         <MainBackground>
-            <Header headerText={"Море рыбы"} subheaderText={"Мои заказы"} drawerNavigation={props.navigation} />
+            <Header headerText={"Много рыбы"} subheaderText={"Мои заказы"} drawerNavigation={props.navigation} />
             <MyOrdersScreen />
         </MainBackground>
     );

@@ -7,6 +7,7 @@ import DatabaseApi from "../utils/database/DatabaseApi";
 import CloseIcon from "../../resources/assets/drawable/cross_icon.svg";
 import {ProductType} from "../entities/ProductType";
 import WokProduct from "../entities/WokProduct";
+import Cart from "../entities/Cart";
 
 export interface ICartItemState {
     productCount: number;
@@ -25,16 +26,27 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
         this.state = {
             productCount: 1,
         };
+        this.updateProductCountState = this.updateProductCountState.bind(this);
     }
 
     componentDidMount() {
         const product = this.props.product;
+        DatabaseApi.addOnCartChangeListener(this.updateProductCountState);
         if (product) {
-            return DatabaseApi.getCart().then((cart) => {
-                this.setState({productCount: cart.getProductCount(product)});
-            });
+            return DatabaseApi.getCart().then(this.updateProductCountState);
         }
         return;
+    }
+
+    componentWillUnmount(): void {
+        DatabaseApi.removeOnCartChangeListener(this.updateProductCountState);
+    }
+
+    private updateProductCountState(cart: Cart) {
+        const product = this.props.product;
+        if (product) {
+            this.setState({productCount: cart.getProductCount(product)});
+        }
     }
 
     private async updateProductCount(product: Product, count: number) {
@@ -63,43 +75,49 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
         return (
             <View style={stylesheet.container}>
                 <Text style={stylesheet.column}>{productName}</Text>
-                <NumericInput
-                    containerStyle={{
-                        ...stylesheet.column,
-                        flex: 0.9,
-                        marginHorizontal: 10,
-                        borderColor: globalColors.fadePrimaryColor,
-                        borderRadius: 20,
-                        backgroundColor: globalColors.fadePrimaryColor,
-                    }}
-                    inputStyle={{
-                        borderColor: globalColors.fadePrimaryColor,
-                    }}
-                    iconStyle={{
-                        color: globalColors.cardBackgroundColor,
-                    }}
-                    totalHeight={NUMERIC_INPUT_HEIGHT}
-                    leftButtonBackgroundColor={globalColors.fadePrimaryColor}
-                    rightButtonBackgroundColor={globalColors.fadePrimaryColor}
-                    textColor={globalColors.cardBackgroundColor}
-                    minValue={0}
-                    rounded={true}
-                    initValue={this.state.productCount}
-                    onChange={async (value) => {
-                        if (value !== this.state.productCount) {
-                            return this.updateProductCount(product, value);
-                        }
-                        return;
-                    }}
-                />
+                {product.id === "_Доставка" ? null : (
+                    <NumericInput
+                        containerStyle={{
+                            ...stylesheet.column,
+                            flex: 0.9,
+                            marginHorizontal: 10,
+                            borderColor: globalColors.fadePrimaryColor,
+                            borderRadius: 20,
+                            backgroundColor: globalColors.fadePrimaryColor,
+                        }}
+                        inputStyle={{
+                            borderColor: globalColors.fadePrimaryColor,
+                        }}
+                        iconStyle={{
+                            color: globalColors.cardBackgroundColor,
+                        }}
+                        totalHeight={NUMERIC_INPUT_HEIGHT}
+                        leftButtonBackgroundColor={globalColors.fadePrimaryColor}
+                        rightButtonBackgroundColor={globalColors.fadePrimaryColor}
+                        textColor={globalColors.cardBackgroundColor}
+                        minValue={0}
+                        rounded={true}
+                        initValue={this.state.productCount}
+                        onChange={async (value) => {
+                            if (value !== this.state.productCount) {
+                                return this.updateProductCount(product, value);
+                            }
+                            return;
+                        }}
+                    />
+                )}
                 <View style={{...stylesheet.column, justifyContent: "flex-end"}}>
                     <Text style={{...globalStylesheet.price, marginHorizontal: 10}}>{textPrice}</Text>
                     <View>
-                        <CloseIcon
-                            width={CLOSE_ICON_SIZE}
-                            height={CLOSE_ICON_SIZE}
-                            onTouchEnd={() => this.updateProductCount(product, 0)}
-                        />
+                        {product.id === "_Доставка" ? (
+                            <View style={{width: CLOSE_ICON_SIZE, height: CLOSE_ICON_SIZE}} />
+                        ) : (
+                            <CloseIcon
+                                width={CLOSE_ICON_SIZE}
+                                height={CLOSE_ICON_SIZE}
+                                onTouchEnd={() => this.updateProductCount(product, 0)}
+                            />
+                        )}
                     </View>
                 </View>
             </View>
