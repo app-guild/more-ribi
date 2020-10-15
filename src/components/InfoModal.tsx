@@ -22,7 +22,6 @@ enum InfoType {
 
 interface IProps {
     type: InfoModalType;
-    onPressOk: () => void;
 }
 
 interface IState {
@@ -47,6 +46,8 @@ function getBorderColor(type: InfoType | undefined): string {
 }
 
 export default class InfoModal extends Component<Readonly<IProps>, Readonly<IState>> {
+    private onPressOkCallback: ((type: InfoType | undefined) => void) | undefined;
+
     constructor(props: IProps) {
         super(props);
 
@@ -68,10 +69,12 @@ export default class InfoModal extends Component<Readonly<IProps>, Readonly<ISta
         this.setState({loadingState: LoadingState.Loading});
     }
 
-    endLoadAnimation(success: boolean, text: string): void {
+    endLoadAnimation(success: boolean, text: string, onPressOkCallback: (type: InfoType | undefined) => void): void {
         if (this.props.type !== InfoModalType.LOADING) {
             throw Error("Current type not support loading");
         }
+
+        this.onPressOkCallback = onPressOkCallback;
 
         this.setState({
             loadingState: success ? LoadingState.Success : LoadingState.Failure,
@@ -86,7 +89,9 @@ export default class InfoModal extends Component<Readonly<IProps>, Readonly<ISta
 
     private _onPressOk = () => {
         this._hideModal();
-        this.props.onPressOk();
+        if (this.onPressOkCallback) {
+            this.onPressOkCallback(this.state.infoType);
+        }
     };
 
     render() {
