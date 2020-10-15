@@ -22,6 +22,7 @@ enum InfoType {
 
 interface IProps {
     type: InfoModalType;
+    onPressOk: () => void;
 }
 
 interface IState {
@@ -83,6 +84,11 @@ export default class InfoModal extends Component<Readonly<IProps>, Readonly<ISta
         this.setState({modalVisible: false});
     };
 
+    private _onPressOk = () => {
+        this._hideModal();
+        this.props.onPressOk();
+    };
+
     render() {
         return (
             <Modal
@@ -97,7 +103,7 @@ export default class InfoModal extends Component<Readonly<IProps>, Readonly<ISta
                     </View>
                 ) : (
                     <View style={{...stylesheet.container, borderColor: getBorderColor(this.state.infoType)}}>
-                        <Info type={this.state.infoType} text={this.state.text} onPressDone={this._hideModal} />
+                        <Info type={this.state.infoType} text={this.state.text} onPressOk={this._onPressOk} />
                     </View>
                 )}
             </Modal>
@@ -108,7 +114,7 @@ export default class InfoModal extends Component<Readonly<IProps>, Readonly<ISta
 interface IInfoProps {
     text: string | undefined;
     type: InfoType | undefined;
-    onPressDone: () => void;
+    onPressOk: () => void;
 }
 
 function Info(props: IInfoProps) {
@@ -117,7 +123,7 @@ function Info(props: IInfoProps) {
             <Text style={stylesheet.infoText}>{props.text}</Text>
             <TouchableOpacity
                 style={{...stylesheet.button, borderColor: getBorderColor(props.type)}}
-                onPress={props.onPressDone}>
+                onPress={props.onPressOk}>
                 <Text style={stylesheet.buttonText}>ОК</Text>
             </TouchableOpacity>
         </View>
