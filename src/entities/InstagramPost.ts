@@ -1,5 +1,5 @@
 export default class InstagramPost {
-    constructor(private _link: string, private _text: string, private _imageUrl: string) {}
+    constructor(private _link: string, private _text: string, private _imageUrl: string, private _date: number) {}
 
     get link(): string {
         return this._link;
@@ -13,7 +13,11 @@ export default class InstagramPost {
         return this._imageUrl;
     }
 
-    static parseRealtimeDatabaseJson(json: any): InstagramPost {
-        return new InstagramPost(json.linkToRecord, json.text, json.mediaUrl);
+    get date(): number {
+        return this._date;
+    }
+
+    static parseRealtimeDatabaseJson(json: any, date: string): InstagramPost {
+        return new InstagramPost(json.linkToRecord, json.text, json.mediaUrl, Date.parse(date));
     }
 }
