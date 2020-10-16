@@ -26,7 +26,7 @@ export default class PageNewsLoader {
                 const posts = RealtimeDatabaseApi.parseInstagramPosts(snapshot.val());
                 const currentPagePosts = posts.slice(start);
 
-                if (!currentPagePosts.length) {
+                if (currentPagePosts.length < limit) {
                     this._pagesOut = true;
                 }
 
