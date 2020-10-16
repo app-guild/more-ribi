@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {FlatList, StyleSheet, View} from "react-native";
+import {FlatList, StyleSheet, Text, View} from "react-native";
 import InstagramPost from "../entities/InstagramPost";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import PromotionCard from "../components/PromotionCard";
@@ -9,6 +9,7 @@ import {globalColors} from "../../resources/styles";
 export interface IPromotionsScreenState {
     promotions: InstagramPost[];
     isLoaded: boolean;
+    showMoreVisible: boolean;
 }
 
 export default class PromotionsScreen extends Component<Readonly<any>, Readonly<IPromotionsScreenState>> {
@@ -17,10 +18,13 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
         this.state = {
             promotions: [],
             isLoaded: false,
+            showMoreVisible: true,
         };
+        this.getMorePosts = this.getMorePosts.bind(this);
     }
 
     componentDidMount() {
+        // тут надо заменить getInstagramPosts на функцию которая возвращает начальные посты
         return RealtimeDatabaseApi.getInstagramPosts().then((posts) => {
             this.setState({promotions: posts, isLoaded: true});
         });
@@ -33,6 +37,13 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
     private _renderSeparator = () => {
         return <Divider style={stylesheet.divider} />;
     };
+
+    private getMorePosts() {
+        // тут надо заменить getInstagramPosts на функцию которая возвращает новые посты
+        return RealtimeDatabaseApi.getInstagramPosts().then((posts) => {
+            this.setState({promotions: this.state.promotions.concat(posts)});
+        });
+    }
 
     render() {
         let unloadedCard;
@@ -59,6 +70,13 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
                         ItemSeparatorComponent={this._renderSeparator}
                         keyExtractor={(item, index) => String(index)}
                         ListHeaderComponent={() => <Divider style={stylesheet.firstDivider} />}
+                        ListFooterComponent={() =>
+                            this.state.showMoreVisible ? (
+                                <View style={stylesheet.showMoreButton} onTouchEnd={this.getMorePosts}>
+                                    <Text>Показать ещё</Text>
+                                </View>
+                            ) : null
+                        }
                     />
                 ) : (
                     <View style={stylesheet.container}>
@@ -106,5 +124,13 @@ const stylesheet = StyleSheet.create({
         height: 20,
         backgroundColor: globalColors.unloadedCard,
         borderRadius: 10,
+    },
+    showMoreButton: {
+        marginTop: 15,
+        padding: 5,
+        borderColor: globalColors.primaryColor,
+        borderWidth: 1,
+        borderRadius: 10,
+        alignItems: "center",
     },
 });
