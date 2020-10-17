@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {PureComponent} from "react";
 import {Image, StyleSheet, View, Text, TouchableOpacity, Linking} from "react-native";
 import {globalColors} from "../../resources/styles";
 import ExpandableTextContainer from "react-native-expandable-text";
@@ -14,7 +14,7 @@ interface IPromotionCardState {
     collapsed: boolean;
 }
 
-export default class PromotionCard extends Component<Readonly<IPromotionCardProps>, IPromotionCardState> {
+export default class PromotionCard extends PureComponent<Readonly<IPromotionCardProps>, IPromotionCardState> {
     constructor(props: IPromotionCardProps) {
         super(props);
 
