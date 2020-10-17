@@ -16,6 +16,10 @@ export default class PageNewsLoader {
         return this._pagesOut ? Promise.resolve([]) : this._getNews(start, limit);
     }
 
+    get pagesOut(): boolean {
+        return this._pagesOut;
+    }
+
     private _getNews(start: number, limit: number): Promise<InstagramPost[]> {
         return database()
             .ref("/instagram")

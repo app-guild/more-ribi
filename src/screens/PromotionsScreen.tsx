@@ -1,10 +1,10 @@
 import React, {Component} from "react";
 import {FlatList, StyleSheet, Text, View} from "react-native";
 import InstagramPost from "../entities/InstagramPost";
-import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import PromotionCard from "../components/PromotionCard";
 import {Divider} from "react-native-paper";
 import {globalColors} from "../../resources/styles";
+import PageNewsLoader from "../api/firebase/PageNewsLoader";
 
 export interface IPromotionsScreenState {
     promotions: InstagramPost[];
@@ -12,21 +12,25 @@ export interface IPromotionsScreenState {
     showMoreVisible: boolean;
 }
 
+const PAGESIZE = 5;
+
 export default class PromotionsScreen extends Component<Readonly<any>, Readonly<IPromotionsScreenState>> {
+    private pageNewsLoader: PageNewsLoader = new PageNewsLoader(PAGESIZE);
+    private flatListRef: FlatList<InstagramPost> | null = null;
+
     constructor(props: any) {
         super(props);
         this.state = {
             promotions: [],
             isLoaded: false,
-            showMoreVisible: true,
+            showMoreVisible: false,
         };
         this.getMorePosts = this.getMorePosts.bind(this);
     }
 
     componentDidMount() {
-        // тут надо заменить getInstagramPosts на функцию которая возвращает начальные посты
-        return RealtimeDatabaseApi.getInstagramPosts().then((posts) => {
-            this.setState({promotions: posts, isLoaded: true});
+        return this.pageNewsLoader.getNextPage().then((posts) => {
+            this.setState({promotions: posts, isLoaded: true, showMoreVisible: !this.pageNewsLoader.pagesOut});
         });
     }
 
@@ -39,9 +43,18 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
     };
 
     private getMorePosts() {
-        // тут надо заменить getInstagramPosts на функцию которая возвращает новые посты
-        return RealtimeDatabaseApi.getInstagramPosts().then((posts) => {
-            this.setState({promotions: this.state.promotions.concat(posts)});
+        return this.pageNewsLoader.getNextPage().then((posts) => {
+            if (posts.length) {
+                const endIndex = this.state.promotions.length;
+                let wait = new Promise((resolve) => setTimeout(resolve, 300));
+                wait.then(() => {
+                    this.flatListRef?.scrollToIndex({index: endIndex, animated: true, viewOffset: 25});
+                });
+                this.setState({
+                    promotions: this.state.promotions.concat(posts),
+                    showMoreVisible: !this.pageNewsLoader.pagesOut,
+                });
+            }
         });
     }
 
@@ -62,6 +75,10 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
             <>
                 {this.state.isLoaded ? (
                     <FlatList
+                        ref={(ref) => {
+                            this.flatListRef = ref;
+                        }}
+                        onScrollToIndexFailed={() => {}}
                         contentContainerStyle={stylesheet.container}
                         data={this.state.promotions}
                         initialNumToRender={10}
