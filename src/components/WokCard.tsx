@@ -60,7 +60,7 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
             product.type,
             product.price,
             product.discountPrice,
-            product.isAvailable,
+            product.available,
             product.image,
             product.composition,
             base,

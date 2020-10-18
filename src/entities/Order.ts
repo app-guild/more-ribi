@@ -37,6 +37,7 @@ export default class Order extends Cart {
     }
 
     static parseDatabaseResponse(response: Json, products: Map<Product, number>): Order {
+        console.log(new Date(response.date));
         return new Order(
             response.id,
             products,

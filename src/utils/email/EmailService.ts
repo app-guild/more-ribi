@@ -4,9 +4,11 @@ import {PaymentsMethods} from "../payment/PaymentsMethods";
 import {firebase, FirebaseFunctionsTypes} from "@react-native-firebase/functions";
 import Restaurant from "../../entities/Restaurant";
 import NetInfo from "@react-native-community/netinfo";
+import {ProductType} from "../../entities/ProductType";
+import WokProduct from "../../entities/WokProduct";
 
 const SHOP_EMAIL = "smouk.chayz@gmail.com";
-const FROM_HEADER = "Много рыбы (Мобильное приложение)";
+const FROM_HEADER = "Много рыбы Мобильное приложение";
 
 export default class EmailService {
     private static async sendEmail(
@@ -17,6 +19,8 @@ export default class EmailService {
     ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
         return new Promise((resolve, reject) => {
             NetInfo.fetch().then((state) => {
+                console.log("Connection");
+                console.log(state);
                 if (state.isConnected) {
                     resolve(
                         firebase.functions().httpsCallable("sendEmail")({
@@ -54,7 +58,11 @@ export default class EmailService {
             const price = prod.discountPrice ? prod.discountPrice : prod.price;
             const count = cart.getProductCount(prod);
             const printCount = count > 1 ? `X ${count} Сумма: ${count * price}` : "";
-            body = body + `<p style="margin-left: 40px; ">${prod.name} (${price} ₽) ${printCount}<br></p>`;
+            let name = prod.name;
+            if (prod.type === ProductType.Wok && prod instanceof WokProduct) {
+                name = prod.toString();
+            }
+            body = body + `<p style="margin-left: 40px; ">${name} (${price} ₽) ${printCount}<br></p>`;
         });
         body = body + `Итого: ${cart.totalPrice}<br>`;
         body = body + `Способ оплаты: ${paymentMethod}<br>`;
@@ -67,7 +75,7 @@ export default class EmailService {
         comment: string,
     ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
         const subject = "Отзыв (мобильное приложение)";
-        let body = `Имя: ${name}</p>Отзыв: ${comment}</p>`;
+        let body = `Имя: ${name}<br>Отзыв: ${comment}`;
 
         return EmailService.sendEmail(FROM_HEADER, SHOP_EMAIL, subject, body);
     }

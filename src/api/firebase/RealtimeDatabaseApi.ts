@@ -40,18 +40,10 @@ for (let productType in ProductType) {
 
             // обновляем продукты в корзине
             DatabaseApi.getCart().then((cart) => {
-                const productsFromCart = cart.products;
-                changedProducts.forEach((changedProduct: Product) => {
-                    const cartProduct = productsFromCart.find((it) => it.id === changedProduct.id);
-                    if (cartProduct) {
-                        cart.replaceProduct(cartProduct, changedProduct);
-                    }
-                });
-
-                DatabaseApi.updateProductsInCart(cart);
+                cart.updateProductsInfo(changedProducts);
+                RealtimeDatabaseApi.callProductsChangedListeners(changedProducts);
+                return DatabaseApi.updateProductsInCart(cart);
             });
-
-            RealtimeDatabaseApi.callProductsChangedListeners(changedProducts);
         });
 }
 

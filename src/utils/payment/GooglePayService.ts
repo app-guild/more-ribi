@@ -70,10 +70,8 @@ export class GooglePayService {
             merchantName: this.merchantName,
             transaction: transaction,
         };
-        console.log("GOOGLE requestPayment start");
         return GooglePay.requestPayment(paymentRequest)
             .then((token: string) => {
-                console.log("GOOGLE requestPayment done");
                 // Send a token to your payment gateway
                 if (tokenCallback) {
                     tokenCallback(token);

@@ -12,6 +12,8 @@ import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import WokCard from "../components/WokCard";
 import Ingredient from "../entities/Ingredient";
+import InfoModal, {InfoModalType} from "../components/InfoModal";
+import DatabaseApi from "../utils/database/DatabaseApi";
 
 export interface IMainScreenState {
     productCardSize: Dimension;
@@ -29,6 +31,7 @@ class MainScreen extends Component<any, IMainScreenState> {
     private list = createRef<CategorizedRecyclerListView>();
     private layoutSize: Dimension[];
     private wokIngredients: Map<string, Ingredient[]> = new Map();
+    private infoModal = createRef<InfoModal>();
 
     constructor(props: any) {
         super(props);
@@ -58,10 +61,12 @@ class MainScreen extends Component<any, IMainScreenState> {
             modalVisible: false,
             currentProduct: null,
         };
+        this.onRemoveUnavailableProductsFromCart = this.onRemoveUnavailableProductsFromCart.bind(this);
     }
 
     componentDidMount() {
         RealtimeDatabaseApi.addProductsChangedListener(this._onProductsChanged);
+        DatabaseApi.addOnRemoveUnavailableProductsListener(this.onRemoveUnavailableProductsFromCart);
 
         return RealtimeDatabaseApi.getProducts().then((products) => {
             return RealtimeDatabaseApi.getWokConstructorIngredients()
@@ -77,7 +82,8 @@ class MainScreen extends Component<any, IMainScreenState> {
                         dataProvider: providers.dataProvider,
                         layoutProvider: providers.layoutProvider,
                     });
-                });
+                })
+                .then(DatabaseApi.removeUnavailableProductsFromCart);
         });
     }
 
@@ -89,10 +95,24 @@ class MainScreen extends Component<any, IMainScreenState> {
 
     componentWillUnmount() {
         RealtimeDatabaseApi.removeProductsChangedListener(this._onProductsChanged);
+        DatabaseApi.removeOnRemoveUnavailableProductsListener(this.onRemoveUnavailableProductsFromCart);
     }
 
     onCategoryCross(category: string) {
         this.setState({currentCategory: ProductType.translateCategoryName(category)});
+    }
+
+    private onRemoveUnavailableProductsFromCart(unavailableProducts: Product[]) {
+        if (unavailableProducts.length > 0) {
+            let text = InfoModal.PRODUCTS_IN_CART_UNAVAILABLE_PATTERN;
+            text = text + unavailableProducts.map((it) => it.name).join(", ");
+            const interval = setInterval(() => {
+                if (this.infoModal && this.infoModal.current) {
+                    this.infoModal.current.showInfo(text);
+                    clearInterval(interval);
+                }
+            }, 300);
+        }
     }
 
     private _onProductsChanged = (newProducts: Product[]) => {
@@ -101,6 +121,9 @@ class MainScreen extends Component<any, IMainScreenState> {
             const foundItem = data.find((item) => item.item?.id === newProduct.id);
             if (foundItem) {
                 foundItem.item = newProduct;
+            } else {
+                const categoryIndex = data.findIndex((item) => item?.name === newProduct.type);
+                data.splice(categoryIndex + 1, 0, {type: "column0", item: newProduct});
             }
         });
 
@@ -204,6 +227,7 @@ class MainScreen extends Component<any, IMainScreenState> {
                             />
                         </View>
                     </Modal>
+                    <InfoModal ref={this.infoModal} />
                 </View>
             </View>
         );

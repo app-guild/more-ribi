@@ -4,6 +4,7 @@ import Cart from "../../entities/Cart";
 import Order from "../../entities/Order";
 import WokProduct from "../../entities/WokProduct";
 import {ProductType} from "../../entities/ProductType";
+import RealtimeDatabaseApi from "../../api/firebase/RealtimeDatabaseApi";
 
 SQLite.DEBUG = true;
 
@@ -26,6 +27,7 @@ interface IResults {
 export default class DatabaseApi {
     private static onCartChangeListeners: Array<(cart: Cart) => void> = [];
     private static onOrdersChangeListeners: Array<(orders: Order[]) => void> = [];
+    private static onRemoveUnavailableProductsListeners: Array<(unavailableProducts: Product[]) => void> = [];
     private static cart: Cart | null = null;
     private static getCartPromise: Promise<Cart> | null = null;
 
@@ -38,6 +40,23 @@ export default class DatabaseApi {
         if (index !== undefined) {
             DatabaseApi.onCartChangeListeners.splice(index, 1);
         }
+    }
+
+    static addOnRemoveUnavailableProductsListener(listener: (unavailableProducts: Product[]) => void) {
+        DatabaseApi.onRemoveUnavailableProductsListeners.push(listener);
+    }
+
+    static removeOnRemoveUnavailableProductsListener(listener: (unavailableProducts: Product[]) => void) {
+        const index = DatabaseApi.onRemoveUnavailableProductsListeners.indexOf(listener);
+        if (index !== undefined) {
+            DatabaseApi.onCartChangeListeners.splice(index, 1);
+        }
+    }
+
+    private static callOnRemoveUnavailableProductsListeners(unavailableProducts: Product[]): void {
+        DatabaseApi.onRemoveUnavailableProductsListeners.forEach((listener) => {
+            listener(unavailableProducts);
+        });
     }
 
     private static callOnCartChangeListeners(cart: Cart): void {
@@ -68,7 +87,7 @@ export default class DatabaseApi {
      * @return {Promise<Order>} Promise contains order
      */
     static getOrders(): Promise<Order[]> {
-        const sql = `SELECT * FROM Orders WHERE date IS NOT NULL`;
+        const sql = `SELECT * FROM Orders WHERE date IS NOT NULL ORDER BY date DESC`;
 
         return DatabaseApi.executeQuery(sql).then((results) => {
             const rawData = results.rows.raw();
@@ -79,10 +98,12 @@ export default class DatabaseApi {
         });
     }
 
-    static async removeUnavailableProductsFromCart(): Promise<Product[]> {
+    static async removeUnavailableProductsFromCart() {
         return DatabaseApi.getCart().then((cart) => {
             const unavailable = cart.popUnavailableProducts();
-            return DatabaseApi.updateProductsInCart(cart).then(() => unavailable);
+            return DatabaseApi.updateProductsInCart(cart).then(() =>
+                DatabaseApi.callOnRemoveUnavailableProductsListeners(unavailable),
+            );
         });
     }
 
@@ -108,9 +129,19 @@ export default class DatabaseApi {
             DatabaseApi.getCartPromise = DatabaseApi.executeQuery(sql).then((results) => {
                 const rawData = results.rows.raw();
                 const cartJson = rawData[0];
+                console.log("getCart");
+                console.log(cartJson);
                 const productMap = DatabaseApi.parseProducts(cartJson.products);
 
                 DatabaseApi.cart = new Cart(cartJson.id, productMap);
+                RealtimeDatabaseApi.getProducts().then((newProducts) => {
+                    const arrayNewProducts: Product[] = [];
+                    Array.from(newProducts.values()).forEach((it) => {
+                        arrayNewProducts.push(...it);
+                    });
+                    DatabaseApi.cart?.updateProductsInfo(arrayNewProducts);
+                });
+
                 DatabaseApi.getCartPromise = null;
                 return DatabaseApi.cart;
             });
@@ -185,10 +216,10 @@ export default class DatabaseApi {
                 `;
                 return sql;
             })
-            .then(DatabaseApi.executeQuery)
-            .then(() => {
-                DatabaseApi.cart = null;
-                DatabaseApi.getCartPromise = null;
+            .then((sql) => DatabaseApi.executeQuery(sql))
+            .then((res) => {
+                console.log("queryCreateOrderRes");
+                console.log(res);
             })
             .then(() => DatabaseApi.getOrders())
             .then((orders) => DatabaseApi.callOnOrdersChangeListeners(orders))
@@ -230,6 +261,14 @@ export default class DatabaseApi {
         const sql = `INSERT INTO Orders DEFAULT VALUES;`;
 
         return DatabaseApi.executeQuery(sql)
+            .then((res) => {
+                console.log("queryCreateCartRes");
+                console.log(res);
+            })
+            .then(() => {
+                DatabaseApi.cart = null;
+                DatabaseApi.getCartPromise = null;
+            })
             .then(DatabaseApi.getCart)
             .then((cart) => {
                 DatabaseApi.callOnCartChangeListeners(cart);

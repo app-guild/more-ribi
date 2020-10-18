@@ -18,8 +18,8 @@ import Restaurant from "../entities/Restaurant";
 import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService";
 import ApplePayButton from "react-native-apple-pay-button";
 import EmailService from "../utils/email/EmailService";
-import SimpleToast from "react-native-simple-toast";
-import { StackActions } from "@react-navigation/native";
+import {StackActions} from "@react-navigation/native";
+import InfoModal from "../components/InfoModal";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -36,6 +36,7 @@ export interface ICreateOrderScreenState {
 
 class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderScreenState>> {
     deliveryOrPickupRef = createRef<RadioButtonGroup>();
+    private infoModal = createRef<InfoModal>();
     restaurants: Restaurant[] = [];
 
     constructor(props: any) {
@@ -186,6 +187,9 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     }
 
     private async sendOrder() {
+        if (this.infoModal && this.infoModal.current) {
+            this.infoModal.current.startLoadAnimation();
+        }
         return KeyValueStorage.setAddress(this.state.address)
             .then(() => KeyValueStorage.setPhoneNumber(this.state.phone))
             .then(() => KeyValueStorage.setUserName(this.state.name))
@@ -197,13 +201,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 if (!this.state.isDelivery && this.state.restaurantForPickup) {
                     address = this.state.restaurantForPickup;
                 }
-                EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, address, this.state.comment);
-            })
-            .catch(() => {
-                SimpleToast.show(
-                    "Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.",
-                    SimpleToast.LONG,
-                );
+                return EmailService.sendDeliveryOrder(cart, this.state.paymentMethod, address, this.state.comment);
             })
             .then(() => {
                 let address: Address = this.state.address;
@@ -215,9 +213,22 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     this.state.comment,
                     this.state.paymentMethod,
                 ).then(() => {
-                    this.props.route.params.drawerNavigation.navigate("Меню доставки");
-                    this.props.navigation.dispatch(StackActions.popToTop());
+                    if (this.infoModal && this.infoModal.current) {
+                        this.infoModal.current.endLoadAnimation(
+                            true,
+                            () => {
+                                this.props.route.params.drawerNavigation.navigate("Меню доставки");
+                                this.props.navigation.dispatch(StackActions.popToTop());
+                            },
+                            InfoModal.SUCCESSFUL_SEND_ORDER_PATTERN,
+                        );
+                    }
                 });
+            })
+            .catch(() => {
+                if (this.infoModal && this.infoModal.current) {
+                    this.infoModal.current.endLoadAnimation(false, () => {}, InfoModal.FAILED_SEND_ORDER_PATTERN);
+                }
             });
     }
 
@@ -422,6 +433,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     </View>
                 </KeyboardAwareScrollView>
                 {this.renderPayButton()}
+                <InfoModal ref={this.infoModal} />
             </View>
         );
     }

@@ -75,6 +75,13 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                     />,
                 );
             });
+            const orderDate = this.state.order.date;
+
+            let date = ("0" + orderDate.getDate()).slice(-2);
+            let month = ("0" + (orderDate.getMonth() + 1)).slice(-2);
+            let year = orderDate.getFullYear();
+            let hours = ("0" + orderDate.getHours()).slice(-2);
+            let minutes = ("0" + orderDate.getMinutes()).slice(-2);
 
             return (
                 <Modal
@@ -88,9 +95,7 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                         <Text style={{marginBottom: 10, textAlign: "center"}}>
                             {this.state.order.address.toString()}
                         </Text>
-                        <Moment format={"DD.MM.YYYY HH:MM"} element={Text}>
-                            {this.state.order.date}
-                        </Moment>
+                        <Text>{`${date}.${month}.${year} ${hours}: ${minutes}`}</Text>
                         <Text style={stylesheet.productsHeader}>Продукты</Text>
 
                         <Divider style={stylesheet.checkBorder} />

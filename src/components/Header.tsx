@@ -9,7 +9,6 @@ import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import {StackNavigationProp} from "@react-navigation/stack";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
-import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 
 const MENU_ICON_SIZE = 40;
 const CART_ICON_SIZE = 20;
@@ -39,8 +38,6 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
 
     componentDidMount() {
         DatabaseApi.addOnCartChangeListener(this.updateCart);
-        RealtimeDatabaseApi.addProductsChangedListener(this.removeUnavailableProductsInCart);
-        return this.removeUnavailableProductsInCart().then(DatabaseApi.getCart).then(this.updateCart);
     }
 
     componentWillUnmount() {
@@ -55,23 +52,13 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
         this.setState({totalPrice: cart.totalPrice});
     }
 
-    removeUnavailableProductsInCart() {
-        return DatabaseApi.removeUnavailableProductsFromCart()
-            .then((unavailableProducts) => {
-                // TODO show modal window with now unavailable products
-                return;
-            })
-            .then(DatabaseApi.getCart)
-            .then(this.updateCart);
-    }
-
     render() {
         let actionIcon = <View />;
 
         switch (this.props.sceneName) {
             case "CartScreen":
                 actionIcon = (
-                    <View style={stylesheet.topContainer} onTouchEnd={this.clearCart}>
+                    <View style={stylesheet.topContainer} onTouchEnd={() => this.clearCart()}>
                         <TrashIcon width={TRASH_ICON_SIZE} height={TRASH_ICON_SIZE} fill={globalColors.primaryColor} />
                     </View>
                 );

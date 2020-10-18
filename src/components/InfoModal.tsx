@@ -20,11 +20,8 @@ enum InfoType {
     Success,
 }
 
-interface IProps {
-    type: InfoModalType;
-}
-
 interface IState {
+    type: InfoModalType;
     modalVisible: boolean;
     loadingState?: LoadingState;
     infoType?: InfoType;
@@ -45,41 +42,53 @@ function getBorderColor(type: InfoType | undefined): string {
     }
 }
 
-export default class InfoModal extends Component<Readonly<IProps>, Readonly<IState>> {
+export default class InfoModal extends Component<any, Readonly<IState>> {
+    public static PRODUCTS_IN_CART_UNAVAILABLE_PATTERN =
+        "К сожалению некоторые товары которые вы добавили в корзину теперь не доступны: ";
+    public static SUCCESSFUL_SEND_ORDER_PATTERN =
+        "Ваш заказ был успешно отправлен. В течение пяти минут с вами свяжется менеждер для подтверждения заказа.";
+    public static FAILED_SEND_ORDER_PATTERN =
+        "Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.";
+    public static SUCCESSFUL_SEND_FEEDBACK_PATTERN = "Спасибо за ваш отзыв.";
+    public static FAILED_SEND_FEEDBACK_PATTERN =
+        "Не удалось отправить отзыв. Пожалуйста, проверьте соединение с интернетом.";
+
     private onPressOkCallback: ((type: InfoType | undefined) => void) | undefined;
 
-    constructor(props: IProps) {
+    constructor(props: any) {
         super(props);
 
         this.state = {
+            type: InfoModalType.INFO,
             modalVisible: false,
-            infoType: props.type === InfoModalType.INFO ? InfoType.Info : undefined,
+            infoType: InfoType.Info,
         };
+        this.showInfo = this.showInfo.bind(this);
+        this.startLoadAnimation = this.startLoadAnimation.bind(this);
+        this.endLoadAnimation = this.endLoadAnimation.bind(this);
     }
 
-    show(): void {
-        this.setState({modalVisible: true});
+    showInfo(text: string, header?: string): void {
+        this.setState({type: InfoModalType.INFO, modalVisible: true, text, header, infoType: InfoType.Info});
     }
 
     startLoadAnimation(): void {
-        if (this.props.type !== InfoModalType.LOADING) {
-            throw Error("Current type not support loading");
-        }
-
-        this.setState({loadingState: LoadingState.Loading});
+        this.setState({type: InfoModalType.LOADING, modalVisible: true, loadingState: LoadingState.Loading});
     }
 
-    endLoadAnimation(success: boolean, text: string, onPressOkCallback: (type: InfoType | undefined) => void): void {
-        if (this.props.type !== InfoModalType.LOADING) {
-            throw Error("Current type not support loading");
-        }
-
+    endLoadAnimation(
+        success: boolean,
+        onPressOkCallback: (type: InfoType | undefined) => void,
+        text: string,
+        header?: string,
+    ): void {
         this.onPressOkCallback = onPressOkCallback;
 
         this.setState({
             loadingState: success ? LoadingState.Success : LoadingState.Failure,
             infoType: success ? InfoType.Success : InfoType.Failure,
             text,
+            header,
         });
     }
 
@@ -98,11 +107,11 @@ export default class InfoModal extends Component<Readonly<IProps>, Readonly<ISta
         return (
             <Modal
                 isVisible={this.state.modalVisible}
-                animationIn={"zoomInUp"}
-                animationOut={"zoomOutUp"}
-                onBackdropPress={this._hideModal}
-                onBackButtonPress={this._hideModal}>
-                {this.props.type === InfoModalType.LOADING && this.state.loadingState === LoadingState.Loading ? (
+                animationIn={"pulse"}
+                animationOut={"pulse"}
+                onBackdropPress={this._onPressOk}
+                onBackButtonPress={this._onPressOk}>
+                {this.state.type === InfoModalType.LOADING && this.state.loadingState === LoadingState.Loading ? (
                     <View style={{height: "100%"}}>
                         <Spinner />
                     </View>

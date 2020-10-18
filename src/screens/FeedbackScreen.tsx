@@ -1,11 +1,11 @@
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import {Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {Divider} from "react-native-paper";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import KeyValueStorage from "../utils/KeyValueStorage";
 import EmailService from "../utils/email/EmailService";
-import SimpleToast from "react-native-simple-toast";
+import InfoModal from "../components/InfoModal";
 
 export interface IFeedbackScreenState {
     enabledButton: boolean;
@@ -15,6 +15,8 @@ export interface IFeedbackScreenState {
 }
 
 export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IFeedbackScreenState>> {
+    private infoModal = createRef<InfoModal>();
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -58,14 +60,29 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
     private _onPressSend = () => {
         return new Promise(() => {
             if (this.state.enabledButton) {
-                this.setState({comment: "", enabledButton: false});
+                if (this.infoModal && this.infoModal.current) {
+                    this.infoModal.current.startLoadAnimation();
+                }
                 KeyValueStorage.setUserName(this.state.name)
                     .then(() => EmailService.sendFeedback(this.state.name, this.state.comment))
-                    .then((response) => {
-                        if (response.data !== "Success!") {
-                            SimpleToast.show(
-                                "Не удалось отправить отзыв. Пожалуйста, проверьте соединение с интернетом.",
-                                SimpleToast.LONG,
+                    .then(() => this.setState({comment: "", enabledButton: false}))
+                    .then(() => {
+                        if (this.infoModal && this.infoModal.current) {
+                            this.infoModal.current.endLoadAnimation(
+                                true,
+                                () => {
+                                    this.setState({comment: "", enabledButton: false});
+                                },
+                                InfoModal.SUCCESSFUL_SEND_FEEDBACK_PATTERN,
+                            );
+                        }
+                    })
+                    .catch(() => {
+                        if (this.infoModal && this.infoModal.current) {
+                            this.infoModal.current.endLoadAnimation(
+                                false,
+                                () => {},
+                                InfoModal.FAILED_SEND_FEEDBACK_PATTERN,
                             );
                         }
                     });
@@ -119,6 +136,7 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
                         </TouchableOpacity>
                     </View>
                 ) : null}
+                <InfoModal ref={this.infoModal} />
             </View>
         );
     }
