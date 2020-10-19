@@ -10,18 +10,25 @@ class MainBackground extends Component<Readonly<any>, Readonly<any>> {
 
     render() {
         return (
-            <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
-                <View style={stylesheet.backgroundOverlay}>{this.props.children}</View>
-            </ImageBackground>
+            <View style={stylesheet.background}>
+                <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
+                    <View style={stylesheet.backgroundOverlay}>{this.props.children}</View>
+                </ImageBackground>
+            </View>
         );
     }
 }
 
 export const stylesheet = StyleSheet.create({
+    background: {
+        height: "100%",
+        width: "100%",
+        backgroundColor: globalColors.mainBackgroundColor,
+    },
     backgroundOverlay: {
         backgroundColor: globalColors.backgroundOverlay,
         flex: 1,
-        opacity: 0.95,
+        opacity: 0.9,
     },
 });
 

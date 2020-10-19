@@ -1,9 +1,11 @@
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import {Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {globalColors} from "../../resources/styles";
+import {globalColors, globalStylesheet} from "../../resources/styles";
 import {Divider} from "react-native-paper";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import KeyValueStorage from "../utils/KeyValueStorage";
+import EmailService from "../utils/email/EmailService";
+import InfoModal from "../components/InfoModal";
 
 export interface IFeedbackScreenState {
     enabledButton: boolean;
@@ -13,6 +15,8 @@ export interface IFeedbackScreenState {
 }
 
 export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IFeedbackScreenState>> {
+    private infoModal = createRef<InfoModal>();
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -54,11 +58,36 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
     };
 
     private _onPressSend = () => {
-        if (this.state.enabledButton) {
-            this.setState({comment: "", enabledButton: false});
-            KeyValueStorage.setUserName(this.state.name);
-            // TODO send comment
-        }
+        return new Promise(() => {
+            if (this.state.enabledButton) {
+                if (this.infoModal && this.infoModal.current) {
+                    this.infoModal.current.startLoadAnimation();
+                }
+                KeyValueStorage.setUserName(this.state.name)
+                    .then(() => EmailService.sendFeedback(this.state.name, this.state.comment))
+                    .then(() => this.setState({comment: "", enabledButton: false}))
+                    .then(() => {
+                        if (this.infoModal && this.infoModal.current) {
+                            this.infoModal.current.endLoadAnimation(
+                                true,
+                                () => {
+                                    this.setState({comment: "", enabledButton: false});
+                                },
+                                InfoModal.SUCCESSFUL_SEND_FEEDBACK_PATTERN,
+                            );
+                        }
+                    })
+                    .catch(() => {
+                        if (this.infoModal && this.infoModal.current) {
+                            this.infoModal.current.endLoadAnimation(
+                                false,
+                                () => {},
+                                InfoModal.FAILED_SEND_FEEDBACK_PATTERN,
+                            );
+                        }
+                    });
+            }
+        });
     };
 
     private _checkButtonState(): void {
@@ -67,32 +96,37 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
     }
 
     render() {
-        const buttonColor = this.state.enabledButton ? colors.enabledButton : colors.disabledButton;
+        const buttonColor = this.state.enabledButton ? globalColors.primaryColor : globalColors.fadePrimaryColor;
 
         return (
-            <KeyboardAwareScrollView contentContainerStyle={{minHeight: "100%"}}>
-                <View>
-                    <Text style={stylesheet.subheader}>Мы будем очень рады, если вы оставите Ваш отзыв</Text>
-                </View>
+            <View style={stylesheet.container}>
+                <KeyboardAwareScrollView style={{padding: 14}}>
+                    <View>
+                        <Text style={stylesheet.subheader}>Мы будем очень рады, если вы оставите Ваш отзыв</Text>
+                    </View>
 
-                <Divider style={stylesheet.divider} />
+                    <Divider style={stylesheet.divider} />
 
-                <View style={stylesheet.content}>
-                    <TextInput
-                        style={{...stylesheet.input, ...stylesheet.nameInput}}
-                        onChangeText={this._onChangeName}
-                        value={this.state.name}
-                        placeholder={"Имя"}
-                    />
-                    <TextInput
-                        style={{...stylesheet.input, ...stylesheet.commentInput}}
-                        onChangeText={this._onChangeComment}
-                        value={this.state.comment}
-                        placeholder={"Отзыв"}
-                        multiline
-                    />
-                </View>
-
+                    <View style={stylesheet.bodyContainer}>
+                        <View style={stylesheet.row}>
+                            <TextInput
+                                style={stylesheet.rowText}
+                                onChangeText={this._onChangeName}
+                                value={this.state.name}
+                                placeholder={"Имя"}
+                            />
+                        </View>
+                        <View style={stylesheet.row}>
+                            <TextInput
+                                style={{...stylesheet.rowText, ...stylesheet.rowTextMultiline}}
+                                onChangeText={this._onChangeComment}
+                                value={this.state.comment}
+                                placeholder={"Отзыв"}
+                                multiline
+                            />
+                        </View>
+                    </View>
+                </KeyboardAwareScrollView>
                 {this.state.buttonVisible ? (
                     <View style={stylesheet.buttonContainer}>
                         <TouchableOpacity
@@ -102,17 +136,22 @@ export default class FeedbackScreen extends Component<Readonly<any>, Readonly<IF
                         </TouchableOpacity>
                     </View>
                 ) : null}
-            </KeyboardAwareScrollView>
+                <InfoModal ref={this.infoModal} />
+            </View>
         );
     }
 }
 
-const colors = {
-    enabledButton: globalColors.primaryColor,
-    disabledButton: "#D1DAE2",
-};
-
 const stylesheet = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: "column",
+    },
+    bodyContainer: {
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "space-between",
+    },
     subheader: {
         alignSelf: "center",
         fontFamily: "Mulish",
@@ -127,40 +166,41 @@ const stylesheet = StyleSheet.create({
         marginTop: 10,
         marginBottom: 25,
     },
-    content: {
-        minHeight: 200,
-        width: "90%",
-        alignSelf: "center",
-    },
     buttonContainer: {
-        position: "absolute",
         width: "100%",
-        bottom: 0,
     },
     button: {
-        height: 70,
+        width: "100%",
+        paddingVertical: 22,
         alignItems: "center",
-        borderTopStartRadius: 9,
-        borderTopEndRadius: 9,
+        justifyContent: "center",
+        backgroundColor: globalColors.primaryColor,
     },
     buttonText: {
-        textAlignVertical: "center",
-        height: "100%",
-        fontFamily: "Mulish-Bold",
-        fontSize: 18,
-        color: "#FFFFFF",
+        ...globalStylesheet.primaryText,
+        color: globalColors.mainBackgroundColor,
     },
-    input: {
+    row: {
+        marginVertical: 10,
+        flex: 1,
+        flexDirection: "row",
+    },
+    rowHeader: {
+        ...globalStylesheet.headerText,
+        paddingHorizontal: 12,
+        flex: 1,
+        flexDirection: "row",
+    },
+    rowText: {
+        ...globalStylesheet.primaryText,
+        paddingHorizontal: 12,
+        flex: 1,
+        flexDirection: "row",
+        marginHorizontal: 14,
+        borderColor: globalColors.fadePrimaryColor,
         borderWidth: 1,
-        borderStyle: "solid",
-        borderColor: "#D1DAE2",
-        width: "100%",
     },
-    nameInput: {
-        height: 50,
-        marginBottom: 20,
-    },
-    commentInput: {
+    rowTextMultiline: {
         minHeight: 120,
         maxHeight: 300,
         textAlignVertical: "top",

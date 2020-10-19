@@ -68,7 +68,7 @@ export class CategorizedRecyclerListView extends Component<
         this.props.onCrossCategory(currentCategory ? currentCategory.name : this.categories[0].name);
     }
 
-    private static transformData(data: ICategorizedData, columns: number): any[] {
+    public static transformData(data: ICategorizedData, columns: number): any[] {
         let transformedData: any[] = [];
 
         for (const [type, products] of data.entries()) {

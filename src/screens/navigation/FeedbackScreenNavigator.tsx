@@ -6,7 +6,7 @@ import FeedbackScreen from "../FeedbackScreen";
 export default function MainScreenNavigator(props: any) {
     return (
         <MainBackground>
-            <Header headerText={"Море рыбы"} subheaderText={"Отзыв"} drawerNavigation={props.navigation} />
+            <Header headerText={"Много рыбы"} subheaderText={"Отзыв"} drawerNavigation={props.navigation} />
             <FeedbackScreen />
         </MainBackground>
     );

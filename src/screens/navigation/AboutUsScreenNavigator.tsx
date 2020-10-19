@@ -6,7 +6,7 @@ import AboutUsScreen from "../AboutUsScreen";
 export default function AboutUsScreenNavigator(props: any) {
     return (
         <MainBackground>
-            <Header headerText={"Море рыбы"} subheaderText={"О нас"} drawerNavigation={props.navigation} />
+            <Header headerText={"Много рыбы"} subheaderText={"О нас"} drawerNavigation={props.navigation} />
             <AboutUsScreen />
         </MainBackground>
     );

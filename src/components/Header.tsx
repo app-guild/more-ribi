@@ -3,6 +3,7 @@ import {StyleSheet, Text, View} from "react-native";
 import {globalColors} from "../../resources/styles";
 import MenuIcon from "../../resources/assets/drawable/menu_icon.svg";
 import CartIcon from "../../resources/assets/drawable/cart_icon.svg";
+import TrashIcon from "../../resources/assets/drawable/delete_icon.svg";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
 import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
@@ -12,12 +13,14 @@ import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
 const MENU_ICON_SIZE = 40;
 const CART_ICON_SIZE = 20;
 const FISH_ICON_SIZE = {width: 47, height: 17};
+const TRASH_ICON_SIZE = 30;
 
 export interface IHeaderState {
-    cartPrise: number;
+    totalPrice: number;
 }
 export interface IHeaderProps {
     headerText: string;
+    sceneName?: string;
     drawerNavigation: DrawerNavigationProp<any>;
     stackNavigation?: StackNavigationProp<any>;
     showBackButton?: boolean;
@@ -28,37 +31,51 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
     constructor(props: any) {
         super(props);
         this.state = {
-            cartPrise: 0,
+            totalPrice: 0,
         };
-        this.updateCartPrice = this.updateCartPrice.bind(this);
+        this.updateCart = this.updateCart.bind(this);
     }
 
     componentDidMount() {
-        DatabaseApi.addOnCartChangeListener(this.updateCartPrice);
-        return DatabaseApi.getCart().then(this.updateCartPrice);
+        DatabaseApi.addOnCartChangeListener(this.updateCart);
     }
 
     componentWillUnmount() {
-        DatabaseApi.removeOnCartChangeListener(this.updateCartPrice);
+        DatabaseApi.removeOnCartChangeListener(this.updateCart);
     }
 
-    updateCartPrice(cart: Cart) {
-        this.setState({cartPrise: cart.totalPrice});
+    clearCart() {
+        return DatabaseApi.clearCart();
+    }
+
+    updateCart(cart: Cart) {
+        this.setState({totalPrice: cart.totalPrice});
     }
 
     render() {
-        let cartIcon = <View />;
-        if (this.state.cartPrise > 0) {
-            cartIcon = (
-                <View
-                    style={stylesheet.topContainer}
-                    onTouchEnd={() => this.props.drawerNavigation.navigate("CartScreen")}>
-                    <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
-                    <Text numberOfLines={1} style={stylesheet.priceText}>
-                        {Math.round(this.state.cartPrise)}
-                    </Text>
-                </View>
-            );
+        let actionIcon = <View />;
+
+        switch (this.props.sceneName) {
+            case "CartScreen":
+                actionIcon = (
+                    <View style={stylesheet.topContainer} onTouchEnd={() => this.clearCart()}>
+                        <TrashIcon width={TRASH_ICON_SIZE} height={TRASH_ICON_SIZE} fill={globalColors.primaryColor} />
+                    </View>
+                );
+                break;
+            default:
+                if (this.state.totalPrice > 0) {
+                    actionIcon = (
+                        <View
+                            style={stylesheet.topContainer}
+                            onTouchEnd={() => this.props.drawerNavigation.navigate("CartScreen")}>
+                            <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
+                            <Text numberOfLines={1} style={stylesheet.priceText}>
+                                {Math.round(this.state.totalPrice)}
+                            </Text>
+                        </View>
+                    );
+                }
         }
 
         return (
@@ -72,7 +89,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                         />
                         <Text style={stylesheet.title}>{this.props.headerText}</Text>
                     </View>
-                    <View style={stylesheet.topContainer}>{cartIcon}</View>
+                    <View style={stylesheet.topContainer}>{actionIcon}</View>
                 </View>
                 {this.props.showBackButton || this.props.subheaderText ? (
                     <View style={stylesheet.subheaderContainer}>
@@ -125,9 +142,10 @@ export const stylesheet = StyleSheet.create({
         textAlignVertical: "center",
         textAlign: "center",
         height: "100%",
-        fontFamily: "Mulish-Bold",
+        fontFamily: "Montserrat-Black",
         fontSize: 18,
         color: globalColors.primaryColor,
+        marginRight: 7,
     },
     topContainer: {
         flexDirection: "row",

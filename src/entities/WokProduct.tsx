@@ -17,6 +17,10 @@ export default class WokProduct extends Product {
         this._id = this._type + "_" + this._name + "_" + this._base + "_" + this._sauce;
     }
 
+    public toString() {
+        return `${this.name} (Основа: ${this.base} Соус: ${this.sauce})`;
+    }
+
     get base(): string {
         return this._base;
     }

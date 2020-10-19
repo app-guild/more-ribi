@@ -19,22 +19,33 @@ export default class MyOrdersScreen extends Component<Readonly<any>, Readonly<IM
         this.state = {
             orders: [],
         };
+        this.updateOrders = this.updateOrders.bind(this);
     }
 
     componentDidMount() {
-        return DatabaseApi.getOrders().then((orders) => {
-            this.setState({orders});
-        });
+        DatabaseApi.addOnOrdersChangeListener(this.updateOrders);
+        return DatabaseApi.getOrders().then(this.updateOrders);
+    }
+
+    componentWillUnmount(): void {
+        DatabaseApi.removeOnOrdersChangeListener(this.updateOrders);
+    }
+
+    updateOrders(orders: Order[]) {
+        this.setState({orders});
     }
 
     private _renderItem = ({item}: {item: Order}) => {
+        let date = ("0" + item.date.getDate()).slice(-2);
+        let month = ("0" + (item.date.getMonth() + 1)).slice(-2);
+        let year = item.date.getFullYear();
+        let hours = ("0" + item.date.getHours()).slice(-2);
+        let minutes = ("0" + item.date.getMinutes()).slice(-2);
         return (
             <TouchableOpacity style={stylesheet.itemContainer} onPress={() => this._modal.current?.show(item)}>
-                <Text style={stylesheet.addressText}>{item.address}</Text>
+                <Text style={stylesheet.addressText}>{item.address.toString()}</Text>
                 <View style={stylesheet.datePriceContainer}>
-                    <Moment format={"D MMMM YYYY HH:MM"} element={Text}>
-                        {Date.now()}
-                    </Moment>
+                    <Text>{`${date}.${month}.${year} ${hours}: ${minutes}`}</Text>
                     <Text>{item.totalPrice + "₽"}</Text>
                 </View>
             </TouchableOpacity>

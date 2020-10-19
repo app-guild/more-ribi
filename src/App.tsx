@@ -9,6 +9,8 @@ import YaMap from "react-native-yamap";
 import "moment/locale/ru";
 import Moment from "react-moment";
 import "moment-timezone";
+import ApplePayService from "./utils/payment/ApplePayService";
+import {Currency} from "./utils/payment/Currency";
 
 YaMap.init("e1e7ca61-b8c3-4b09-a837-bea473d4de8b");
 
@@ -44,6 +46,13 @@ global.googlePayService = new GooglePayService(
     "Example Merchant",
     "ENVIRONMENT_TEST",
 );
+
+global.applePayService = new ApplePayService({
+    merchantIdentifier: "exampleGatewayMerchantId",
+    supportedNetworks: ["visa", "mastercard", "amex"],
+    countryCode: "RU",
+    currencyCode: Currency.RUB,
+});
 
 global.db = SQLite.openDatabase(
     {
