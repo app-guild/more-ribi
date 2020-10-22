@@ -91,6 +91,13 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => this.parseRestaurants(snapshot.val()));
     }
 
+    static async getDestinationEmail(): Promise<string> {
+        return database()
+            .ref("/destination_email")
+            .once("value")
+            .then((snapshot) => snapshot.val());
+    }
+
     static async getInstagramPosts(): Promise<InstagramPost[]> {
         return database()
             .ref("/instagram")

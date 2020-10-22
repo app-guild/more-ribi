@@ -6,8 +6,9 @@ import Restaurant from "../../entities/Restaurant";
 import NetInfo from "@react-native-community/netinfo";
 import {ProductType} from "../../entities/ProductType";
 import WokProduct from "../../entities/WokProduct";
+import RealtimeDatabaseApi from "../../api/firebase/RealtimeDatabaseApi";
 
-const SHOP_EMAIL = "smouk.chayz@gmail.com";
+const SHOP_EMAIL = "moreribi.mobileapp@gmail.com";
 const FROM_HEADER = "Много рыбы Мобильное приложение";
 
 export default class EmailService {
@@ -17,10 +18,9 @@ export default class EmailService {
         subject: string,
         body: string,
     ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
+        console.log(emailTo);
         return new Promise((resolve, reject) => {
             NetInfo.fetch().then((state) => {
-                console.log("Connection");
-                console.log(state);
                 if (state.isConnected) {
                     resolve(
                         firebase.functions().httpsCallable("sendEmail")({
@@ -67,7 +67,9 @@ export default class EmailService {
         body = body + `Итого: ${cart.totalPrice}<br>`;
         body = body + `Способ оплаты: ${paymentMethod}<br>`;
 
-        return EmailService.sendEmail(FROM_HEADER, SHOP_EMAIL, subject, body);
+        return RealtimeDatabaseApi.getDestinationEmail().then((emailTo) =>
+            EmailService.sendEmail(FROM_HEADER, emailTo ? emailTo : SHOP_EMAIL, subject, body),
+        );
     }
 
     public static async sendFeedback(
@@ -77,6 +79,8 @@ export default class EmailService {
         const subject = "Отзыв (мобильное приложение)";
         let body = `Имя: ${name}<br>Отзыв: ${comment}`;
 
-        return EmailService.sendEmail(FROM_HEADER, SHOP_EMAIL, subject, body);
+        return RealtimeDatabaseApi.getDestinationEmail().then((emailTo) =>
+            EmailService.sendEmail(FROM_HEADER, emailTo ? emailTo : SHOP_EMAIL, subject, body),
+        );
     }
 }

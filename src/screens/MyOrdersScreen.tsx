@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Divider} from "react-native-paper";
 import {globalColors} from "../../resources/styles";
-import Moment from "react-moment";
 import Order from "../entities/Order";
 import OrderCheckModal from "../components/OrderCheckModal";
 import DatabaseApi from "../utils/database/DatabaseApi";

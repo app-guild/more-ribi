@@ -2,9 +2,7 @@ import React, {Component} from "react";
 import Order from "../entities/Order";
 import {View, Text, StyleSheet, ScrollView} from "react-native";
 import Modal from "react-native-modal";
-import Moment from "react-moment";
 import {Divider} from "react-native-paper";
-import Address from "../entities/Address";
 import {ProductType} from "../entities/ProductType";
 import WokProduct from "../entities/WokProduct";
 

@@ -129,8 +129,6 @@ export default class DatabaseApi {
             DatabaseApi.getCartPromise = DatabaseApi.executeQuery(sql).then((results) => {
                 const rawData = results.rows.raw();
                 const cartJson = rawData[0];
-                console.log("getCart");
-                console.log(cartJson);
                 const productMap = DatabaseApi.parseProducts(cartJson.products);
 
                 DatabaseApi.cart = new Cart(cartJson.id, productMap);
@@ -217,10 +215,6 @@ export default class DatabaseApi {
                 return sql;
             })
             .then((sql) => DatabaseApi.executeQuery(sql))
-            .then((res) => {
-                console.log("queryCreateOrderRes");
-                console.log(res);
-            })
             .then(() => DatabaseApi.getOrders())
             .then((orders) => DatabaseApi.callOnOrdersChangeListeners(orders))
             .then(() => DatabaseApi.createCart());
@@ -261,10 +255,6 @@ export default class DatabaseApi {
         const sql = `INSERT INTO Orders DEFAULT VALUES;`;
 
         return DatabaseApi.executeQuery(sql)
-            .then((res) => {
-                console.log("queryCreateCartRes");
-                console.log(res);
-            })
             .then(() => {
                 DatabaseApi.cart = null;
                 DatabaseApi.getCartPromise = null;
