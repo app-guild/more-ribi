@@ -16,6 +16,10 @@ target 'SeaOfFish' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
+  pod 'react-native-simple-toast', :path => '../node_modules/react-native-simple-toast'
+
+  pod 'react-native-apple-pay-button', :path => '../node_modules/react-native-apple-pay-button'
+
   target 'SeaOfFishTests' do
     inherit! :complete
     # Pods for testing

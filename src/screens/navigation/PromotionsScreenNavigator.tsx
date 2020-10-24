@@ -6,7 +6,7 @@ import PromotionsScreen from "../PromotionsScreen";
 export default function PromotionsScreenNavigator(props: any) {
     return (
         <MainBackground>
-            <Header headerText={"Море рыбы"} subheaderText={"Новости"} drawerNavigation={props.navigation} />
+            <Header headerText={"Много рыбы"} subheaderText={"Новости"} drawerNavigation={props.navigation} />
             <PromotionsScreen />
         </MainBackground>
     );

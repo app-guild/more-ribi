@@ -17,6 +17,29 @@ export default class Cart {
         return this._id;
     }
 
+    popUnavailableProducts(): Product[] {
+        const unavailableProducts = Array.from(this._products.entries()).filter((prod) => !prod[0].available);
+        unavailableProducts.forEach((prod) => this._products.delete(prod[0]));
+        return unavailableProducts.map((pair) => pair[0]);
+    }
+
+    updateProductsInfo(newProducts: Product[]) {
+        Array.from(this._products.keys()).forEach((prod) => {
+            const newProd = newProducts.find((it: Product) => {
+                return it.type + it.name === prod.type + prod.name;
+            });
+            if (newProd) {
+                Object.assign(prod, {
+                    _price: newProd.price,
+                    _discountPrice: newProd.discountPrice,
+                    _available: newProd.available,
+                    _image: newProd.image,
+                    _composition: newProd.composition,
+                });
+            }
+        });
+    }
+
     addProduct(product: Product, count?: number): void {
         if (this.getProductById(product.id)) {
             return;
@@ -78,7 +101,10 @@ export default class Cart {
 
     getProductCount(product: Product): number {
         const originalProduct = this.getProductById(product.id);
-        return this._products.get(originalProduct) || 0;
+        if (originalProduct) {
+            return this._products.get(originalProduct) || 0;
+        }
+        return 0;
     }
 
     getJsonProducts(): string {

@@ -3,6 +3,7 @@ import {StyleSheet} from "react-native";
 const globalColors = {
     transparent: "transparent",
     primaryColor: "#779DB9",
+    fadePrimaryColor: "#D1DAE2",
     accentColor: "#E5E5E5",
     mainBackgroundColor: "#E5E5E5",
     navigatorBackgroundColor: "white",
@@ -28,6 +29,7 @@ const globalStylesheet = StyleSheet.create({
         position: "relative",
         height: "100%",
         display: "flex",
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },
@@ -53,6 +55,24 @@ const globalStylesheet = StyleSheet.create({
         fontSize: 12,
         color: globalColors.crossedOutPriceColor,
         textDecorationLine: "line-through",
+    },
+    headerContainer: {
+        paddingVertical: 24,
+        paddingHorizontal: 26,
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    headerText: {
+        fontFamily: "Muli",
+        fontSize: 18,
+        lineHeight: 23,
+        color: globalColors.primaryColor,
+    },
+    headerFishBackButton: {
+        position: "absolute",
+        left: 0,
     },
 });
 

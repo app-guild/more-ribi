@@ -65,7 +65,7 @@ export default class Product {
             ProductType.parse(json.type),
             json.price,
             json.discountPrice,
-            !!json.available,
+            json.available,
             json.image,
             json.composition,
         );
@@ -77,7 +77,7 @@ export default class Product {
             productType,
             json.price,
             json.discountPrice,
-            json.available !== false,
+            json.available,
             json.image,
             json.composition,
         );

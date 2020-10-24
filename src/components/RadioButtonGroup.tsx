@@ -1,6 +1,5 @@
 import React, {PureComponent} from "react";
-import {Text} from "react-native";
-import Ingredient from "../entities/Ingredient";
+import {Text, TextStyle} from "react-native";
 import {stylesheet} from "./СheckBoxGroup";
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from "react-native-simple-radio-button";
 import {globalColors} from "../../resources/styles";
@@ -10,9 +9,10 @@ export interface IRadioButtonGroupState {
 }
 
 export interface IRadioButtonGroupProps {
-    choices: Ingredient[];
+    choices: {name: string}[];
     needAdditionalText?: boolean;
     canUncheck?: boolean;
+    labelStyle?: TextStyle;
     onClick?: (changed: boolean) => void;
 }
 
@@ -73,7 +73,7 @@ class RadioButtonGroup extends PureComponent<Readonly<IRadioButtonGroupProps>, R
                             obj={{label: obj.name, value: i}}
                             labelHorizontal={true}
                             onPress={() => this.onRadioButtonPress(i)}
-                            labelStyle={stylesheet.radioButtonText}
+                            labelStyle={this.props.labelStyle ? this.props.labelStyle : stylesheet.radioButtonText}
                         />
                         {needAdditionalText ? (
                             <Text style={stylesheet.additionalText}>{" (+" + obj.additionalPrice + "₽)"}</Text>

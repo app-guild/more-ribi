@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import {Dimensions} from "react-native";
+import {Dimensions, View} from "react-native";
 import {CommonActions, DrawerActions, NavigationContainer, useLinkBuilder} from "@react-navigation/native";
 import {createDrawerNavigator, DrawerContentScrollView, DrawerItem} from "@react-navigation/drawer";
 import RestaurantsScreen from "../RestaurantsScreen";
@@ -11,7 +11,7 @@ import PromotionsScreenNavigator from "./PromotionsScreenNavigator";
 import DeliveryConditionsScreenNavigator from "./DeliveryConditionsScreenNavigator";
 import MyOrdersScreenNavigator from "./MyOrdersScreenNavigator";
 import AboutUsScreenNavigator from "./AboutUsScreenNavigator";
-import CartScreen from "../CartScreen";
+import CartScreenNavigation from "./CartNavigation";
 
 function DrawerContent(props: any) {
     const {
@@ -71,6 +71,7 @@ export default function Navigation() {
                 drawerContent={(props) => <DrawerContent {...props} />}
                 backBehavior={"initialRoute"}
                 initialRouteName="Меню доставки"
+                lazy={false}
                 edgeWidth={Dimensions.get("window").width / 3}>
                 <Drawer.Screen name={"Меню доставки"} component={MainScreenNavigator} />
                 <Drawer.Screen name={"Мои заказы"} component={MyOrdersScreenNavigator} />
@@ -79,7 +80,7 @@ export default function Navigation() {
                 <Drawer.Screen name={"Условия доставки"} component={DeliveryConditionsScreenNavigator} />
                 <Drawer.Screen name={"Обратная связь"} component={FeedbackScreenNavigator} />
                 <Drawer.Screen name={"О приложении"} component={AboutUsScreenNavigator} />
-                <Drawer.Screen name={"CartScreen"} component={CartScreen} />
+                <Drawer.Screen name={"CartScreen"} component={CartScreenNavigation} />
             </Drawer.Navigator>
         </NavigationContainer>
     );

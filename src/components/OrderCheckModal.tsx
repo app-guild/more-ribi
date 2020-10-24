@@ -2,8 +2,9 @@ import React, {Component} from "react";
 import Order from "../entities/Order";
 import {View, Text, StyleSheet, ScrollView} from "react-native";
 import Modal from "react-native-modal";
-import Moment from "react-moment";
 import {Divider} from "react-native-paper";
+import {ProductType} from "../entities/ProductType";
+import WokProduct from "../entities/WokProduct";
 
 interface ICheckModalState {
     modalVisible: boolean;
@@ -20,9 +21,9 @@ function Row(props: IRowProps) {
     return (
         <View style={stylesheet.rowContainer}>
             <Text style={{flex: 5}}>{props.name}</Text>
-            <Text style={{flex: 2, textAlign: "center"}}>{props.price}</Text>
+            <Text style={{flex: 2, textAlign: "center"}}>{props.price + " ₽"}</Text>
             <Text style={{flex: 1, textAlign: "center"}}>{props.count}</Text>
-            <Text style={{flex: 2, textAlign: "right"}}>{props.price * props.count}</Text>
+            <Text style={{flex: 2, textAlign: "right"}}>{props.price * props.count + " ₽"}</Text>
         </View>
     );
 }
@@ -59,15 +60,26 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
         if (this.state.order) {
             const rows: JSX.Element[] = [];
             this.state.order.products.forEach((count, product) => {
+                let productName = product.name;
+                if (product.type === ProductType.Wok && product instanceof WokProduct) {
+                    productName = product.toString();
+                }
                 rows.push(
                     <Row
                         key={product.id}
-                        name={product.name}
+                        name={productName}
                         price={product.discountPrice || product.price}
                         count={count}
                     />,
                 );
             });
+            const orderDate = this.state.order.date;
+
+            let date = ("0" + orderDate.getDate()).slice(-2);
+            let month = ("0" + (orderDate.getMonth() + 1)).slice(-2);
+            let year = orderDate.getFullYear();
+            let hours = ("0" + orderDate.getHours()).slice(-2);
+            let minutes = ("0" + orderDate.getMinutes()).slice(-2);
 
             return (
                 <Modal
@@ -78,10 +90,10 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                     onBackdropPress={() => this.setState({modalVisible: false})}
                     onBackButtonPress={() => this.setState({modalVisible: false})}>
                     <ScrollView style={stylesheet.scroll} contentContainerStyle={stylesheet.container}>
-                        <Text style={{marginBottom: 10}}>{this.state.order.address}</Text>
-                        <Moment format={"DD.MM.YYYY HH:MM"} element={Text}>
-                            {this.state.order.date}
-                        </Moment>
+                        <Text style={{marginBottom: 10, textAlign: "center"}}>
+                            {this.state.order.address.toString()}
+                        </Text>
+                        <Text>{`${date}.${month}.${year} ${hours}: ${minutes}`}</Text>
                         <Text style={stylesheet.productsHeader}>Продукты</Text>
 
                         <Divider style={stylesheet.checkBorder} />
@@ -92,14 +104,16 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                         <View style={stylesheet.resultContainer}>
                             <Text style={stylesheet.resultText}>ИТОГО:</Text>
                             <Text style={{...stylesheet.resultText, textAlign: "right"}}>
-                                {this.state.order.totalPrice}
+                                {this.state.order.totalPrice + " ₽"}
                             </Text>
                         </View>
 
                         <Text style={{...stylesheet.additionalText, marginTop: 30}}>
                             {"Способ оплаты: " + this.state.order.paymentMethod.toLowerCase()}
                         </Text>
-                        <Text style={stylesheet.additionalText}>{"Комментарий: " + this.state.order.comment}</Text>
+                        {this.state.order.comment ? (
+                            <Text style={stylesheet.additionalText}>{"Комментарий: " + this.state.order.comment}</Text>
+                        ) : null}
                     </ScrollView>
                 </Modal>
             );

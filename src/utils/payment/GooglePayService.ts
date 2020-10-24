@@ -54,31 +54,34 @@ export class GooglePayService {
         }
     }
 
+    public async isReadyToPay(): Promise<boolean> {
+        return GooglePay.isReadyToPay(
+            this.cardPaymentMethodMap.allowedCardNetworks,
+            this.cardPaymentMethodMap.allowedCardAuthMethods,
+        );
+    }
+
     public async doPaymentRequest(
         transaction: IPaymentTransaction,
         tokenCallback?: (token: string) => void,
-    ): Promise<void> {
+    ): Promise<boolean> {
         const paymentRequest: ICardPaymentRequest = {
             cardPaymentMethod: this.cardPaymentMethodMap,
             merchantName: this.merchantName,
             transaction: transaction,
         };
+        return GooglePay.requestPayment(paymentRequest)
+            .then((token: string) => {
+                // Send a token to your payment gateway
+                if (tokenCallback) {
+                    tokenCallback(token);
+                }
 
-        return GooglePay.isReadyToPay(
-            paymentRequest.cardPaymentMethod.allowedCardNetworks,
-            paymentRequest.cardPaymentMethod.allowedCardAuthMethods,
-        ).then((ready) => {
-            if (ready) {
-                // Request payment token
-                GooglePay.requestPayment(paymentRequest)
-                    .then((token: string) => {
-                        // Send a token to your payment gateway
-                        if (tokenCallback) {
-                            tokenCallback(token);
-                        }
-                    })
-                    .catch((error) => console.log(error.code, error.message));
-            }
-        });
+                return true;
+            })
+            .catch((error) => {
+                console.log(error.code, error.message);
+                return false;
+            });
     }
 }
