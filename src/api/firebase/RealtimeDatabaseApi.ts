@@ -137,8 +137,8 @@ export default class RealtimeDatabaseApi {
         return response.filter((it) => !!it).map((it) => Restaurant.parseRealtimeDatabaseJson(it));
     }
 
-    private static parseInstagramPosts(json: any): InstagramPost[] {
-        return Object.values(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it));
+    static parseInstagramPosts(json: any): InstagramPost[] {
+        return Object.entries(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it[1], it[0]));
     }
 
     private static parseConstructorIngredients(json: any): Map<string, Ingredient[]> {
