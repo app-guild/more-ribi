@@ -138,8 +138,7 @@ export default class RealtimeDatabaseApi {
     }
 
     static parseInstagramPosts(json: any): InstagramPost[] {
-        const posts = Object.entries(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it[1], it[0]));
-        return posts.sort((a, b) => (a.date > b.date ? 1 : -1));
+        return Object.entries(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it[1], it[0]));
     }
 
     private static parseConstructorIngredients(json: any): Map<string, Ingredient[]> {
