@@ -11,6 +11,7 @@ import RadioButtonGroup from "../components/RadioButtonGroup";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import {ProductType} from "../entities/ProductType";
 import Product from "../entities/Product";
+import InfoModal from "../components/InfoModal";
 
 export interface IPokeConstructorScreenState {
     addIngredientOpen: boolean;
@@ -83,6 +84,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     private additionalIngredientsRefs: (CheckBoxGroup | RadioButtonGroup | null)[] = [];
     private scrollViewRef = createRef<ScrollView>();
     private needToScroll: boolean = true;
+    private infoModal = createRef<InfoModal>();
 
     constructor(props: any) {
         super(props);
@@ -255,28 +257,35 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
     }
 
     private async addToCart(ingredients: string, price: number, image: string) {
-        DatabaseApi.getCart().then((cart) => {
-            const productIndex = cart.products.findIndex((value1) => value1.composition === ingredients);
-            const cartCount = cart.products.length;
-            if (productIndex === -1) {
-                return DatabaseApi.addProductToCart(
-                    new Product(
-                        "Идеальный поке" + ` (${ingredients})`,
-                        ProductType.CustomPoke,
-                        price,
-                        undefined,
-                        true,
-                        image,
-                        ingredients,
-                    ),
-                );
-            } else {
-                return DatabaseApi.updateProductCount(
-                    cart.products[productIndex],
-                    cart.getProductCount(cart.products[productIndex]) + 1,
-                );
-            }
-        });
+        DatabaseApi.getCart()
+            .then((cart) => {
+                const productIndex = cart.products.findIndex((value1) => value1.composition === ingredients);
+                const cartCount = cart.products.length;
+                if (productIndex === -1) {
+                    return DatabaseApi.addProductToCart(
+                        new Product(
+                            "Идеальный поке" + ` (${ingredients})`,
+                            ProductType.CustomPoke,
+                            price,
+                            undefined,
+                            true,
+                            image,
+                            ingredients,
+                        ),
+                    );
+                } else {
+                    return DatabaseApi.updateProductCount(
+                        cart.products[productIndex],
+                        cart.getProductCount(cart.products[productIndex]) + 1,
+                    );
+                }
+            })
+            .then(() => {
+                const text = `Ваш идеальный поке (${ingredients}) был добавлен в корзину.`;
+                if (this.infoModal && this.infoModal.current) {
+                    this.infoModal.current.showInfo(text);
+                }
+            });
     }
 
     render() {
@@ -444,6 +453,7 @@ class PokeConstructorScreen extends Component<Readonly<any>, Readonly<IPokeConst
                         {additionalCards}
                     </View>
                 ) : null}
+                <InfoModal ref={this.infoModal} />
             </ScrollView>
         );
     }
