@@ -70,7 +70,8 @@ export default class PromotionCard extends PureComponent<Readonly<IPromotionCard
 
 const stylesheet = StyleSheet.create({
     image: {
-        height: 220,
+        width: "100%",
+        aspectRatio: 1,
     },
     header: {
         fontFamily: "Mulish",
