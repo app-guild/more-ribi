@@ -26,6 +26,7 @@ export default function MainScreenNavigator(props: any) {
                     ),
                     headerStyle: {backgroundColor: globalColors.transparent},
                     cardStyle: {backgroundColor: globalColors.transparent},
+                    cardOverlayEnabled: true,
                     cardOverlay: () => <MainBackground />,
                 }}
                 initialRouteName="Main"

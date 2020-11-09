@@ -3,8 +3,9 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-#import <SplashScreen.h>
+#import <RNSplashScreen.h>
 #import <React/RCTLinkingManager.h>
+#import <Firebase.h>
 
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -45,8 +46,10 @@ static void InitializeFlipper(UIApplication *application) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  [SplashScreen show];
-  [YMKMapKit setApiKey: @"e1e7ca61-b8c3-4b09-a837-bea473d4de8b"];
+  if ([FIRApp defaultApp] == nil) {
+      [FIRApp configure];
+  }
+  [RNSplashScreen show];
   return YES;
 }
 

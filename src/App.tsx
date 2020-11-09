@@ -8,7 +8,7 @@ import {GooglePayService} from "./utils/payment/GooglePayService";
 import YaMap from "react-native-yamap";
 import ApplePayService from "./utils/payment/ApplePayService";
 import {Currency} from "./utils/payment/Currency";
-import {LogBox} from "react-native";
+import {LogBox, Platform} from "react-native";
 
 YaMap.init("e1e7ca61-b8c3-4b09-a837-bea473d4de8b");
 LogBox.ignoreAllLogs(true);
@@ -28,34 +28,42 @@ export default class App extends Component<Readonly<any>, Readonly<any>> {
     }
 }
 
-global.googlePayService = new GooglePayService(
-    {
-        tokenizationSpecification: {
-            type: "PAYMENT_GATEWAY",
-            // other:
-            gateway: "example",
-            gatewayMerchantId: "exampleGatewayMerchantId",
+if (Platform.OS === "android") {
+    global.googlePayService = new GooglePayService(
+        {
+            tokenizationSpecification: {
+                type: "PAYMENT_GATEWAY",
+                // other:
+                gateway: "example",
+                gatewayMerchantId: "exampleGatewayMerchantId",
+            },
+            allowedCardNetworks: ["VISA", "MASTERCARD"],
+            allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
         },
-        allowedCardNetworks: ["VISA", "MASTERCARD"],
-        allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-    },
-    "Example Merchant",
-    "ENVIRONMENT_TEST",
-);
-
-global.applePayService = new ApplePayService({
-    merchantIdentifier: "exampleGatewayMerchantId",
-    supportedNetworks: ["visa", "mastercard", "amex"],
-    countryCode: "RU",
-    currencyCode: Currency.RUB,
-});
+        "Example Merchant",
+        "ENVIRONMENT_TEST",
+    );
+}
+if (Platform.OS === "ios") {
+    global.applePayService = new ApplePayService({
+        merchantIdentifier: "exampleGatewayMerchantId",
+        supportedNetworks: ["visa", "mastercard", "amex"],
+        countryCode: "RU",
+        currencyCode: Currency.RUB,
+    });
+}
 
 global.db = SQLite.openDatabase(
-    {
-        name: "SQLite",
-        location: "default",
-        createFromLocation: "~SQLite.db",
-    },
+    Platform.OS === "ios"
+        ? {
+              name: "SQLite.db",
+              createFromLocation: 1,
+          }
+        : {
+              name: "SQLite",
+              location: "default",
+              createFromLocation: "~SQLite.db",
+          },
     () => console.log("SUCCESS OPEN DB"),
     (error: any) => console.error("ERROR: " + error),
 );

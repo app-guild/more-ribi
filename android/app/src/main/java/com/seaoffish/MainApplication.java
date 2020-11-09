@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.multidex.MultiDexApplication;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import ru.vvdev.yamap.RNYamapPackage;
 import com.reactlibrary.RNGooglePayButtonPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.busfor.RNGooglePayPackage;

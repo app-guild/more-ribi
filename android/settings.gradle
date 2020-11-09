@@ -1,4 +1,8 @@
 rootProject.name = 'SeaOfFish'
+include ':react-native-splash-screen'
+project(':react-native-splash-screen').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-splash-screen/android')
+include ':react-native-yamap'
+project(':react-native-yamap').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-yamap/android')
 include ':react-native-gpay-button'
 project(':react-native-gpay-button').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gpay-button/android')
 include ':react-native-gesture-handler'
