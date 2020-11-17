@@ -16,13 +16,14 @@ target 'SeaOfFish' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
-  pod 'react-native-apple-pay-button', :path => '../node_modules/react-native-apple-pay-button'
 
   pod 'RNYamap', :path => '../node_modules/react-native-yamap'
 
   pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
+  pod 'react-native-rn-apple-pay-button', :path => '../node_modules/react-native-rn-apple-pay-button'
 
   target 'SeaOfFishTests' do
     inherit! :complete

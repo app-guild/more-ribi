@@ -1,18 +1,15 @@
 import React from "react";
-import {Image, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Ingredient from "../entities/Ingredient";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {IProductCardProps, IProductCardState, stylesheet as productCardStylesheet} from "./ProductCard";
-import {Picker} from "@react-native-community/picker";
 import ProductCard from "./ProductCard";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import PriceButton from "./PriceButton";
 import WokProduct from "../entities/WokProduct";
 import Cart from "../entities/Cart";
 import Product from "../entities/Product";
-import OpenDish from "./OpenDish";
-import {ProductType} from "../entities/ProductType";
-import Modal from "react-native-modal";
+import AdaptPicker from "./AdaptPicker";
 
 export interface IWokCardProps extends IProductCardProps {
     baseIngredients: Ingredient[];
@@ -22,8 +19,6 @@ export interface IWokCardProps extends IProductCardProps {
 export interface IWokCardState extends IProductCardState {
     basePicker: string;
     saucePicker: string;
-    basePickerVisible: boolean;
-    saucePickerVisible: boolean;
 }
 
 class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
@@ -33,8 +28,6 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
             countInCart: 0,
             basePicker: props.baseIngredients[0] ? props.baseIngredients[0].name : "",
             saucePicker: props.sauceIngredients[0] ? props.sauceIngredients[0].name : "",
-            basePickerVisible: false,
-            saucePickerVisible: false,
         };
         this.addToCart = this.addToCart.bind(this);
         this.setCountInCart = this.setCountInCart.bind(this);
@@ -104,104 +97,16 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
                     <View style={productCardStylesheet.shoppingCardSubContainer}>
                         <View style={stylesheet.pickers}>
                             <View style={stylesheet.pickerContainer}>
-                                {Platform.OS === "ios" ? (
-                                    <>
-                                        <TouchableOpacity
-                                            style={stylesheet.iosPickerLabel}
-                                            onPress={() => this.setState({basePickerVisible: true})}>
-                                            <Text style={{...globalStylesheet.secondaryText, fontSize: 14}}>
-                                                {this.state.basePicker}
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <Modal
-                                            isVisible={this.state.basePickerVisible}
-                                            animationIn={"zoomInUp"}
-                                            animationOut={"zoomOutUp"}
-                                            backdropOpacity={0}
-                                            style={{margin: 0}}
-                                            onBackdropPress={() => {
-                                                this.setState({basePickerVisible: false});
-                                            }}
-                                            onBackButtonPress={() => {
-                                                this.setState({basePickerVisible: false});
-                                            }}>
-                                            <View style={stylesheet.iosPickerContainer}>
-                                                <Picker
-                                                    mode={"dropdown"}
-                                                    selectedValue={this.state.basePicker}
-                                                    onValueChange={(itemValue) =>
-                                                        this.setState({basePicker: itemValue.toString()})
-                                                    }>
-                                                    {baseIngredients.map((value, i) => (
-                                                        <Picker.Item key={i} label={value.name} value={value.name} />
-                                                    ))}
-                                                </Picker>
-                                            </View>
-                                        </Modal>
-                                    </>
-                                ) : (
-                                    <Picker
-                                        mode={"dropdown"}
-                                        selectedValue={this.state.basePicker}
-                                        style={stylesheet.pricker}
-                                        onValueChange={(itemValue) =>
-                                            this.setState({basePicker: itemValue.toString()})
-                                        }>
-                                        {baseIngredients.map((value, i) => (
-                                            <Picker.Item key={i} label={value.name} value={value.name} />
-                                        ))}
-                                    </Picker>
-                                )}
+                                <AdaptPicker
+                                    items={baseIngredients.map((it) => it.name)}
+                                    onValueChange={(newValue: string) => this.setState({basePicker: newValue})}
+                                />
                             </View>
                             <View style={stylesheet.pickerContainer}>
-                                {Platform.OS === "ios" ? (
-                                    <>
-                                        <TouchableOpacity
-                                            style={stylesheet.iosPickerLabel}
-                                            onPress={() => this.setState({saucePickerVisible: true})}>
-                                            <Text style={{...globalStylesheet.secondaryText, fontSize: 14}}>
-                                                {this.state.saucePicker}
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <Modal
-                                            isVisible={this.state.saucePickerVisible}
-                                            animationIn={"zoomInUp"}
-                                            animationOut={"zoomOutUp"}
-                                            backdropOpacity={0}
-                                            style={{margin: 0}}
-                                            onBackdropPress={() => {
-                                                this.setState({saucePickerVisible: false});
-                                            }}
-                                            onBackButtonPress={() => {
-                                                this.setState({saucePickerVisible: false});
-                                            }}>
-                                            <View style={stylesheet.iosPickerContainer}>
-                                                <Picker
-                                                    mode={"dropdown"}
-                                                    selectedValue={this.state.saucePicker}
-                                                    onValueChange={(itemValue) =>
-                                                        this.setState({saucePicker: itemValue.toString()})
-                                                    }>
-                                                    {sauceIngredients.map((value, i) => (
-                                                        <Picker.Item key={i} label={value.name} value={value.name} />
-                                                    ))}
-                                                </Picker>
-                                            </View>
-                                        </Modal>
-                                    </>
-                                ) : (
-                                    <Picker
-                                        mode={"dropdown"}
-                                        selectedValue={this.state.saucePicker}
-                                        style={stylesheet.pricker}
-                                        onValueChange={(itemValue) =>
-                                            this.setState({saucePicker: itemValue.toString()})
-                                        }>
-                                        {sauceIngredients.map((value, i) => (
-                                            <Picker.Item key={i} label={value.name} value={value.name} />
-                                        ))}
-                                    </Picker>
-                                )}
+                                <AdaptPicker
+                                    items={sauceIngredients.map((it) => it.name)}
+                                    onValueChange={(newValue: string) => this.setState({saucePicker: newValue})}
+                                />
                             </View>
                         </View>
                         <View style={productCardStylesheet.shoppingCartButtonContainer}>
@@ -236,7 +141,7 @@ export const stylesheet = StyleSheet.create({
         borderWidth: 1,
         borderColor: globalColors.primaryColor,
     },
-    pricker: {
+    picker: {
         width: "140%",
         height: 30,
         paddingVertical: 10,

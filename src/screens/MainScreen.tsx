@@ -32,6 +32,7 @@ class MainScreen extends Component<any, IMainScreenState> {
     private layoutSize: Dimension[];
     private wokIngredients: Map<string, Ingredient[]> = new Map();
     private infoModal = createRef<InfoModal>();
+    private openDishModal = createRef<OpenDish>();
 
     constructor(props: any) {
         super(props);
@@ -141,7 +142,8 @@ class MainScreen extends Component<any, IMainScreenState> {
     }
 
     private onCardClick(product: Product) {
-        this.setState({modalVisible: true, currentProduct: product});
+        this.setState({currentProduct: product});
+        this.openDishModal.current?.showModal();
     }
 
     private _rowRenderer(type: any, data: any) {
@@ -199,34 +201,14 @@ class MainScreen extends Component<any, IMainScreenState> {
                         dataProvider={this.state.dataProvider}
                         initialRenderIndex={1}
                     />
-                    <Modal
-                        isVisible={this.state.modalVisible}
-                        animationIn={"zoomInUp"}
-                        animationOut={"zoomOutUp"}
-                        style={{margin: 0}}
-                        onBackdropPress={() => {
-                            this.setState({modalVisible: false});
-                        }}
-                        onBackButtonPress={() => {
-                            this.setState({modalVisible: false});
-                        }}>
-                        <View
-                            style={{
-                                ...stylesheet.openDishModal,
-                            }}>
-                            <OpenDish
-                                width={windowSize.width - 2 * stylesheet.openDishModal.paddingHorizontal}
-                                height={windowSize.height - 2 * stylesheet.openDishModal.paddingVertical}
-                                product={this.state.currentProduct}
-                                baseIngredients={
-                                    this.state.currentProduct?.type === ProductType.Wok ? baseIngredients : undefined
-                                }
-                                sauceIngredients={
-                                    this.state.currentProduct?.type === ProductType.Wok ? sauceIngredients : undefined
-                                }
-                            />
-                        </View>
-                    </Modal>
+                    <OpenDish
+                        ref={this.openDishModal}
+                        width={windowSize.width - 2 * stylesheet.openDishModal.paddingHorizontal}
+                        height={windowSize.height - 2 * stylesheet.openDishModal.paddingVertical}
+                        product={this.state.currentProduct}
+                        baseIngredients={baseIngredients}
+                        sauceIngredients={sauceIngredients}
+                    />
                     <InfoModal ref={this.infoModal} />
                 </View>
             </View>

@@ -16,10 +16,11 @@ import RadioButtonGroup from "../components/RadioButtonGroup";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Restaurant from "../entities/Restaurant";
 import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService";
-import ApplePayButton from "react-native-apple-pay-button";
+import {ApplePayButton} from "react-native-rn-apple-pay-button";
 import EmailService from "../utils/email/EmailService";
 import {StackActions} from "@react-navigation/native";
 import InfoModal from "../components/InfoModal";
+import AdaptPicker from "../components/AdaptPicker";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -141,19 +142,6 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         this.setState({buttonVisible: true});
     };
 
-    private renderPaymentsPickerItems() {
-        return [...this.state.availablePaymentMethods].map((method: PaymentsMethods) => {
-            return <Picker.Item label={method.toString()} value={method} key={method} />;
-        });
-    }
-
-    private renderRestaurantsPickerItems() {
-        return this.restaurants.map((rest) => {
-            const label = rest.address.split(";").slice(1).join(" ");
-            return <Picker.Item label={label} value={rest} key={rest.address} />;
-        });
-    }
-
     private async payWithGoogle() {
         const transaction: IPaymentTransaction = {
             totalPrice: this.state.totalPrice.toString(),
@@ -181,6 +169,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             },
         };
         const paymentRequest = global.applePayService.getPaymentRequest(transaction);
+        console.log(paymentRequest);
         return ApplePayService.processPayment(paymentRequest, (paymentDetails) => console.log(paymentDetails)).then(
             this.sendOrder,
         );
@@ -236,8 +225,8 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         const buttonColor = this.isButtonEnable() ? globalColors.primaryColor : globalColors.fadePrimaryColor;
 
         const buttonSize = {
-            width: Dimensions.get("window").width - PixelRatio.getPixelSizeForLayoutSize(16),
-            height: PixelRatio.getPixelSizeForLayoutSize(21),
+            minWidth: Dimensions.get("window").width - PixelRatio.getPixelSizeForLayoutSize(16),
+            minHeight: 50,
         };
 
         let button = null;
@@ -262,17 +251,20 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 case PaymentsMethods.ApplePay: {
                     if (Platform.OS === "ios" && this.isButtonEnable()) {
                         button = (
-                            <ApplePayButton
-                                buttonStyle="whiteOutline"
-                                type="buy"
-                                style={{...buttonSize, ...stylesheet.orderButton}}
-                                onPress={() => {
-                                    if (this.isButtonEnable()) {
-                                        return this.payWithApple();
-                                    }
-                                    return null;
-                                }}
-                            />
+                            <View style={{...buttonSize, ...stylesheet.orderButton}}>
+                                <ApplePayButton
+                                    buttonStyle="whiteOutline"
+                                    type="buy"
+                                    width={buttonSize.minWidth}
+                                    height={buttonSize.minHeight}
+                                    onPress={() => {
+                                        if (this.isButtonEnable()) {
+                                            return this.payWithApple();
+                                        }
+                                        return null;
+                                    }}
+                                />
+                            </View>
                         );
                     }
                     break;
@@ -364,12 +356,14 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             <View>
                 <View style={stylesheet.row}>
                     <View style={stylesheet.rowText}>
-                        <Picker
-                            selectedValue={this.state.restaurantForPickup}
-                            onValueChange={(itemValue) => this.setState({restaurantForPickup: itemValue})}
-                            style={stylesheet.rowText}>
-                            {this.renderRestaurantsPickerItems()}
-                        </Picker>
+                        <AdaptPicker
+                            items={this.restaurants.map((it) => it.address.split(";")[1])}
+                            onValueChange={(itemValue) =>
+                                this.setState({
+                                    restaurantForPickup: this.restaurants.find((it) => it.address.split(";")[1] === itemValue),
+                                })
+                            }
+                        />
                     </View>
                 </View>
             </View>
@@ -421,13 +415,18 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             />
                         </View>
                         <View style={stylesheet.row}>
+                            <Text style={stylesheet.rowHeader}>Способ оплаты</Text>
+                        </View>
+                        <View style={stylesheet.row}>
                             <View style={stylesheet.rowText}>
-                                <Picker
-                                    selectedValue={this.state.paymentMethod}
-                                    style={stylesheet.rowHeader}
-                                    onValueChange={(itemValue) => this.setState({paymentMethod: itemValue})}>
-                                    {this.renderPaymentsPickerItems()}
-                                </Picker>
+                                <AdaptPicker
+                                    initValue={this.state.paymentMethod}
+                                    items={[...this.state.availablePaymentMethods]}
+                                    onValueChange={(itemValue) => {
+                                        const method = PaymentsMethods.parse(itemValue);
+                                        this.setState({paymentMethod: method ? method : PaymentsMethods.CashToCourier});
+                                    }}
+                                />
                             </View>
                         </View>
                     </View>
@@ -458,7 +457,7 @@ const stylesheet = StyleSheet.create({
     },
     rowText: {
         ...globalStylesheet.primaryText,
-        paddingHorizontal: 12,
+        padding: 12,
         flex: 1,
         flexDirection: "row",
         marginHorizontal: 14,
@@ -482,7 +481,6 @@ const stylesheet = StyleSheet.create({
         color: globalColors.primaryColor,
     },
     orderButton: {
-        paddingVertical: 22,
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center",
@@ -492,7 +490,7 @@ const stylesheet = StyleSheet.create({
     },
     orderButtonText: {
         ...globalStylesheet.headerText,
-        color: globalColors.mainBackgroundColor,
+        color: "white",
     },
 });
 

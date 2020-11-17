@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors} from "../../resources/styles";
 import MenuIcon from "../../resources/assets/drawable/menu_icon.svg";
 import CartIcon from "../../resources/assets/drawable/cart_icon.svg";
@@ -58,48 +58,47 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
         switch (this.props.sceneName) {
             case "CartScreen":
                 actionIcon = (
-                    <View style={stylesheet.topContainer} onTouchEnd={() => this.clearCart()}>
+                    <TouchableOpacity style={stylesheet.topContainer} onPress={() => this.clearCart()}>
                         <TrashIcon width={TRASH_ICON_SIZE} height={TRASH_ICON_SIZE} fill={globalColors.primaryColor} />
-                    </View>
+                    </TouchableOpacity>
                 );
                 break;
             default:
                 if (this.state.totalPrice > 0) {
                     actionIcon = (
-                        <View
+                        <TouchableOpacity
                             style={stylesheet.topContainer}
-                            onTouchEnd={() => this.props.drawerNavigation.navigate("CartScreen")}>
+                            onPress={() => this.props.drawerNavigation.navigate("CartScreen")}>
                             <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
                             <Text numberOfLines={1} style={stylesheet.priceText}>
                                 {Math.round(this.state.totalPrice)}
                             </Text>
-                        </View>
+                        </TouchableOpacity>
                     );
                 }
         }
 
         return (
-            <>
+            <SafeAreaView>
                 <View style={stylesheet.container}>
-                    <View style={stylesheet.topContainer}>
-                        <MenuIcon
-                            width={MENU_ICON_SIZE}
-                            height={MENU_ICON_SIZE}
-                            onTouchEnd={() => this.props.drawerNavigation.openDrawer()}
-                        />
+                    <TouchableOpacity
+                        style={stylesheet.topContainer}
+                        onPress={() => this.props.drawerNavigation.openDrawer()}>
+                        <MenuIcon width={MENU_ICON_SIZE} height={MENU_ICON_SIZE} />
                         <Text style={stylesheet.title}>{this.props.headerText}</Text>
-                    </View>
+                    </TouchableOpacity>
                     <View style={stylesheet.topContainer}>{actionIcon}</View>
                 </View>
                 {this.props.showBackButton || this.props.subheaderText ? (
                     <View style={stylesheet.subheaderContainer}>
                         {this.props.showBackButton ? (
-                            <FishIcon
-                                style={{flex: 1}}
-                                width={FISH_ICON_SIZE.width}
-                                height={FISH_ICON_SIZE.height}
-                                onTouchEnd={() => this.props.stackNavigation?.goBack()}
-                            />
+                            <TouchableOpacity onPress={() => this.props.stackNavigation?.goBack()}>
+                                <FishIcon
+                                    style={{flex: 1}}
+                                    width={FISH_ICON_SIZE.width}
+                                    height={FISH_ICON_SIZE.height}
+                                />
+                            </TouchableOpacity>
                         ) : null}
                         {this.props.subheaderText ? (
                             <Text style={stylesheet.subTitle}>{this.props.subheaderText}</Text>
@@ -107,7 +106,7 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                         {this.props.showBackButton ? <View style={{flex: 1}} /> : null}
                     </View>
                 ) : null}
-            </>
+            </SafeAreaView>
         );
     }
 }
@@ -117,7 +116,6 @@ export const stylesheet = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 12,
         width: "100%",
-        height: 70,
         flexDirection: "row",
         justifyContent: "space-between",
         backgroundColor: globalColors.transparent,
