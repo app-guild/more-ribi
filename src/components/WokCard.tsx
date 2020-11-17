@@ -3,13 +3,13 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Ingredient from "../entities/Ingredient";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {IProductCardProps, IProductCardState, stylesheet as productCardStylesheet} from "./ProductCard";
-import {Picker} from "@react-native-community/picker";
 import ProductCard from "./ProductCard";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import PriceButton from "./PriceButton";
 import WokProduct from "../entities/WokProduct";
 import Cart from "../entities/Cart";
 import Product from "../entities/Product";
+import AdaptPicker from "./AdaptPicker";
 
 export interface IWokCardProps extends IProductCardProps {
     baseIngredients: Ingredient[];
@@ -25,6 +25,7 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
     constructor(props: IWokCardProps) {
         super(props);
         this.state = {
+            countInCart: 0,
             basePicker: props.baseIngredients[0] ? props.baseIngredients[0].name : "",
             saucePicker: props.sauceIngredients[0] ? props.sauceIngredients[0].name : "",
         };
@@ -96,26 +97,16 @@ class WokCard extends ProductCard<IWokCardProps, IWokCardState> {
                     <View style={productCardStylesheet.shoppingCardSubContainer}>
                         <View style={stylesheet.pickers}>
                             <View style={stylesheet.pickerContainer}>
-                                <Picker
-                                    mode={"dropdown"}
-                                    selectedValue={this.state.basePicker}
-                                    style={stylesheet.pricker}
-                                    onValueChange={(itemValue) => this.setState({basePicker: itemValue.toString()})}>
-                                    {baseIngredients.map((value, i) => (
-                                        <Picker.Item key={i} label={value.name} value={value.name} />
-                                    ))}
-                                </Picker>
+                                <AdaptPicker
+                                    items={baseIngredients.map((it) => it.name)}
+                                    onValueChange={(newValue: string) => this.setState({basePicker: newValue})}
+                                />
                             </View>
                             <View style={stylesheet.pickerContainer}>
-                                <Picker
-                                    mode={"dropdown"}
-                                    selectedValue={this.state.saucePicker}
-                                    style={stylesheet.pricker}
-                                    onValueChange={(itemValue) => this.setState({saucePicker: itemValue.toString()})}>
-                                    {sauceIngredients.map((value, i) => (
-                                        <Picker.Item key={i} label={value.name} value={value.name} />
-                                    ))}
-                                </Picker>
+                                <AdaptPicker
+                                    items={sauceIngredients.map((it) => it.name)}
+                                    onValueChange={(newValue: string) => this.setState({saucePicker: newValue})}
+                                />
                             </View>
                         </View>
                         <View style={productCardStylesheet.shoppingCartButtonContainer}>
@@ -150,7 +141,7 @@ export const stylesheet = StyleSheet.create({
         borderWidth: 1,
         borderColor: globalColors.primaryColor,
     },
-    pricker: {
+    picker: {
         width: "140%",
         height: 30,
         paddingVertical: 10,
@@ -159,8 +150,24 @@ export const stylesheet = StyleSheet.create({
         color: globalColors.additionalTextColor,
         backgroundColor: globalColors.almostTransparent,
     },
+    iosPickerLabel: {
+        width: "100%",
+        height: 30,
+        alignItems: "center",
+        justifyContent: "center",
+        color: globalColors.additionalTextColor,
+        backgroundColor: globalColors.almostTransparent,
+    },
     pickers: {
         width: "50%",
+    },
+    iosPickerContainer: {
+        backgroundColor: globalColors.cardBackgroundColor,
+        opacity: 0.8,
+        height: "30%",
+        alignContent: "center",
+        justifyContent: "center",
+        padding: 20,
     },
 });
 

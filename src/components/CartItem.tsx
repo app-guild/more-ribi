@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import Product from "../entities/Product";
 import NumericInput from "react-native-numeric-input";
@@ -112,11 +112,9 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
                         {product.id === "_Доставка" ? (
                             <View style={{width: CLOSE_ICON_SIZE, height: CLOSE_ICON_SIZE}} />
                         ) : (
-                            <CloseIcon
-                                width={CLOSE_ICON_SIZE}
-                                height={CLOSE_ICON_SIZE}
-                                onTouchEnd={() => this.updateProductCount(product, 0)}
-                            />
+                            <TouchableOpacity onPress={() => this.updateProductCount(product, 0)}>
+                                <CloseIcon width={CLOSE_ICON_SIZE} height={CLOSE_ICON_SIZE} />
+                            </TouchableOpacity>
                         )}
                     </View>
                 </View>

@@ -24,6 +24,7 @@ export default function CartScreenNavigation(props: any) {
                             sceneName={scene.route.name}
                         />
                     ),
+                    cardOverlayEnabled: true,
                     headerStyle: {backgroundColor: globalColors.transparent},
                     cardStyle: {backgroundColor: globalColors.transparent},
                     cardOverlay: () => <MainBackground />,
