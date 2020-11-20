@@ -1,5 +1,5 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, StyleSheet, Text, View} from "react-native";
+import {Dimensions, PixelRatio, StyleSheet, Text, View} from "react-native";
 import ProductCard from "../components/ProductCard";
 import {DataProvider, Dimension, LayoutProvider} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
@@ -7,12 +7,11 @@ import {CategorizedRecyclerListView} from "../components/CategorizedRecyclerList
 import OpenDish from "../components/OpenDish";
 import {globalColors} from "../../resources/styles";
 import Product from "../entities/Product";
-import Modal from "react-native-modal";
 import FishIcon from "../../resources/assets/drawable/fish_icon2.svg";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import WokCard from "../components/WokCard";
 import Ingredient from "../entities/Ingredient";
-import InfoModal, {InfoModalType} from "../components/InfoModal";
+import InfoModal from "../components/InfoModal";
 import DatabaseApi from "../utils/database/DatabaseApi";
 
 export interface IMainScreenState {
@@ -42,7 +41,7 @@ class MainScreen extends Component<any, IMainScreenState> {
         this.onCardClick = this.onCardClick.bind(this);
         const cardLayoutSize = {
             width: windowSize.width,
-            height: windowSize.height * 0.2,
+            height: 150,
         };
         this.layoutSize = [
             {

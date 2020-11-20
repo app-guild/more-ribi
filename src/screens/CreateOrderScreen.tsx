@@ -1,5 +1,5 @@
 import React, {Component, createRef} from "react";
-import {Dimensions, Keyboard, Picker, PixelRatio, Platform, StyleSheet, Text, TextInput, View} from "react-native";
+import {Dimensions, Keyboard, PixelRatio, Platform, StyleSheet, Text, TextInput, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import {PaymentsMethods} from "../utils/payment/PaymentsMethods";
 import {TouchableOpacity} from "react-native-gesture-handler";
