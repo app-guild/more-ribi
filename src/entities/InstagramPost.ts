@@ -18,6 +18,6 @@ export default class InstagramPost {
     }
 
     static parseRealtimeDatabaseJson(json: any, date: string): InstagramPost {
-        return new InstagramPost(json.linkToRecord, json.text, json.mediaUrl, Date.parse(date));
+        return new InstagramPost(json.linkToRecord, json.text, json.mediaUrl, Date.parse(date.split("+")[0]));
     }
 }

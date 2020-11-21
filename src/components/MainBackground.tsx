@@ -1,6 +1,8 @@
 import React, {Component} from "react";
-import {ImageBackground, StyleSheet, View} from "react-native";
+import {Dimensions, ImageBackground, StyleSheet, View} from "react-native";
 import {globalColors} from "../../resources/styles";
+
+const {height, width} = Dimensions.get("window");
 
 class MainBackground extends Component<Readonly<any>, Readonly<any>> {
     constructor(props: any) {
@@ -11,7 +13,9 @@ class MainBackground extends Component<Readonly<any>, Readonly<any>> {
     render() {
         return (
             <View style={stylesheet.background}>
-                <ImageBackground source={require("../../resources/assets/drawable/background.png")} style={{flex: 1}}>
+                <ImageBackground
+                    source={require("../../resources/assets/drawable/background.png")}
+                    style={{height, width}}>
                     <View style={stylesheet.backgroundOverlay}>{this.props.children}</View>
                 </ImageBackground>
             </View>

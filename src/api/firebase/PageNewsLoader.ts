@@ -1,40 +1,35 @@
-import database from "@react-native-firebase/database";
 import RealtimeDatabaseApi from "./RealtimeDatabaseApi";
 import InstagramPost from "../../entities/InstagramPost";
 
 export default class PageNewsLoader {
     private _currentPage: number;
     private _pagesOut: boolean = false;
+    private _posts?: InstagramPost[];
+
     constructor(private _pageSize: number, startPage?: number) {
         this._currentPage = startPage || 0;
     }
 
-    getNextPage(): Promise<InstagramPost[]> {
+    async getNextPage(): Promise<InstagramPost[]> {
+        if (!this._posts) {
+            this._posts = await RealtimeDatabaseApi.getInstagramPosts();
+            this._posts = this._posts.sort((a, b) => b.date - a.date);
+        }
         const start = this._currentPage * this._pageSize;
         this._currentPage++;
-        const limit = this._currentPage * this._pageSize;
-        return this._pagesOut ? Promise.resolve([]) : this._getNews(start, limit);
+        let limit = this._currentPage * this._pageSize;
+        if (!this._pagesOut) {
+            if (limit > this._posts.length) {
+                this._pagesOut = true;
+                limit = this._posts.length;
+            }
+            return this._posts.slice(start, limit);
+        } else {
+            return [];
+        }
     }
 
     get pagesOut(): boolean {
         return this._pagesOut;
-    }
-
-    private _getNews(start: number, limit: number): Promise<InstagramPost[]> {
-        return database()
-            .ref("/instagram")
-            .orderByKey()
-            .limitToFirst(limit)
-            .once("value")
-            .then((snapshot) => {
-                const posts = RealtimeDatabaseApi.parseInstagramPosts(snapshot.val());
-                const currentPagePosts = posts.slice(start);
-
-                if (currentPagePosts.length < limit) {
-                    this._pagesOut = true;
-                }
-
-                return currentPagePosts;
-            });
     }
 }

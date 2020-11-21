@@ -24,6 +24,13 @@ export default class AdaptPicker extends PureComponent<IAdaptPickerProps, IAdapt
         };
     }
 
+    shouldComponentUpdate(nextProps: Readonly<IAdaptPickerProps>): boolean {
+        if (nextProps.initValue !== this.props.initValue) {
+            this.setState({currentValue: nextProps.initValue ? nextProps.initValue : nextProps.items[0]});
+        }
+        return true;
+    }
+
     private onValueChange(newValue: string) {
         if (this.props.onValueChange) {
             this.props.onValueChange(newValue);

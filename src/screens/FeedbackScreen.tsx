@@ -193,7 +193,7 @@ const stylesheet = StyleSheet.create({
     },
     rowText: {
         ...globalStylesheet.primaryText,
-        paddingHorizontal: 12,
+        padding: 12,
         flex: 1,
         flexDirection: "row",
         marginHorizontal: 14,
