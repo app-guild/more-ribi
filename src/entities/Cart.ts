@@ -9,6 +9,10 @@ export default class Cart {
         return Array.from(this._products.keys());
     }
 
+    setProducts(value: Map<Product, number>) {
+        this._products = value;
+    }
+
     get totalPrice() {
         return this.countTotalPrice(this._products);
     }

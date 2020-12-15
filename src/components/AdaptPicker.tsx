@@ -1,4 +1,4 @@
-import React, {PureComponent} from "react";
+import React, {Component} from "react";
 import {Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import Modal from "react-native-modal";
@@ -15,7 +15,7 @@ export interface IAdaptPickerState {
     isModalVisible: boolean;
 }
 
-export default class AdaptPicker extends PureComponent<IAdaptPickerProps, IAdaptPickerState> {
+export default class AdaptPicker extends Component<IAdaptPickerProps, IAdaptPickerState> {
     constructor(props: IAdaptPickerProps) {
         super(props);
         this.state = {

@@ -5,6 +5,9 @@ import Modal from "react-native-modal";
 import {Divider} from "react-native-paper";
 import {ProductType} from "../entities/ProductType";
 import WokProduct from "../entities/WokProduct";
+import DatabaseApi from "../utils/database/DatabaseApi";
+import {TouchableOpacity} from "react-native";
+import {globalColors} from "../../resources/styles";
 
 interface ICheckModalState {
     modalVisible: boolean;
@@ -48,6 +51,24 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
             order: null,
         };
     }
+
+    repeatOrder = (): Promise<void> => {
+        if (this.state.order) {
+            const order = this.state.order;
+            return DatabaseApi.getCart()
+                .then((cart) => {
+                    cart.clear();
+                    [...order.products.keys()].forEach((product) =>
+                        cart.addProduct(product, order.products.get(product)),
+                    );
+                    console.log(cart.products);
+                    return cart;
+                })
+                .then((cart) => DatabaseApi.updateProductsInCart(cart))
+                .then(() => DatabaseApi.removeUnavailableProductsFromCart());
+        }
+        return Promise.resolve();
+    };
 
     show(order: Order): void {
         // Сперва создаем компоненты и только после этого отображаем
@@ -114,6 +135,12 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                         {this.state.order.comment ? (
                             <Text style={stylesheet.additionalText}>{"Комментарий: " + this.state.order.comment}</Text>
                         ) : null}
+                        <TouchableOpacity
+                            activeOpacity={0.5}
+                            style={stylesheet.repeatButton}
+                            onPress={() => this.repeatOrder()}>
+                            <Text style={stylesheet.repeatText}>Повторить заказ</Text>
+                        </TouchableOpacity>
                     </ScrollView>
                 </Modal>
             );
@@ -164,5 +191,23 @@ const stylesheet = StyleSheet.create({
     additionalText: {
         alignSelf: "flex-start",
         fontSize: 13,
+    },
+    repeatButton: {
+        zIndex: 1000,
+        paddingVertical: 11,
+        paddingHorizontal: 22,
+        marginTop: 15,
+        backgroundColor: globalColors.primaryColor,
+        borderRadius: 7,
+        alignSelf: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+    },
+    repeatText: {
+        fontFamily: "Montserrat-Bold",
+        fontSize: 14,
+        lineHeight: 17,
+        color: globalColors.whiteTextColor,
     },
 });

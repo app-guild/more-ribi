@@ -13,7 +13,9 @@ export interface IGateway {
     gateway: string;
     gatewayMerchantId?: string;
 
-    // Add object for identify gateway
+    terminalKey?: string;
+    password?: string;
+    publicKey?: string;
 }
 
 export interface IDirect {
@@ -70,18 +72,20 @@ export class GooglePayService {
             merchantName: this.merchantName,
             transaction: transaction,
         };
-        return GooglePay.requestPayment(paymentRequest)
-            .then((token: string) => {
-                // Send a token to your payment gateway
-                if (tokenCallback) {
-                    tokenCallback(token);
-                }
+        return this.isReadyToPay().then(() => {
+            return GooglePay.requestPayment(paymentRequest)
+                .then((token: string) => {
+                    // Send a token to your payment gateway
+                    if (tokenCallback) {
+                        tokenCallback(token);
+                    }
 
-                return true;
-            })
-            .catch((error) => {
-                console.log(error.code, error.message);
-                return false;
-            });
+                    return true;
+                })
+                .catch((error) => {
+                    console.log(error.code, error.message);
+                    return false;
+                });
+        });
     }
 }

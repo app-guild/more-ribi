@@ -193,6 +193,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.2.4'
 
     implementation project(':react-native-google-pay')
+    implementation 'ru.tinkoff.acquiring:ui:2.2.0'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
