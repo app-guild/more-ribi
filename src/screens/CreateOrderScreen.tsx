@@ -17,7 +17,7 @@ import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Restaurant from "../entities/Restaurant";
 import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService";
 import {ApplePayButton} from "react-native-rn-apple-pay-button";
-import EmailService from "../utils/email/EmailService";
+import EmailService, {NETWORK_ERROR} from "../utils/email/EmailService";
 import {StackActions} from "@react-navigation/native";
 import InfoModal from "../components/InfoModal";
 import AdaptPicker from "../components/AdaptPicker";
@@ -214,9 +214,16 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     }
                 });
             })
-            .catch(() => {
+            .catch((e) => {
+                console.error("Order error:");
+                console.error(e);
                 if (this.infoModal && this.infoModal.current) {
-                    this.infoModal.current.endLoadAnimation(false, () => {}, InfoModal.FAILED_SEND_ORDER_PATTERN);
+                    if (e === NETWORK_ERROR) {
+                        this.infoModal.current.endLoadAnimation(false, () => {}, InfoModal.FAILED_SEND_ORDER_PATTERN);
+                    } else {
+                        // TODO Print error and ask for connect as.
+                        this.infoModal.current.endLoadAnimation(false, () => {}, InfoModal.FAILED_SEND_ORDER_PATTERN);
+                    }
                 }
             });
     }
@@ -360,7 +367,9 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             items={this.restaurants.map((it) => it.address.split(";")[1])}
                             onValueChange={(itemValue) =>
                                 this.setState({
-                                    restaurantForPickup: this.restaurants.find((it) => it.address.split(";")[1] === itemValue),
+                                    restaurantForPickup: this.restaurants.find(
+                                        (it) => it.address.split(";")[1] === itemValue,
+                                    ),
                                 })
                             }
                         />

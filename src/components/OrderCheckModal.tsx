@@ -61,7 +61,7 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                     return RealtimeDatabaseApi.getProducts().then((products: Map<ProductType, Product[]>) => {
                         cart.clear();
                         [...order.products.keys()].forEach((productFromOrder) => {
-                            if (productFromOrder.type === ProductType.Poke) {
+                            if (productFromOrder.type === ProductType.CustomPoke) {
                                 cart.addProduct(productFromOrder, order.products.get(productFromOrder));
                             } else {
                                 let updatedProduct;

@@ -10,6 +10,7 @@ import RealtimeDatabaseApi from "../../api/firebase/RealtimeDatabaseApi";
 
 const SHOP_EMAIL = "moreribi.mobileapp@gmail.com";
 const FROM_HEADER = "Много рыбы Мобильное приложение";
+export const NETWORK_ERROR = "No internet connection";
 
 export default class EmailService {
     private static async sendEmail(
@@ -18,20 +19,27 @@ export default class EmailService {
         subject: string,
         body: string,
     ): Promise<FirebaseFunctionsTypes.HttpsCallableResult> {
-        console.log(emailTo);
+        console.log("Send email:");
+        console.log({
+            from,
+            emailTo,
+            subject,
+            body,
+        });
         return new Promise((resolve, reject) => {
             NetInfo.fetch().then((state) => {
+                console.log(`Network connected: ${state.isConnected}`);
                 if (state.isConnected) {
                     resolve(
                         firebase.functions().httpsCallable("sendEmail")({
-                            from: from,
-                            emailTo: emailTo,
+                            from,
+                            emailTo,
                             subject,
                             body,
                         }),
                     );
                 } else {
-                    reject();
+                    reject(NETWORK_ERROR);
                 }
             });
         });
