@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import {FlatList, StyleSheet, Text, View} from "react-native";
 import Cart from "../entities/Cart";
 import {globalColors, globalStylesheet} from "../../resources/styles";
@@ -7,10 +7,8 @@ import CartItem from "../components/CartItem";
 import Product from "../entities/Product";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import {ProductType} from "../entities/ProductType";
-
-const MIN_TOTAL_PRICE = 500;
-const DELIVERY_PRICE = 120;
-const delivery = new Product("Доставка", ProductType.None, DELIVERY_PRICE, undefined, true, "", "");
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
+import InfoModal from "../components/InfoModal";
 
 export interface ICartScreenState {
     cart: Cart;
@@ -18,6 +16,12 @@ export interface ICartScreenState {
 }
 
 class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
+    private minTotalPrice: undefined | number;
+    private deliveryPrice: undefined | number;
+    private deliveryProduct: undefined | Product;
+
+    private infoModal = createRef<InfoModal>();
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -29,7 +33,31 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
 
     componentDidMount() {
         DatabaseApi.addOnCartChangeListener(this.updateCart);
-        return DatabaseApi.getCart().then(this.updateCart);
+
+        const promises = [];
+        promises.push(
+            RealtimeDatabaseApi.getMinimumOrderPrice().then(
+                (minimumOrderPrice) => (this.minTotalPrice = minimumOrderPrice),
+            ),
+        );
+        promises.push(
+            RealtimeDatabaseApi.getDeliveryPrice().then((deliveryPrice) => (this.deliveryPrice = deliveryPrice)),
+        );
+
+        return Promise.all(promises).then(() => {
+            if (this.deliveryPrice && this.minTotalPrice) {
+                this.deliveryProduct = new Product(
+                    "Доставка",
+                    ProductType.None,
+                    this.deliveryPrice!!,
+                    undefined,
+                    true,
+                    "",
+                    "",
+                );
+            }
+            return DatabaseApi.getCart().then(this.updateCart);
+        });
     }
 
     componentWillUnmount() {
@@ -38,20 +66,29 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
 
     private async updateCart(cart: Cart) {
         let isEnabled = true;
-        if (cart.products.length === 0 || (cart.products.length === 1 && cart.getProductCount(delivery) > 0)) {
-            await DatabaseApi.removeProductFromCart(delivery);
-            isEnabled = false;
+
+        if (this.deliveryProduct && this.deliveryPrice && this.minTotalPrice) {
+            if (cart.products.length === 0) {
+                isEnabled = false;
+            } else if (cart.products.length === 1 && cart.getProductCount(this.deliveryProduct) > 0) {
+                await DatabaseApi.removeProductFromCart(this.deliveryProduct);
+                isEnabled = false;
+            } else {
+                let cartPrice = cart.totalPrice;
+                const deliveryCount = cart.getProductCount(this.deliveryProduct);
+                if (deliveryCount > 0) {
+                    cartPrice = cartPrice - deliveryCount * this.deliveryProduct.price;
+                }
+                if (cartPrice >= this.minTotalPrice) {
+                    if (deliveryCount > 0) {
+                        await DatabaseApi.removeProductFromCart(this.deliveryProduct);
+                    }
+                } else if (deliveryCount === 0) {
+                    await DatabaseApi.addProductToCart(this.deliveryProduct);
+                }
+            }
         } else {
-            let cartPrice = cart.totalPrice;
-            const deliveryCount = cart.getProductCount(delivery);
-            if (deliveryCount > 0) {
-                cartPrice = cartPrice - deliveryCount * delivery.price;
-            }
-            if (cartPrice >= MIN_TOTAL_PRICE) {
-                await DatabaseApi.removeProductFromCart(delivery);
-            } else if (deliveryCount === 0) {
-                await DatabaseApi.addProductToCart(delivery);
-            }
+            isEnabled = false;
         }
         this.setState({cart, buttonEnabled: isEnabled});
     }
@@ -78,10 +115,16 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
                         )}
                     />
                     <View>
-                        {this.state.cart.getProductCount(delivery) > 0 ? (
+                        {this.deliveryProduct && this.state.cart.getProductCount(this.deliveryProduct) > 0 ? (
                             <View style={stylesheet.totalPriceContainer}>
                                 <Text style={stylesheet.deliveryTermText}>
-                                    {`Доставка осуществляется бесплатно при заказе от ${MIN_TOTAL_PRICE}₽`}{" "}
+                                    {`Доставка осуществляется бесплатно при заказе от ${this.minTotalPrice}₽`}{" "}
+                                </Text>
+                            </View>
+                        ) : !this.deliveryProduct ? (
+                            <View style={stylesheet.totalPriceContainer}>
+                                <Text style={stylesheet.deliveryTermText}>
+                                    {"Невозможно соединиться с сервером, проверьте соединение с интернетом"}{" "}
                                 </Text>
                             </View>
                         ) : null}
@@ -100,6 +143,7 @@ class CartScreen extends Component<Readonly<any>, Readonly<ICartScreenState>> {
                         </TouchableOpacity>
                     </View>
                 </View>
+                <InfoModal ref={this.infoModal} />
             </View>
         );
     }

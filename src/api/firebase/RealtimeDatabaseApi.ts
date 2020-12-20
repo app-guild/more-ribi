@@ -98,6 +98,19 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => snapshot.val());
     }
 
+    static async getMinimumOrderPrice(): Promise<number> {
+        return database()
+            .ref("/minimum_order_price")
+            .once("value")
+            .then((snapshot) => snapshot.val());
+    }
+    static async getDeliveryPrice(): Promise<number> {
+        return database()
+            .ref("/delivery_price")
+            .once("value")
+            .then((snapshot) => snapshot.val());
+    }
+
     static async getInstagramPosts(): Promise<InstagramPost[]> {
         return database()
             .ref("/instagram")
