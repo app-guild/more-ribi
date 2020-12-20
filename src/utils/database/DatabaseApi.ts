@@ -31,6 +31,22 @@ export default class DatabaseApi {
     private static cart: Cart | null = null;
     private static getCartPromise: Promise<Cart> | null = null;
 
+    private static _onProductsChangedOnRealtimeDatabase = (newProducts: Product[]) => {
+        DatabaseApi.getCart()
+            .then((cart) => {
+                newProducts.forEach((it) => {
+                    const product = cart.products.find((productInCart) => productInCart.id === it.id);
+                    if (product) {
+                        const productCount = cart.getProductCount(product);
+                        cart.removeProduct(product);
+                        cart.addProduct(it, productCount);
+                    }
+                });
+                return cart;
+            })
+            .then((cart) => DatabaseApi.callOnCartChangeListeners(cart));
+    };
+
     static addOnCartChangeListener(listener: (cart: Cart) => void) {
         DatabaseApi.onCartChangeListeners.push(listener);
     }
@@ -141,6 +157,8 @@ export default class DatabaseApi {
                 });
 
                 DatabaseApi.getCartPromise = null;
+
+                RealtimeDatabaseApi.addProductsChangedListener(this._onProductsChangedOnRealtimeDatabase);
                 return DatabaseApi.cart;
             });
             return DatabaseApi.getCartPromise;

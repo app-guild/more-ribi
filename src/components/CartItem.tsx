@@ -67,10 +67,7 @@ class CartItem extends Component<Readonly<ICartItemProps>, Readonly<ICartItemSta
         const {product} = this.props;
         let price = product.discountPrice === undefined ? product.price : product.discountPrice;
         const textPrice = price + " ₽";
-        let productName = this.props.product.name;
-        if (product.type === ProductType.Wok && product instanceof WokProduct) {
-            productName = product.toString();
-        }
+        let productName = product.toString();
 
         return (
             <View style={stylesheet.container}>

@@ -25,6 +25,14 @@ export default class WokProduct extends Product {
         return this._base;
     }
 
+    set base(value: string) {
+        this._base = value;
+    }
+
+    set sauce(value: string) {
+        this._sauce = value;
+    }
+
     get sauce(): string {
         return this._sauce;
     }

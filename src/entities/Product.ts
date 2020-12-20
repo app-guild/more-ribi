@@ -1,7 +1,7 @@
 import {ProductType} from "./ProductType";
 
 export default class Product {
-    protected _id: string;
+    private _id: string;
 
     constructor(
         protected _name: string,
@@ -13,6 +13,10 @@ export default class Product {
         protected _composition: string,
     ) {
         this._id = this._type + "_" + this._name;
+    }
+
+    set id(value: string) {
+        this._id = value;
     }
 
     get id(): string {
@@ -45,6 +49,10 @@ export default class Product {
 
     get composition(): string {
         return this._composition;
+    }
+
+    public toString() {
+        return this.name;
     }
 
     toObject(): object {

@@ -1,13 +1,14 @@
 import React, {Component} from "react";
 import Order from "../entities/Order";
-import {View, Text, StyleSheet, ScrollView} from "react-native";
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Modal from "react-native-modal";
 import {Divider} from "react-native-paper";
 import {ProductType} from "../entities/ProductType";
 import WokProduct from "../entities/WokProduct";
 import DatabaseApi from "../utils/database/DatabaseApi";
-import {TouchableOpacity} from "react-native";
 import {globalColors} from "../../resources/styles";
+import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
+import Product from "../entities/Product";
 
 interface ICheckModalState {
     modalVisible: boolean;
@@ -57,12 +58,45 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
             const order = this.state.order;
             return DatabaseApi.getCart()
                 .then((cart) => {
-                    cart.clear();
-                    [...order.products.keys()].forEach((product) =>
-                        cart.addProduct(product, order.products.get(product)),
-                    );
-                    console.log(cart.products);
-                    return cart;
+                    return RealtimeDatabaseApi.getProducts().then((products: Map<ProductType, Product[]>) => {
+                        cart.clear();
+                        [...order.products.keys()].forEach((productFromOrder) => {
+                            if (productFromOrder.type === ProductType.Poke) {
+                                cart.addProduct(productFromOrder, order.products.get(productFromOrder));
+                            } else {
+                                let updatedProduct;
+                                if (products.has(productFromOrder.type)) {
+                                    products.get(productFromOrder.type)?.forEach((it) => {
+                                        if (productFromOrder.type === ProductType.Wok) {
+                                            const wokFromOrder = productFromOrder as WokProduct;
+                                            const wokFromRealtimeDatabase = it as WokProduct;
+                                            if (wokFromOrder.name === wokFromRealtimeDatabase.name) {
+                                                updatedProduct = new WokProduct(
+                                                    it.name,
+                                                    ProductType.Wok,
+                                                    it.price,
+                                                    it.discountPrice,
+                                                    it.available,
+                                                    it.image,
+                                                    it.composition,
+                                                    wokFromOrder.base,
+                                                    wokFromOrder.sauce,
+                                                );
+                                            }
+                                        } else {
+                                            if (it.id === productFromOrder.id) {
+                                                updatedProduct = it;
+                                            }
+                                        }
+                                    });
+                                }
+                                if (updatedProduct) {
+                                    cart.addProduct(updatedProduct, order.products.get(productFromOrder));
+                                }
+                            }
+                        });
+                        return cart;
+                    });
                 })
                 .then((cart) => DatabaseApi.updateProductsInCart(cart))
                 .then(() => DatabaseApi.removeUnavailableProductsFromCart());
