@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import {Dimensions, View} from "react-native";
+import {Dimensions} from "react-native";
 import {CommonActions, DrawerActions, NavigationContainer, useLinkBuilder} from "@react-navigation/native";
 import {createDrawerNavigator, DrawerContentScrollView, DrawerItem} from "@react-navigation/drawer";
 import RestaurantsScreen from "../RestaurantsScreen";

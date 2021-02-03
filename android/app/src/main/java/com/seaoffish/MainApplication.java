@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.multidex.MultiDexApplication;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import pro.rocketscience.tinkoff.RNTinkoffAsdkPackage;
 import com.reactlibrary.RnApplePayButtonPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import ru.tinkoff.acquiring.sdk.AcquiringSdk;

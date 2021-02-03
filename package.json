@@ -50,6 +50,7 @@
     "react-native-svg-transformer": "^0.14.3",
     "react-native-text-input-mask": "^2.0.0",
     "react-native-timer": "^1.3.6",
+    "react-native-tinkoff-asdk": "^0.5.4",
     "react-native-vector-icons": "^7.1.0",
     "react-native-yamap": "^1.0.20",
     "recyclerlistview": "^3.0.0",

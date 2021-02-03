@@ -9,6 +9,7 @@ import Cart from "../entities/Cart";
 import DatabaseApi from "../utils/database/DatabaseApi";
 import {StackNavigationProp} from "@react-navigation/stack";
 import FishIcon from "../../resources/assets/drawable/fish_back_button.svg";
+import TinkoffASDK from "react-native-tinkoff-asdk";
 
 const MENU_ICON_SIZE = 40;
 const CART_ICON_SIZE = 20;
@@ -68,7 +69,47 @@ class Header extends Component<Readonly<IHeaderProps>, Readonly<IHeaderState>> {
                     actionIcon = (
                         <TouchableOpacity
                             style={stylesheet.topContainer}
-                            onPress={() => this.props.drawerNavigation.navigate("CartScreen")}>
+                            onPress={() => {
+                                // TinkoffASDK.Pay({
+                                //     OrderID: "1", // ID заказа в вашей системе
+                                //     Amount: 32345, // сумма для оплаты (в копейках)
+                                //     PaymentName: "НАЗВАНИЕ ПЛАТЕЖА", // название платежа, видимое пользователю
+                                //     PaymentDesc: "ОПИСАНИЕ ПЛАТЕЖА", // описание платежа, видимое пользователю
+                                //     // тестовые:
+                                //     IsRecurrent: true, // флаг определяющий является ли платеж рекуррентным [1]
+                                //     UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
+                                //     ExtraData: {},
+                                //     GooglePayParams: {
+                                //         MerchantName: "test",
+                                //         AddressRequired: false,
+                                //         PhoneRequired: false,
+                                //         Environment: "TEST", // "SANDBOX", "PRODUCTION"
+                                //     },
+                                //     Taxation: "usn_income",
+                                //     Items: [
+                                //         {
+                                //             Name: "test 1",
+                                //             Price: 10000, // В копейках (100 рублей)
+                                //             Quantity: 2,
+                                //             Amount: 20000, // В копейках (200 рублей)
+                                //             Tax: "usn_income",
+                                //         },
+                                //         {
+                                //             Name: "test 2",
+                                //             Price: 12345,
+                                //             Quantity: 1,
+                                //             Amount: 12345,
+                                //             Tax: "usn_income",
+                                //         },
+                                //     ],
+                                // }).then((r) => {
+                                //     console.log(r);
+                                // })
+                                //     .catch((e) => {
+                                //         console.error(e);
+                                //     });
+                                //this.props.drawerNavigation.navigate("CartScreen");
+                            }}>
                             <CartIcon width={CART_ICON_SIZE} height={CART_ICON_SIZE} fill={globalColors.primaryColor} />
                             <Text numberOfLines={1} style={stylesheet.priceText}>
                                 {Math.round(this.state.totalPrice)}
