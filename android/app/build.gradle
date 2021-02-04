@@ -197,7 +197,6 @@ dependencies {
 
     //Payments
     implementation project(':react-native-google-pay')
-    compile group: 'ru.tinkoff.acquiring', name: 'ui', version: '2.3.0'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

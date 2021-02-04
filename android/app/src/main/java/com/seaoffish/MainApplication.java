@@ -8,7 +8,6 @@ import com.facebook.react.ReactApplication;
 import pro.rocketscience.tinkoff.RNTinkoffAsdkPackage;
 import com.reactlibrary.RnApplePayButtonPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import ru.tinkoff.acquiring.sdk.AcquiringSdk;
 import ru.vvdev.yamap.RNYamapPackage;
 import com.reactlibrary1.RNGooglePayButtonPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
