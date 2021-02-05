@@ -10,25 +10,26 @@ import Address from "../entities/Address";
 import KeyValueStorage from "../utils/KeyValueStorage";
 import TextInputMask from "react-native-text-input-mask";
 import RNGooglePayButton from "react-native-gpay-button";
-import {IPaymentTransaction} from "../utils/payment/GooglePayService";
-import {Currency} from "../utils/payment/Currency";
+// import {IPaymentTransaction} from "../utils/payment/GooglePayService";
+// import {Currency} from "../utils/payment/Currency";
 import RadioButtonGroup from "../components/RadioButtonGroup";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Restaurant from "../entities/Restaurant";
-import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService";
+// import ApplePayService, {IPaymentDetails} from "../utils/payment/ApplePayService";
 import {ApplePayButton} from "react-native-rn-apple-pay-button";
 import EmailService, {NETWORK_ERROR} from "../utils/email/EmailService";
 import {StackActions} from "@react-navigation/native";
 import InfoModal from "../components/InfoModal";
 import AdaptPicker from "../components/AdaptPicker";
+import RNTinkoffAsdk from "react-native-tinkoff-asdk";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
     restaurantForPickup?: Restaurant;
     availablePaymentMethods: Set<PaymentsMethods>;
     paymentMethod: PaymentsMethods;
-    totalPrice: number;
     buttonVisible: boolean;
+    cart: Cart | null;
     address: Address;
     name: string;
     phone: string;
@@ -49,13 +50,13 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             phone: "",
             address: new Address(),
             buttonVisible: true,
-            totalPrice: 0,
+            cart: null,
             availablePaymentMethods: new Set([PaymentsMethods.CardToCourier, PaymentsMethods.CashToCourier]),
             paymentMethod: PaymentsMethods.CardToCourier,
         };
-        this.updateTotalPrice = this.updateTotalPrice.bind(this);
+        this.updateCart = this.updateCart.bind(this);
         this.sendOrder = this.sendOrder.bind(this);
-        this.payWithGoogle = this.payWithGoogle.bind(this);
+        // this.payWithGoogle = this.payWithGoogle.bind(this);
         this.onTakeWayChanged = this.onTakeWayChanged.bind(this);
         Keyboard.addListener("keyboardDidShow", this._keyboardDidShow);
         Keyboard.addListener("keyboardDidHide", this._keyboardDidHide);
@@ -79,17 +80,17 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 this.setState({
                     ...modifiedPaymentsMethods,
                     restaurantForPickup: this.restaurants[0],
-                    totalPrice: cart.totalPrice,
                     address,
+                    cart,
                     name,
                     phone,
                 });
             })
-            .then(() => DatabaseApi.addOnCartChangeListener(this.updateTotalPrice));
+            .then(() => DatabaseApi.addOnCartChangeListener(this.updateCart));
     }
 
     componentWillUnmount(): void {
-        DatabaseApi.removeOnCartChangeListener(this.updateTotalPrice);
+        DatabaseApi.removeOnCartChangeListener(this.updateCart);
     }
 
     private isButtonEnable(): boolean {
@@ -130,8 +131,8 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         });
     }
 
-    private updateTotalPrice(cart: Cart) {
-        this.setState({totalPrice: cart.totalPrice});
+    private updateCart(cart: Cart) {
+        this.setState({cart});
     }
 
     private _keyboardDidShow = () => {
@@ -142,37 +143,87 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         this.setState({buttonVisible: true});
     };
 
-    private async payWithGoogle() {
-        const transaction: IPaymentTransaction = {
-            totalPrice: this.state.totalPrice.toString(),
-            totalPriceStatus: "FINAL",
-            currencyCode: Currency.RUB,
-        };
-        return global.googlePayService
-            .doPaymentRequest(transaction, (token: string) => console.log(token))
-            .then((success: boolean) => {
-                if (success) {
-                    return this.sendOrder();
-                }
-                return;
-            });
-    }
+    // private async payWithGoogle() {
+    //     const transaction: IPaymentTransaction = {
+    //         totalPrice: this.state.totalPrice.toString(),
+    //         totalPriceStatus: "FINAL",
+    //         currencyCode: Currency.RUB,
+    //     };
+    //     return global.googlePayService
+    //         .doPaymentRequest(transaction, (token: string) => console.log(token))
+    //         .then((success: boolean) => {
+    //             if (success) {
+    //                 return this.sendOrder();
+    //             }
+    //             return;
+    //         });
+    // }
 
-    private async payWithApple() {
-        const transaction: IPaymentDetails = {
-            total: {
-                label: "Заказ из Много Рыбы",
-                amount: {
-                    currency: Currency.RUB,
-                    value: this.state.totalPrice.toString(),
-                },
-            },
+    // private async payWithApple() {
+    //     const transaction: IPaymentDetails = {
+    //         total: {
+    //             label: "Заказ из Много Рыбы",
+    //             amount: {
+    //                 currency: Currency.RUB,
+    //                 value: this.state.totalPrice.toString(),
+    //             },
+    //         },
+    //     };
+    //     const paymentRequest = global.applePayService.getPaymentRequest(transaction);
+    //     console.log(paymentRequest);
+    //     return ApplePayService.processPayment(paymentRequest, (paymentDetails) => console.log(paymentDetails)).then(
+    //         this.sendOrder,
+    //     );
+    // }
+
+    private async payWithTinkoff() {
+        const getItmes = (cart: Cart): any[] => {
+            const items: any[] = [];
+            cart.products.forEach((product) => {
+                items.push({
+                    Name: product.name,
+                    Price: product.price * 100,
+                    Quantity: cart.getProductCount(product),
+                    Amount: product.price * 100 * cart.getProductCount(product),
+                    Tax: "none",
+                });
+            });
+            return items;
         };
-        const paymentRequest = global.applePayService.getPaymentRequest(transaction);
-        console.log(paymentRequest);
-        return ApplePayService.processPayment(paymentRequest, (paymentDetails) => console.log(paymentDetails)).then(
-            this.sendOrder,
-        );
+
+        const cart = this.state.cart;
+
+        if (cart) {
+            return RNTinkoffAsdk.Pay({
+                OrderID: "1", // ID заказа в вашей системе //TODO настроить синхронизацию с firebase для актуальности id
+                Amount: cart.totalPrice * 100, // сумма для оплаты (в копейках)
+                PaymentName: "Заказ Много Рыбы", // название платежа, видимое пользователю
+                PaymentDesc: "ОПИСАНИЕ ПЛАТЕЖА", // описание платежа, видимое пользователю
+                CardID: "CARD-ID", // ID карточки
+                //Email: "batman@gotham.co",         // E-mail клиента для отправки уведомления об оплате
+                //CustomerKey: null,                 // ID клиента для сохранения карты
+                // тестовые:
+                // Email: "testCustomerKey1@gmail.com",
+                // CustomerKey: "testCustomerKey1@gmail.com",
+                IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
+                UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
+                ExtraData: {},
+                GooglePayParams: {
+                    MerchantName: "test",
+                    AddressRequired: false,
+                    PhoneRequired: false,
+                    Environment: "TEST", // "SANDBOX", "PRODUCTION"
+                },
+                Taxation: "usn_income",
+                Items: getItmes(cart),
+            })
+                .then((r: any) => {
+                    console.log(r);
+                })
+                .catch((e: any) => {
+                    console.error(e);
+                });
+        }
     }
 
     private async sendOrder() {
@@ -245,7 +296,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             <TouchableOpacity
                                 onPress={() => {
                                     if (this.isButtonEnable()) {
-                                        return this.payWithGoogle();
+                                        // return this.payWithGoogle();
                                     }
                                     return null;
                                 }}>
@@ -266,7 +317,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                                     height={buttonSize.minHeight}
                                     onPress={() => {
                                         if (this.isButtonEnable()) {
-                                            return this.payWithApple();
+                                            // return this.payWithApple();
                                         }
                                         return null;
                                     }}
@@ -282,7 +333,8 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                             style={{...buttonSize, ...stylesheet.orderButton, backgroundColor: buttonColor}}
                             onPress={() => {
                                 if (this.isButtonEnable()) {
-                                    return this.sendOrder();
+                                    // return this.sendOrder();
+                                    return this.payWithTinkoff();
                                 }
                                 return null;
                             }}>
@@ -296,7 +348,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 <View>
                     <View style={stylesheet.totalPriceContainer}>
                         <Text style={stylesheet.totalPriceText}>Сумма заказа: </Text>
-                        <Text style={stylesheet.totalPriceText}>{this.state.totalPrice + " ₽"}</Text>
+                        <Text style={stylesheet.totalPriceText}>{this.state.cart?.totalPrice + " ₽"}</Text>
                     </View>
                     {button}
                 </View>
