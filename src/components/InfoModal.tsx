@@ -49,6 +49,9 @@ export default class InfoModal extends Component<any, Readonly<IState>> {
         "Ваш заказ был успешно отправлен. В течение пяти минут с вами свяжется менеждер для подтверждения заказа.";
     public static FAILED_SEND_ORDER_PATTERN =
         "Не удалось сделать заказ. Пожалуйста, проверьте соединение с интернетом.";
+    public static SUCCESSFUL_PAYMENT_PATTERN = "Ваш заказ был успешно оплачен.";
+    public static FAILED_PAYMENT_PATTERN =
+        "Не удалось оплатить заказ. Пожалуйста, попробуйте еще раз или воспользуйтесь другим способом оплаты.";
     public static SUCCESSFUL_SEND_FEEDBACK_PATTERN = "Спасибо за ваш отзыв.";
     public static FAILED_SEND_FEEDBACK_PATTERN =
         "Не удалось отправить отзыв. Пожалуйста, проверьте соединение с интернетом.";

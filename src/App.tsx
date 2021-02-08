@@ -12,7 +12,7 @@ import {LogBox, Platform} from "react-native";
 import RNTinkoffAsdk from "react-native-tinkoff-asdk";
 
 YaMap.init("e1e7ca61-b8c3-4b09-a837-bea473d4de8b");
-LogBox.ignoreAllLogs(true);
+LogBox.ignoreAllLogs(false);
 
 export default class App extends Component<Readonly<any>, Readonly<any>> {
     constructor(props: any) {
@@ -30,8 +30,8 @@ export default class App extends Component<Readonly<any>, Readonly<any>> {
 }
 
 RNTinkoffAsdk.init({
-    terminalKey: "1605803895876DEMO",
-    password: "m9b1fl8n5ujvrj3a",
+    terminalKey: "1605803895876DEMO", //"1611689121147DEMO",
+    password: "m9b1fl8n5ujvrj3a", //"jhlldfhr107f2155s",
     publicKey:
         "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv5yse9ka3ZQE0feuGtemYv3IqOlLck8zHUM7lTr0za6lXTszRSXfUO7jMb+L5C7e2QNFs+7sIX2OQJ6a+HG8kr+jwJ4tS3cVsWtd9NXpsU40PE4MeNr5RqiNXjcDxA+L4OsEm/BlyFOEOh2epGyYUd5/iO3OiQFRNicomT2saQYAeqIwuELPs1XpLk9HLx5qPbm8fRrQhjeUD5TLO8b+4yCnObe8vy/BMUwBfq+ieWADIjwWCMp2KTpMGLz48qnaD9kdrYJ0iyHqzb2mkDhdIzkim24A3lWoYitJCBrrB2xM05sm9+OdCI1f7nPNJbl5URHobSwR94IRGT7CJcUjvwIDAQAB",
     testMode: true,

@@ -10,7 +10,7 @@ module.exports = {
   rules: {
     "@typescript-eslint/no-unused-vars": "warn",
     quotes: ["error", "double", { "allowTemplateLiterals": true, "avoidEscape": true }],
-    "@typescript-eslint/member-delimiter-style": ["error", {
+    "@typescript-eslint/member-delimiter-style": ["warn", {
       multiline: {
         delimiter: 'comma',
         requireLast: true,
