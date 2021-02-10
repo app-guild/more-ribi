@@ -17,6 +17,7 @@ import {StackActions} from "@react-navigation/native";
 import InfoModal from "../components/InfoModal";
 import AdaptPicker from "../components/AdaptPicker";
 import RNTinkoffAsdk from "react-native-tinkoff-asdk";
+import Config from "react-native-config";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -129,53 +130,44 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         const cart = this.state.cart;
 
         if (cart) {
-            const hasApplePay = await RNTinkoffAsdk.isPayWithAppleAvailable();
-            if (hasApplePay) {
-                // RNTinkoffAsdk.ApplePay({
-                //     appleMerchantId: "....",
-                //     Phone: "+74956481000",
-                //     Shipping: {
-                //         Street: "Головинское шоссе, дом 5, корп. 1",
-                //         Country: "Россия",
-                //         City: "Москва",
-                //         PostalCode: "125212",
-                //         ISOCountryCode: "643",
-                //         givenName: "имя",
-                //         familyName: "фамилия"
-                //     }
-                //     // Все то же что в простом Pay
-                // })
-            }
-            return RNTinkoffAsdk.Pay({
-                OrderID: "7", // ID заказа в вашей системе //TODO настроить синхронизацию с firebase для актуальности id
+            const payment = {
+                OrderID: Date.now(), // ID заказа в вашей системе //TODO настроить синхронизацию с firebase для актуальности id
                 Amount: cart.totalPrice * 100, // сумма для оплаты (в копейках)
                 PaymentName: "Заказ Много Рыбы", // название платежа, видимое пользователю
-                PaymentDesc: "ОПИСАНИЕ ПЛАТЕЖА", // описание платежа, видимое пользователю
+                PaymentDesc: "", // описание платежа, видимое пользователю
                 CardID: "CARD-ID", // ID карточки
-                //Email: "batman@gotham.co",         // E-mail клиента для отправки уведомления об оплате
-                //CustomerKey: null,                 // ID клиента для сохранения карты
-                // тестовые:
-                Email: "smouk.chayz@gmail.com",
-                // CustomerKey: "testCustomerKey1@gmail.com",
+                Email: "",
                 IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
                 UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
                 ExtraData: {},
                 GooglePayParams: {
-                    MerchantName: "test",
+                    MerchantName: Config.googlePayMerchantId,
                     AddressRequired: false,
                     PhoneRequired: false,
-                    Environment: "TEST", // "SANDBOX", "PRODUCTION"
+                    Environment: "PRODUCTION", // "SANDBOX", "PRODUCTION"
                 },
                 Taxation: "usn_income",
                 Items: getItmes(cart),
+            };
+            const hasApplePay = await RNTinkoffAsdk.isPayWithAppleAvailable();
+            return new Promise(() => {
+                if (hasApplePay) {
+                    return RNTinkoffAsdk.ApplePay({
+                        appleMerchantId: "....",
+                        Phone: "+74956481000",
+                        ...payment,
+                    });
+                } else {
+                    return RNTinkoffAsdk.Pay(payment);
+                }
             })
                 .then((response: any) => {
                     return this.sendOrder();
                 })
                 .catch((e: any) => {
-                    console.log("catch");
                     console.error(e);
                     if (this.infoModal && this.infoModal.current) {
+                        this.infoModal.current.startLoadAnimation();
                         this.infoModal.current.endLoadAnimation(
                             false,
                             () => {},

@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.multidex.MultiDexApplication;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import pro.rocketscience.tinkoff.RNTinkoffAsdkPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import ru.vvdev.yamap.RNYamapPackage;

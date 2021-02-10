@@ -27,6 +27,8 @@ target 'SeaOfFish' do
 
   pod 'RNTinkoffAsdk', :path => '../node_modules/react-native-tinkoff-asdk'
 
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
   target 'SeaOfFishTests' do
     inherit! :complete
     # Pods for testing
