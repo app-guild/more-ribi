@@ -7,7 +7,9 @@ import SQLite from "react-native-sqlite-storage";
 import YaMap from "react-native-yamap";
 import {LogBox, Platform} from "react-native";
 import RNTinkoffAsdk from "react-native-tinkoff-asdk";
-import Config from "react-native-config";
+import RealtimeDatabaseApi from "./api/firebase/RealtimeDatabaseApi";
+import TinkoffCredentials from "./utils/payment/entity/TinkoffCredentials";
+import GooglePayCredentials from "./utils/payment/entity/GooglePayCredentials";
 
 YaMap.init("e1e7ca61-b8c3-4b09-a837-bea473d4de8b");
 LogBox.ignoreAllLogs(true);
@@ -19,21 +21,30 @@ export default class App extends Component<Readonly<any>, Readonly<any>> {
     }
 
     componentDidMount() {
-        SplashScreen.hide();
+        Promise.all([
+            RealtimeDatabaseApi.getTinkoffPaymentCredentials(),
+            RealtimeDatabaseApi.getGooglePaymentCredentials(),
+        ])
+            .then((creds) => {
+                global.tinkoffCredentials = creds.find((el) => el instanceof TinkoffCredentials);
+                global.googlePayCredentials = creds.find((el) => el instanceof GooglePayCredentials);
+            })
+            .then(() => {
+                RNTinkoffAsdk.init({
+                    terminalKey: global.tinkoffCredentials.terminal,
+                    password: global.tinkoffCredentials.password,
+                    publicKey: global.tinkoffCredentials.publicKey,
+                    testMode: true,
+                    debugLog: true,
+                });
+            })
+            .then(() => SplashScreen.hide());
     }
 
     render() {
         return <Navigation />;
     }
 }
-
-RNTinkoffAsdk.init({
-    terminalKey: Config.terminalKey, //"1611689121147DEMO",
-    password: Config.terminalPassword, //"jhlldfhr107f2155s",
-    publicKey: Config.publicKey,
-    testMode: false,
-    debugLog: true,
-});
 
 // if (Platform.OS === "android") {
 //     global.googlePayService = new GooglePayService(

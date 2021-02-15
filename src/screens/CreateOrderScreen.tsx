@@ -17,7 +17,6 @@ import {StackActions} from "@react-navigation/native";
 import InfoModal from "../components/InfoModal";
 import AdaptPicker from "../components/AdaptPicker";
 import RNTinkoffAsdk from "react-native-tinkoff-asdk";
-import Config from "react-native-config";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -131,7 +130,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
 
         if (cart) {
             const payment = {
-                OrderID: Date.now(), // ID заказа в вашей системе //TODO настроить синхронизацию с firebase для актуальности id
+                OrderID: Date.now().toString(), // ID заказа в вашей системе //TODO настроить синхронизацию с firebase для актуальности id
                 Amount: cart.totalPrice * 100, // сумма для оплаты (в копейках)
                 PaymentName: "Заказ Много Рыбы", // название платежа, видимое пользователю
                 PaymentDesc: "", // описание платежа, видимое пользователю
@@ -141,7 +140,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
                 ExtraData: {},
                 GooglePayParams: {
-                    MerchantName: Config.googlePayMerchantId,
+                    MerchantName: global.googlePayCredentials.merchantId,
                     AddressRequired: false,
                     PhoneRequired: false,
                     Environment: "PRODUCTION", // "SANDBOX", "PRODUCTION"

@@ -5,6 +5,8 @@ import Restaurant from "../../entities/Restaurant";
 import Ingredient from "../../entities/Ingredient";
 import InstagramPost from "../../entities/InstagramPost";
 import DatabaseApi from "../../utils/database/DatabaseApi";
+import GooglePayCredentials from "../../utils/payment/entity/GooglePayCredentials";
+import TinkoffCredentials from "../../utils/payment/entity/TinkoffCredentials";
 
 interface ProductJson {
     name: string;
@@ -84,6 +86,20 @@ export default class RealtimeDatabaseApi {
      * Return promise with array of restaurants
      * @return {Promise<Restaurant[]>}
      */
+    static async getTinkoffPaymentCredentials(): Promise<TinkoffCredentials> {
+        return database()
+            .ref("/delivery/payments/tinkoff")
+            .once("value")
+            .then((snapshot) => this.parseTinkoffCredentials(snapshot.val()));
+    }
+
+    static async getGooglePaymentCredentials(): Promise<GooglePayCredentials> {
+        return database()
+            .ref("/delivery/payments/googlePay")
+            .once("value")
+            .then((snapshot) => this.parseGooglePayCredentials(snapshot.val()));
+    }
+
     static async getRestaurants(): Promise<Restaurant[]> {
         return database()
             .ref("/restaurants")
@@ -93,20 +109,20 @@ export default class RealtimeDatabaseApi {
 
     static async getDestinationEmail(): Promise<string> {
         return database()
-            .ref("/destination_email")
+            .ref("/delivery/destination_email")
             .once("value")
             .then((snapshot) => snapshot.val());
     }
 
     static async getMinimumOrderPrice(): Promise<number> {
         return database()
-            .ref("/minimum_order_price")
+            .ref("/delivery/minimum_order_price")
             .once("value")
             .then((snapshot) => snapshot.val());
     }
     static async getDeliveryPrice(): Promise<number> {
         return database()
-            .ref("/delivery_price")
+            .ref("/delivery/delivery_price")
             .once("value")
             .then((snapshot) => snapshot.val());
     }
@@ -148,6 +164,14 @@ export default class RealtimeDatabaseApi {
 
     private static parseRestaurants(response: any[]): Restaurant[] {
         return response.filter((it) => !!it).map((it) => Restaurant.parseRealtimeDatabaseJson(it));
+    }
+
+    private static parseGooglePayCredentials(response: any): GooglePayCredentials {
+        return new GooglePayCredentials(response.merchantId);
+    }
+
+    private static parseTinkoffCredentials(response: any): TinkoffCredentials {
+        return new TinkoffCredentials(response.terminal, response.password, response.publicKey);
     }
 
     static parseInstagramPosts(json: any): InstagramPost[] {
