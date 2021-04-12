@@ -1,4 +1,6 @@
 rootProject.name = 'SeaOfFish'
+include ':react-native-rn-apple-pay-button'
+project(':react-native-rn-apple-pay-button').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-rn-apple-pay-button/android')
 include ':react-native-config'
 project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
 include ':react-native-tinkoff-asdk'

@@ -17,6 +17,7 @@ import {StackActions} from "@react-navigation/native";
 import InfoModal from "../components/InfoModal";
 import AdaptPicker from "../components/AdaptPicker";
 import RNTinkoffAsdk from "react-native-tinkoff-asdk";
+import {ApplePayButton} from "react-native-rn-apple-pay-button";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -46,16 +47,13 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             address: new Address(),
             buttonVisible: true,
             cart: null,
-            availablePaymentMethods: new Set([
-                PaymentsMethods.CardToCourier,
-                PaymentsMethods.CashToCourier,
-                PaymentsMethods.InternetAcquiring,
-            ]),
+            availablePaymentMethods: new Set([PaymentsMethods.CardToCourier, PaymentsMethods.CashToCourier]),
             paymentMethod: PaymentsMethods.CardToCourier,
         };
         this.updateCart = this.updateCart.bind(this);
         this.sendOrder = this.sendOrder.bind(this);
         this.payWithTinkoff = this.payWithTinkoff.bind(this);
+        this.payWithApplePay = this.payWithApplePay.bind(this);
         this.onTakeWayChanged = this.onTakeWayChanged.bind(this);
         Keyboard.addListener("keyboardDidShow", this._keyboardDidShow);
         Keyboard.addListener("keyboardDidHide", this._keyboardDidHide);
@@ -69,10 +67,26 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             const name = await KeyValueStorage.getUserName();
             const phone = await KeyValueStorage.getPhoneNumber();
             let lastPaymentMethod = await KeyValueStorage.getLastPaymentMethod();
+            const hasApplePay = await RNTinkoffAsdk.isPayWithAppleAvailable();
             if (!address) {
                 address = new Address();
             }
-            const paymentMethod = lastPaymentMethod ? lastPaymentMethod : PaymentsMethods.CardToCourier;
+            const availablePaymentMethods = new Set([
+                ...this.state.availablePaymentMethods,
+                hasApplePay ? PaymentsMethods.ApplePay : PaymentsMethods.InternetAcquiring,
+            ]);
+            let paymentMethod = lastPaymentMethod;
+            if (!paymentMethod) {
+                if (availablePaymentMethods.has(PaymentsMethods.InternetAcquiring)) {
+                    paymentMethod = PaymentsMethods.InternetAcquiring;
+                }
+                if (availablePaymentMethods.has(PaymentsMethods.ApplePay)) {
+                    paymentMethod = PaymentsMethods.ApplePay;
+                }
+                if (!paymentMethod) {
+                    paymentMethod = PaymentsMethods.CardToCourier;
+                }
+            }
             this.setState({
                 paymentMethod,
                 restaurantForPickup: this.restaurants[0],
@@ -80,6 +94,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 cart,
                 name,
                 phone,
+                availablePaymentMethods,
             });
             DatabaseApi.addOnCartChangeListener(this.updateCart);
         });
@@ -109,7 +124,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
         this.setState({buttonVisible: true});
     };
 
-    private async payWithTinkoff() {
+    private getPaymentObject(): any {
         const getItmes = (cart: Cart): any[] => {
             const items: any[] = [];
             cart.products.forEach((product) => {
@@ -125,11 +140,10 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             console.log(items);
             return items;
         };
-
         const cart = this.state.cart;
-
+        let payment = null;
         if (cart) {
-            const payment = {
+            payment = {
                 OrderID: Date.now().toString(), // ID заказа в вашей системе //TODO настроить синхронизацию с firebase для актуальности id
                 Amount: cart.totalPrice * 100, // сумма для оплаты (в копейках)
                 PaymentName: "Заказ Много Рыбы", // название платежа, видимое пользователю
@@ -148,34 +162,52 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 Taxation: "usn_income",
                 Items: getItmes(cart),
             };
-            const hasApplePay = await RNTinkoffAsdk.isPayWithAppleAvailable();
-            return new Promise(() => {
-                if (hasApplePay) {
-                    return RNTinkoffAsdk.ApplePay({
-                        appleMerchantId: "....",
-                        Phone: "+74956481000",
-                        ...payment,
-                    });
-                } else {
-                    return RNTinkoffAsdk.Pay(payment);
-                }
-            })
-                .then((response: any) => {
-                    return this.sendOrder();
-                })
-                .catch((e: any) => {
-                    console.error(e);
-                    if (this.infoModal && this.infoModal.current) {
-                        this.infoModal.current.startLoadAnimation();
-                        this.infoModal.current.endLoadAnimation(
-                            false,
-                            () => {},
-                            InfoModal.FAILED_PAYMENT_PATTERN,
-                            "Ошибка оплаты",
-                        );
-                    }
-                });
         }
+        return payment;
+    }
+
+    private async payWithApplePay() {
+        const hasApplePay = await RNTinkoffAsdk.isPayWithAppleAvailable();
+        return new Promise(() => {
+            const payment = this.getPaymentObject();
+            if (hasApplePay) {
+                return RNTinkoffAsdk.ApplePay({
+                    appleMerchantId: "....",
+                    Phone: "+74956481000",
+                    Shipping: {
+                        Street: this.state.address.toString(),
+                        Country: "Россия",
+                        City: "Ярославль",
+                        givenName: this.state.name,
+                    },
+                    ...payment,
+                });
+            } else {
+                return RNTinkoffAsdk.Pay(payment);
+            }
+        }).then((response: any) => {
+            return this.sendOrder();
+        });
+    }
+
+    private async payWithTinkoff() {
+        const payment = this.getPaymentObject();
+        return RNTinkoffAsdk.Pay(payment)
+            .then((response: any) => {
+                return this.sendOrder();
+            })
+            .catch((e: any) => {
+                console.error(e);
+                if (this.infoModal && this.infoModal.current) {
+                    this.infoModal.current.startLoadAnimation();
+                    this.infoModal.current.endLoadAnimation(
+                        false,
+                        () => {},
+                        InfoModal.FAILED_PAYMENT_PATTERN,
+                        "Ошибка оплаты",
+                    );
+                }
+            });
     }
 
     private async sendOrder() {
@@ -246,21 +278,37 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                         <Text style={stylesheet.totalPriceText}>Сумма заказа: </Text>
                         <Text style={stylesheet.totalPriceText}>{this.state.cart?.totalPrice + " ₽"}</Text>
                     </View>
-                    <TouchableOpacity
-                        style={{...buttonSize, ...stylesheet.orderButton, backgroundColor: buttonColor}}
-                        onPress={() => {
-                            if (this.isButtonEnable()) {
-                                // return this.sendOrder();
-                                if (this.state.paymentMethod === PaymentsMethods.InternetAcquiring) {
-                                    return this.payWithTinkoff();
-                                } else {
-                                    return this.sendOrder();
+                    {this.state.paymentMethod === PaymentsMethods.ApplePay && this.isButtonEnable() ? (
+                        <View style={{...buttonSize, ...stylesheet.orderButton}}>
+                            <ApplePayButton
+                                buttonStyle="whiteOutline"
+                                type="buy"
+                                width={buttonSize.minWidth}
+                                height={buttonSize.minHeight}
+                                onPress={() => {
+                                    if (this.isButtonEnable()) {
+                                        return this.payWithApplePay();
+                                    }
+                                    return null;
+                                }}
+                            />
+                        </View>
+                    ) : this.state.paymentMethod !== PaymentsMethods.ApplePay ? (
+                        <TouchableOpacity
+                            style={{...buttonSize, ...stylesheet.orderButton, backgroundColor: buttonColor}}
+                            onPress={() => {
+                                if (this.isButtonEnable()) {
+                                    if (this.state.paymentMethod === PaymentsMethods.InternetAcquiring) {
+                                        return this.payWithTinkoff();
+                                    } else {
+                                        return this.sendOrder();
+                                    }
                                 }
-                            }
-                            return null;
-                        }}>
-                        <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
-                    </TouchableOpacity>
+                                return null;
+                            }}>
+                            <Text style={stylesheet.orderButtonText}>ЗАКАЗАТЬ</Text>
+                        </TouchableOpacity>
+                    ) : null}
                 </View>
             );
         }

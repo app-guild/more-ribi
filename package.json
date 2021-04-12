@@ -38,6 +38,7 @@
     "react-native-progress": "^4.1.2",
     "react-native-push-notification": "^5.1.0",
     "react-native-reanimated": "^1.13.1",
+    "react-native-rn-apple-pay-button": "^1.1.0",
     "react-native-safe-area-context": "^3.1.8",
     "react-native-safe-area-view": "^1.1.1",
     "react-native-screens": "^2.11.0",
