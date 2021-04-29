@@ -150,6 +150,7 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 PaymentDesc: "", // описание платежа, видимое пользователю
                 CardID: "CARD-ID", // ID карточки
                 Email: "",
+                Phone: this.state.phone,
                 IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
                 UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
                 ExtraData: {},
@@ -173,7 +174,6 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
             if (hasApplePay) {
                 return RNTinkoffAsdk.ApplePay({
                     appleMerchantId: "....",
-                    Phone: "+74956481000",
                     Shipping: {
                         Street: this.state.address.toString(),
                         Country: "Россия",
