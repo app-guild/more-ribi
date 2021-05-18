@@ -12,7 +12,6 @@ import ru.vvdev.yamap.RNYamapPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.busfor.RNGooglePayPackage;
 import io.liteglue.SQLitePluginPackage;
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.horcrux.svg.SvgPackage;
 import com.reactnativepayments.ReactNativePaymentsPackage;
 import com.facebook.react.ReactInstanceManager;

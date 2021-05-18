@@ -3,7 +3,7 @@ import {ProductType} from "../../entities/ProductType";
 import Product from "../../entities/Product";
 import Restaurant from "../../entities/Restaurant";
 import Ingredient from "../../entities/Ingredient";
-import InstagramPost from "../../entities/InstagramPost";
+import Post from "../../entities/Post";
 import DatabaseApi from "../../utils/database/DatabaseApi";
 import GooglePayCredentials from "../../utils/payment/entity/GooglePayCredentials";
 import TinkoffCredentials from "../../utils/payment/entity/TinkoffCredentials";
@@ -127,11 +127,11 @@ export default class RealtimeDatabaseApi {
             .then((snapshot) => snapshot.val());
     }
 
-    static async getInstagramPosts(): Promise<InstagramPost[]> {
+    static async getPosts(): Promise<Post[]> {
         return database()
-            .ref("/instagram")
+            .ref("/posts")
             .once("value")
-            .then((snapshot) => this.parseInstagramPosts(snapshot.val()));
+            .then((snapshot) => this.parsePosts(snapshot.val()));
     }
 
     static async getPokeConstructorIngredients(): Promise<Map<string, Ingredient[]>> {
@@ -174,8 +174,8 @@ export default class RealtimeDatabaseApi {
         return new TinkoffCredentials(response.terminal, response.password, response.publicKey);
     }
 
-    static parseInstagramPosts(json: any): InstagramPost[] {
-        return Object.entries(json).map((it) => InstagramPost.parseRealtimeDatabaseJson(it[1], it[0]));
+    static parsePosts(json: any): Post[] {
+        return Object.entries(json).map((it) => Post.parseRealtimeDatabaseJson(it[1]));
     }
 
     private static parseConstructorIngredients(json: any): Map<string, Ingredient[]> {

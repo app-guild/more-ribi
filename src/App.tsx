@@ -34,7 +34,7 @@ export default class App extends Component<Readonly<any>, Readonly<any>> {
                     terminalKey: global.tinkoffCredentials.terminal,
                     password: global.tinkoffCredentials.password,
                     publicKey: global.tinkoffCredentials.publicKey,
-                    testMode: false,
+                    testMode: true,
                     debugLog: true,
                 });
             })

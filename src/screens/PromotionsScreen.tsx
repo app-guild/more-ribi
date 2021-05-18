@@ -1,13 +1,13 @@
 import React, {Component} from "react";
 import {FlatList, StyleSheet, Text, View} from "react-native";
-import InstagramPost from "../entities/InstagramPost";
+import Post from "../entities/Post";
 import PromotionCard from "../components/PromotionCard";
 import {Divider} from "react-native-paper";
 import {globalColors} from "../../resources/styles";
 import PageNewsLoader from "../api/firebase/PageNewsLoader";
 
 export interface IPromotionsScreenState {
-    promotions: InstagramPost[];
+    promotions: Post[];
     isLoaded: boolean;
     showMoreVisible: boolean;
 }
@@ -16,7 +16,7 @@ const PAGESIZE = 5;
 
 export default class PromotionsScreen extends Component<Readonly<any>, Readonly<IPromotionsScreenState>> {
     private pageNewsLoader: PageNewsLoader = new PageNewsLoader(PAGESIZE);
-    private flatListRef: FlatList<InstagramPost> | null = null;
+    private flatListRef: FlatList<Post> | null = null;
 
     constructor(props: any) {
         super(props);
@@ -34,7 +34,7 @@ export default class PromotionsScreen extends Component<Readonly<any>, Readonly<
         });
     }
 
-    private _renderItem = ({item}: {item: InstagramPost}) => {
+    private _renderItem = ({item}: {item: Post}) => {
         return <PromotionCard text={item.text} imageUrl={item.imageUrl} linkToPromotion={item.link} />;
     };
 

@@ -18,7 +18,6 @@ import InfoModal from "../components/InfoModal";
 import AdaptPicker from "../components/AdaptPicker";
 import RNTinkoffAsdk from "react-native-tinkoff-asdk";
 import {ApplePayButton} from "react-native-rn-apple-pay-button";
-import {err} from "react-native-svg/lib/typescript/xml";
 
 export interface ICreateOrderScreenState {
     isDelivery: boolean;
@@ -190,13 +189,13 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 return this.sendOrder();
             })
             .catch((e: any) => {
-                console.error(e);
-                const error = e === "Error: Ошибка" ? InfoModal.FAILED_PAYMENT_PATTERN : e.toString();
-                error.replace("Error:", "");
-                console.error(error);
-                if (this.infoModal && this.infoModal.current) {
-                    this.infoModal.current.startLoadAnimation();
-                    this.infoModal.current.endLoadAnimation(false, () => {}, error, "Ошибка оплаты");
+                if (e.toString() !== "Error: payment cancelled") {
+                    const error = e === "Error: Ошибка" ? InfoModal.FAILED_PAYMENT_PATTERN : e.toString();
+                    error.replace("Error: ", "");
+                    if (this.infoModal && this.infoModal.current) {
+                        this.infoModal.current.startLoadAnimation();
+                        this.infoModal.current.endLoadAnimation(false, () => {}, error, "Ошибка оплаты");
+                    }
                 }
             });
     }
@@ -208,13 +207,13 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 return this.sendOrder();
             })
             .catch((e: any) => {
-                console.error(e);
-                const error = e === "Error: Ошибка" ? InfoModal.FAILED_PAYMENT_PATTERN : e.toString();
-                error.replace("Error:", "");
-                console.error(error);
-                if (this.infoModal && this.infoModal.current) {
-                    this.infoModal.current.startLoadAnimation();
-                    this.infoModal.current.endLoadAnimation(false, () => {}, error, "Ошибка оплаты");
+                if (e.toString() !== "Error: payment cancelled") {
+                    const error = e === "Error: Ошибка" ? InfoModal.FAILED_PAYMENT_PATTERN : e.toString();
+                    error.replace("Error: ", "");
+                    if (this.infoModal && this.infoModal.current) {
+                        this.infoModal.current.startLoadAnimation();
+                        this.infoModal.current.endLoadAnimation(false, () => {}, error, "Ошибка оплаты");
+                    }
                 }
             });
     }

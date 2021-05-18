@@ -1,18 +1,18 @@
 import RealtimeDatabaseApi from "./RealtimeDatabaseApi";
-import InstagramPost from "../../entities/InstagramPost";
+import Post from "../../entities/Post";
 
 export default class PageNewsLoader {
     private _currentPage: number;
     private _pagesOut: boolean = false;
-    private _posts?: InstagramPost[];
+    private _posts?: Post[];
 
     constructor(private _pageSize: number, startPage?: number) {
         this._currentPage = startPage || 0;
     }
 
-    async getNextPage(): Promise<InstagramPost[]> {
+    async getNextPage(): Promise<Post[]> {
         if (!this._posts) {
-            this._posts = await RealtimeDatabaseApi.getInstagramPosts();
+            this._posts = await RealtimeDatabaseApi.getPosts();
             this._posts = this._posts.sort((a, b) => b.date - a.date);
         }
         const start = this._currentPage * this._pageSize;
