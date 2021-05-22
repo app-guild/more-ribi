@@ -8,7 +8,7 @@ import {ProductType} from "../entities/ProductType";
 import Ingredient from "../entities/Ingredient";
 import WokCard from "./WokCard";
 import WokProduct from "../entities/WokProduct";
-import Modal from "react-native-modal";
+import {Overlay} from "react-native-elements";
 import AdaptPicker from "./AdaptPicker";
 
 const timer = require("react-native-timer");
@@ -229,14 +229,9 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
         const image = product?.image ? {uri: product.image} : require("../../resources/assets/drawable/food.jpg");
 
         return (
-            <Modal
+            <Overlay
                 isVisible={this.state.modalVisible}
-                animationIn={"zoomInUp"}
-                animationOut={"zoomOutUp"}
                 onBackdropPress={() => {
-                    this.hideModal();
-                }}
-                onBackButtonPress={() => {
                     this.hideModal();
                 }}>
                 {product !== null ? (
@@ -347,7 +342,7 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                 ) : (
                     <></>
                 )}
-            </Modal>
+            </Overlay>
         );
     }
 }

@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import Modal from "react-native-modal";
+import {Overlay} from "react-native-elements";
 import {View, Text, StyleSheet, TouchableOpacity} from "react-native";
 import * as Progress from "react-native-progress";
 
@@ -108,12 +108,7 @@ export default class InfoModal extends Component<any, Readonly<IState>> {
 
     render() {
         return (
-            <Modal
-                isVisible={this.state.modalVisible}
-                animationIn={"pulse"}
-                animationOut={"pulse"}
-                onBackdropPress={this._onPressOk}
-                onBackButtonPress={this._onPressOk}>
+            <Overlay isVisible={this.state.modalVisible} onBackdropPress={this._onPressOk}>
                 {this.state.type === InfoModalType.LOADING && this.state.loadingState === LoadingState.Loading ? (
                     <View style={{height: "100%"}}>
                         <Spinner />
@@ -123,7 +118,7 @@ export default class InfoModal extends Component<any, Readonly<IState>> {
                         <Info type={this.state.infoType} text={this.state.text} onPressOk={this._onPressOk} />
                     </View>
                 )}
-            </Modal>
+            </Overlay>
         );
     }
 }

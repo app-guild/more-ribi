@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import Order from "../entities/Order";
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import Modal from "react-native-modal";
-import {Divider} from "react-native-paper";
+import {Overlay} from "react-native-elements";
 import {ProductType} from "../entities/ProductType";
 import WokProduct from "../entities/WokProduct";
 import DatabaseApi from "../utils/database/DatabaseApi";
@@ -137,13 +136,10 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
             let minutes = ("0" + orderDate.getMinutes()).slice(-2);
 
             return (
-                <Modal
+                <Overlay
                     isVisible={this.state.modalVisible}
-                    animationIn={"zoomInUp"}
-                    animationOut={"zoomOutUp"}
                     style={{margin: 0}}
-                    onBackdropPress={() => this.setState({modalVisible: false})}
-                    onBackButtonPress={() => this.setState({modalVisible: false})}>
+                    onBackdropPress={() => this.setState({modalVisible: false})}>
                     <ScrollView style={stylesheet.scroll} contentContainerStyle={stylesheet.container}>
                         <Text style={{marginBottom: 10, textAlign: "center"}}>
                             {this.state.order.address.toString()}
@@ -176,7 +172,7 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
                             <Text style={stylesheet.repeatText}>Повторить заказ</Text>
                         </TouchableOpacity>
                     </ScrollView>
-                </Modal>
+                </Overlay>
             );
         } else {
             return <></>;

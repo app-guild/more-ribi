@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
-import Modal from "react-native-modal";
+import {Overlay} from "react-native-elements";
 import {Picker} from "@react-native-community/picker";
 
 export interface IAdaptPickerProps {
@@ -46,16 +46,10 @@ export default class AdaptPicker extends Component<IAdaptPickerProps, IAdaptPick
                     onPress={() => this.setState({isModalVisible: true})}>
                     <Text style={{...globalStylesheet.secondaryText, fontSize: 14}}>{this.state.currentValue}</Text>
                 </TouchableOpacity>
-                <Modal
+                <Overlay
                     isVisible={this.state.isModalVisible}
-                    animationIn={"zoomInUp"}
-                    animationOut={"zoomOutUp"}
-                    backdropOpacity={0}
                     style={{margin: 0}}
                     onBackdropPress={() => {
-                        this.setState({isModalVisible: false});
-                    }}
-                    onBackButtonPress={() => {
                         this.setState({isModalVisible: false});
                     }}>
                     <View style={stylesheet.iosPickerContainer}>
@@ -68,7 +62,7 @@ export default class AdaptPicker extends Component<IAdaptPickerProps, IAdaptPick
                             ))}
                         </Picker>
                     </View>
-                </Modal>
+                </Overlay>
             </>
         ) : (
             <Picker
