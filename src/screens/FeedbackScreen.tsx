@@ -1,7 +1,7 @@
 import React, {Component, createRef} from "react";
 import {Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
-import {Divider} from "react-native-paper";
+import Divider from "../components/Divider";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import KeyValueStorage from "../utils/KeyValueStorage";
 import EmailService from "../utils/email/EmailService";

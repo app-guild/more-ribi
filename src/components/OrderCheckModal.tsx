@@ -8,6 +8,7 @@ import DatabaseApi from "../utils/database/DatabaseApi";
 import {globalColors} from "../../resources/styles";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Product from "../entities/Product";
+import Divider from "./Divider";
 
 interface ICheckModalState {
     modalVisible: boolean;
@@ -137,10 +138,10 @@ export default class OrderCheckModal extends Component<Readonly<any>, Readonly<I
 
             return (
                 <Overlay
+                    overlayStyle={stylesheet.scroll}
                     isVisible={this.state.modalVisible}
-                    style={{margin: 0}}
                     onBackdropPress={() => this.setState({modalVisible: false})}>
-                    <ScrollView style={stylesheet.scroll} contentContainerStyle={stylesheet.container}>
+                    <ScrollView style={stylesheet.scroll}>
                         <Text style={{marginBottom: 10, textAlign: "center"}}>
                             {this.state.order.address.toString()}
                         </Text>

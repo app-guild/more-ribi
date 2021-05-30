@@ -3,7 +3,6 @@ import {Dimensions, StyleSheet, View} from "react-native";
 import CategoryCard from "../components/CategoryCard";
 import {DataProvider, LayoutProvider, RecyclerListView} from "recyclerlistview";
 import {ProductType} from "../entities/ProductType";
-import {globalColors} from "../../resources/styles";
 
 export interface ICategoriesScreenState {
     mainContainerWidth: number;

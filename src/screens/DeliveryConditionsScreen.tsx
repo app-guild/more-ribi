@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {StyleSheet, Text, View} from "react-native";
-import {Divider} from "react-native-paper";
+import Divider from "../components/Divider";
 
 export interface IDeliveryConditionsScreenState {}
 

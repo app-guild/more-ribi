@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Animated, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalColors, globalStylesheet} from "../../resources/styles";
 import Product from "../entities/Product";
 import DatabaseApi from "../utils/database/DatabaseApi";
@@ -236,108 +236,116 @@ class OpenDish extends Component<Readonly<IOpenDishProps>, Readonly<IOpenDishSta
                 }}>
                 {product !== null ? (
                     <View style={stylesheet.container}>
-                        <Image
-                            source={image}
-                            style={{
-                                width: widthWithoutPadding,
-                                height: widthWithoutPadding,
-                                borderRadius: 10,
-                            }}
-                        />
-                        <Text style={stylesheet.title}>{product.name}</Text>
+                        <ScrollView>
+                            <Image
+                                source={image}
+                                style={{
+                                    width: widthWithoutPadding,
+                                    height: widthWithoutPadding,
+                                    borderRadius: 10,
+                                }}
+                            />
+                            <Text style={stylesheet.title}>{product.name}</Text>
 
-                        {product.type === ProductType.Wok ? (
-                            <View>
-                                <Text
-                                    style={{
-                                        ...stylesheet.composition,
-                                        maxWidth: widthWithoutPadding,
-                                        textAlign: "center",
-                                    }}>
-                                    Выберите основу и соус:
-                                </Text>
-                                <View style={stylesheet.pickers}>
-                                    <View style={stylesheet.pickerContainer}>
-                                        <AdaptPicker
-                                            items={baseIngredients.map((it) => it.name)}
-                                            onValueChange={(newValue: string) => this.setState({basePicker: newValue})}
-                                        />
-                                    </View>
-                                    <View style={stylesheet.pickerContainer}>
-                                        <AdaptPicker
-                                            items={sauceIngredients.map((it) => it.name)}
-                                            onValueChange={(newValue: string) => this.setState({saucePicker: newValue})}
-                                        />
+                            {product.type === ProductType.Wok ? (
+                                <View>
+                                    <Text
+                                        style={{
+                                            ...stylesheet.composition,
+                                            maxWidth: widthWithoutPadding,
+                                            textAlign: "center",
+                                        }}>
+                                        Выберите основу и соус:
+                                    </Text>
+                                    <View style={stylesheet.pickers}>
+                                        <View style={stylesheet.pickerContainer}>
+                                            <AdaptPicker
+                                                items={baseIngredients.map((it) => it.name)}
+                                                onValueChange={(newValue: string) =>
+                                                    this.setState({basePicker: newValue})
+                                                }
+                                            />
+                                        </View>
+                                        <View style={stylesheet.pickerContainer}>
+                                            <AdaptPicker
+                                                items={sauceIngredients.map((it) => it.name)}
+                                                onValueChange={(newValue: string) =>
+                                                    this.setState({saucePicker: newValue})
+                                                }
+                                            />
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                        ) : (
-                            <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>
-                                {product.composition}
-                            </Text>
-                        )}
-                        {this.renderPrice(product.price, product.discountPrice)}
-                        <View style={stylesheet.addToCartContainer}>
-                            <Animated.View
-                                style={{
-                                    ...stylesheet.addToCartButtonAnim,
-                                    top: this.buttonMoveAnimValue,
-                                    opacity: this.buttonFadeAnimValue,
-                                }}>
-                                <TouchableOpacity
-                                    style={stylesheet.addToCartButton}
-                                    onPress={async () =>
-                                        this.addToCartFromButton(
-                                            product.type === ProductType.Wok ? this.getWokProduct(product) : product,
-                                        )
-                                    }
-                                    activeOpacity={0.5}>
-                                    <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
-                                </TouchableOpacity>
-                            </Animated.View>
-                            <Animated.View
-                                style={{
-                                    ...stylesheet.addToCartNumericInput,
-                                    top: this.counterMoveAnimValue,
-                                    opacity: this.counterFadeAnimValue,
-                                }}>
-                                <NumericInput
-                                    containerStyle={{
-                                        borderColor: globalColors.transparent,
-                                    }}
-                                    inputStyle={{
-                                        borderColor: globalColors.transparent,
-                                    }}
-                                    iconStyle={{
-                                        color: globalColors.mainBackgroundColor,
-                                    }}
-                                    leftButtonBackgroundColor={globalColors.primaryColor}
-                                    rightButtonBackgroundColor={globalColors.primaryColor}
-                                    textColor={globalColors.primaryColor}
-                                    minValue={0}
-                                    rounded={true}
-                                    initValue={this.state.productCount}
-                                    onChange={async (value) => {
-                                        if (value > this.state.productCount) {
-                                            return this.addToCartFromCounter(
+                            ) : (
+                                <Text style={{...stylesheet.composition, maxWidth: widthWithoutPadding}}>
+                                    {product.composition}
+                                </Text>
+                            )}
+                            {this.renderPrice(product.price, product.discountPrice)}
+                            <View style={stylesheet.addToCartContainer}>
+                                <Animated.View
+                                    style={{
+                                        ...stylesheet.addToCartButtonAnim,
+                                        top: this.buttonMoveAnimValue,
+                                        opacity: this.buttonFadeAnimValue,
+                                    }}>
+                                    <TouchableOpacity
+                                        style={stylesheet.addToCartButton}
+                                        onPress={async () =>
+                                            this.addToCartFromButton(
                                                 product.type === ProductType.Wok
                                                     ? this.getWokProduct(product)
                                                     : product,
-                                                value,
-                                            );
-                                        } else if (value < this.state.productCount) {
-                                            return this.removeFromCartFromCounter(
-                                                product.type === ProductType.Wok
-                                                    ? this.getWokProduct(product)
-                                                    : product,
-                                                value,
-                                            );
+                                            )
                                         }
-                                        return;
-                                    }}
-                                />
-                            </Animated.View>
-                        </View>
+                                        activeOpacity={0.5}>
+                                        <Text style={stylesheet.addToCartText}>Добавить в корзину</Text>
+                                    </TouchableOpacity>
+                                </Animated.View>
+                                <Animated.View
+                                    style={{
+                                        ...stylesheet.addToCartNumericInput,
+                                        top: this.counterMoveAnimValue,
+                                        opacity: this.counterFadeAnimValue,
+                                    }}>
+                                    <NumericInput
+                                        containerStyle={{
+                                            borderColor: globalColors.transparent,
+                                        }}
+                                        inputStyle={{
+                                            borderColor: globalColors.transparent,
+                                        }}
+                                        iconStyle={{
+                                            color: globalColors.mainBackgroundColor,
+                                        }}
+                                        leftButtonBackgroundColor={globalColors.primaryColor}
+                                        rightButtonBackgroundColor={globalColors.primaryColor}
+                                        textColor={globalColors.primaryColor}
+                                        minValue={0}
+                                        rounded={true}
+                                        initValue={this.state.productCount}
+                                        onChange={async (value) => {
+                                            if (value > this.state.productCount) {
+                                                return this.addToCartFromCounter(
+                                                    product.type === ProductType.Wok
+                                                        ? this.getWokProduct(product)
+                                                        : product,
+                                                    value,
+                                                );
+                                            } else if (value < this.state.productCount) {
+                                                return this.removeFromCartFromCounter(
+                                                    product.type === ProductType.Wok
+                                                        ? this.getWokProduct(product)
+                                                        : product,
+                                                    value,
+                                                );
+                                            }
+                                            return;
+                                        }}
+                                    />
+                                </Animated.View>
+                            </View>
+                        </ScrollView>
                     </View>
                 ) : (
                     <></>

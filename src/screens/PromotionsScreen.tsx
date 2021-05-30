@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {FlatList, StyleSheet, Text, View} from "react-native";
 import Post from "../entities/Post";
 import PromotionCard from "../components/PromotionCard";
-import {Divider} from "react-native-paper";
+import Divider from "../components/Divider";
 import {globalColors} from "../../resources/styles";
 import PageNewsLoader from "../api/firebase/PageNewsLoader";
 

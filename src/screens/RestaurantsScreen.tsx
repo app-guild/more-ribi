@@ -4,7 +4,7 @@ import YaMap, {Marker} from "react-native-yamap";
 import RealtimeDatabaseApi from "../api/firebase/RealtimeDatabaseApi";
 import Restaurant from "../entities/Restaurant";
 import RestaurantCard, {HEIGHT as CARD_HEIGHT} from "../components/RestaurantCard";
-import {Divider} from "react-native-paper";
+import Divider from "../components/Divider";
 
 const CENTER_POSITION = {lon: 39.876635, lat: 57.624475, zoom: 13};
 
