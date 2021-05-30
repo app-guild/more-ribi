@@ -29,7 +29,6 @@
     "react-native-google-pay": "^2.1.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.2",
     "react-native-numeric-input": "^1.8.3",
-    "react-native-payments": "^0.7.1",
     "react-native-progress": "^4.1.2",
     "react-native-reanimated": "^1.13.1",
     "react-native-rn-apple-pay-button": "^1.1.0",
