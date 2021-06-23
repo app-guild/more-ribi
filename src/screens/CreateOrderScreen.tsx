@@ -150,7 +150,6 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                 PaymentDesc: "", // описание платежа, видимое пользователю
                 CardID: "CARD-ID", // ID карточки
                 Phone: this.state.phone,
-                IsRecurrent: false, // флаг определяющий является ли платеж рекуррентным [1]
                 UseSafeKeyboard: true, // флаг использования безопасной клавиатуры [2]
                 ExtraData: {},
                 GooglePayParams: {
@@ -198,6 +197,45 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
                     }
                 }
             });
+    }
+
+    private async recPayWithTinkoff() {
+        const payment = this.getPaymentObject();
+        payment.IsRecurrent = true;
+        payment.CustomerKey = "TEST";
+        payment.ExtraData = {
+            Email: "smouk.chayz@gmail.com",
+        };
+        return RNTinkoffAsdk.Pay(payment)
+            .then(() => {
+                return this.sendOrder();
+            })
+            .catch((e: any) => {
+                if (e.toString() !== "Error: payment cancelled") {
+                    const error = e === "Error: Ошибка" ? InfoModal.FAILED_PAYMENT_PATTERN : e.toString();
+                    error.replace("Error: ", "");
+                    if (this.infoModal && this.infoModal.current) {
+                        this.infoModal.current.startLoadAnimation();
+                        this.infoModal.current.endLoadAnimation(false, () => {}, error, "Ошибка оплаты");
+                    }
+                }
+            });
+    }
+
+    private async getCardListWithTinkoff() {
+        return RNTinkoffAsdk.GetCardList({CustomerKey: "TEST"}).then((cards: any) => {
+            console.log(cards);
+        });
+    }
+
+    private async chargeWithTinkoff() {
+        const PaymentId = "800000011113";
+        const RebillId = "1624480565729";
+        return RNTinkoffAsdk.Charge({PaymentId, RebillId});
+    }
+
+    private async addCardWithTinkoff() {
+        return RNTinkoffAsdk.AddCard({CustomerKey: "TEST", Email: "smouk.chayz@gmail.com", CardCheckType: "HOLD"});
     }
 
     private async payWithTinkoff() {
