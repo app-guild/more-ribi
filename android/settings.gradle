@@ -1,7 +1,21 @@
 rootProject.name = 'SeaOfFish'
+include ':react-native-rn-apple-pay-button'
+project(':react-native-rn-apple-pay-button').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-rn-apple-pay-button/android')
+include ':react-native-config'
+project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
+include ':react-native-tinkoff-asdk'
+project(':react-native-tinkoff-asdk').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-tinkoff-asdk/android')
+include ':react-native-splash-screen'
+project(':react-native-splash-screen').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-splash-screen/android')
+include ':react-native-yamap'
+project(':react-native-yamap').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-yamap/android')
+include ':react-native-gesture-handler'
+project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gesture-handler/android')
+include ':react-native-google-pay'
+project(':react-native-google-pay').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-google-pay/android')
+include ':react-native-sqlite-storage'
+project(':react-native-sqlite-storage').projectDir = new File(rootProject.projectDir, '../../node_modules/react-native-sqlite-storage/platforms/android-native')
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
-include ':react-native-payments'
-project(':react-native-payments').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-payments/android')
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'

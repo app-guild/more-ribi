@@ -3,5 +3,16 @@ module.exports = {
         ios: {},
         android: {},
     },
-    assets: ["./assets/fonts", "./assets/drawable"],
+    assets: ["./resources/assets/fonts", "/resources/assets/drawable"],
+    dependencies: {
+        "react-native-sqlite-storage": {
+            platforms: {
+                android: {
+                    sourceDir: "../node_modules/react-native-sqlite-storage/platforms/android-native",
+                    packageImportPath: "import io.liteglue.SQLitePluginPackage;",
+                    packageInstance: "new SQLitePluginPackage()",
+                },
+            },
+        },
+    },
 };

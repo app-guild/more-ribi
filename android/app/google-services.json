@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1003629150578",
+    "firebase_url": "https://sea-of-fish.firebaseio.com",
+    "project_id": "sea-of-fish",
+    "storage_bucket": "sea-of-fish.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003629150578:android:0a9df61b5dbb06c9715deb",
+        "android_client_info": {
+          "package_name": "com.seaoffish"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003629150578-mivqfk6d0a65tfd639je6gtboj396rt2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRqw7I6yHyYUbe9qKzb04ziORWqFIyDSA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1003629150578-mivqfk6d0a65tfd639je6gtboj396rt2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1003629150578-94isnm2mobqcketbsu2j130ha3t7ma0l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.SeaOfFish"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

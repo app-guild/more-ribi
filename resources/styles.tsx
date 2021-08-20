@@ -1,65 +1,79 @@
 import {StyleSheet} from "react-native";
 
-const globals = {
+const globalColors = {
+    transparent: "transparent",
     primaryColor: "#779DB9",
+    fadePrimaryColor: "#D1DAE2",
     accentColor: "#E5E5E5",
     mainBackgroundColor: "#E5E5E5",
     navigatorBackgroundColor: "white",
     mainTextColor: "#000000",
+    cardBackgroundColor: "#FFFFFF",
+    whiteTextColor: "#FFFFFF",
+    shadowColor: "#000000",
+    additionalTextColor: "#909193",
+    crossedOutPriceColor: "#A5A5A5",
+    backgroundOverlay: "#efefef",
+    headerUnderlineColor: "#FFC11E",
+    categoriesScreenCardTitleContainerBGColor: "rgba(0,0,0,0.35)",
+    orangeColor: "#ffc11e",
+    unloadedCard: "lightgrey",
+    redBlinkColor: "rgba(255, 0, 0, 0.35)",
+    aboutUsBackground: "#009966",
+    almostTransparent: "rgba(255, 255, 255, 0.0001)",
 };
 
-const stylesheet = StyleSheet.create({
+const globalStylesheet = StyleSheet.create({
     centerBody: {
-        backgroundColor: globals.mainBackgroundColor,
+        backgroundColor: globalColors.mainBackgroundColor,
         position: "relative",
         height: "100%",
         display: "flex",
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },
-    header: {
-        width: "100%",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingBottom: 20,
-    },
-    body: {
-        backgroundColor: globals.mainBackgroundColor,
-        position: "relative",
-        height: "100%",
-        paddingHorizontal: 42,
-        paddingVertical: 24,
-        display: "flex",
-    },
-    textInput: {
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        borderRadius: 30,
-        fontSize: 18,
-        marginHorizontal: 20,
-        color: globals.mainTextColor,
-    },
-    text: {
-        position: "relative",
-        fontStyle: "normal",
-        fontWeight: "normal",
+    primaryText: {
+        fontFamily: "Muli-Bold",
         fontSize: 14,
-        color: globals.mainTextColor,
+        lineHeight: 18,
+        color: globalColors.mainTextColor,
     },
-    accentText: {
-        position: "relative",
-        fontStyle: "normal",
-        fontWeight: "normal",
+    secondaryText: {
+        fontFamily: "Muli",
+        fontSize: 10,
+        lineHeight: 13,
+        color: globalColors.additionalTextColor,
+    },
+    price: {
+        fontFamily: "Muli",
+        fontSize: 14,
+        color: globalColors.primaryColor,
+    },
+    crossedOutPrice: {
+        fontFamily: "Muli",
         fontSize: 12,
-        color: globals.accentColor,
+        color: globalColors.crossedOutPriceColor,
+        textDecorationLine: "line-through",
     },
-    bottomNavigator: {
-        height: 66,
-        backgroundColor: globals.navigatorBackgroundColor,
-        paddingBottom: 10,
+    headerContainer: {
+        paddingVertical: 24,
+        paddingHorizontal: 26,
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    headerText: {
+        fontFamily: "Muli",
+        fontSize: 18,
+        lineHeight: 23,
+        color: globalColors.primaryColor,
+    },
+    headerFishBackButton: {
+        position: "absolute",
+        left: 0,
     },
 });
 
-export {stylesheet, globals};
+export {globalColors, globalStylesheet};

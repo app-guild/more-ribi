@@ -2,6 +2,7 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '10.0'
+install! 'cocoapods', :disable_input_output_paths => true
 
 target 'SeaOfFish' do
   config = use_native_modules!
@@ -12,6 +13,21 @@ target 'SeaOfFish' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
+
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+
+  pod 'RNYamap', :path => '../node_modules/react-native-yamap'
+
+  pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
+
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
+  pod 'RNTinkoffAsdk', :path => '../node_modules/react-native-tinkoff-asdk'
+
+  pod 'react-native-rn-apple-pay-button', :path => '../node_modules/react-native-rn-apple-pay-button'
+
   target 'SeaOfFishTests' do
     inherit! :complete
     # Pods for testing
@@ -21,10 +37,10 @@ target 'SeaOfFish' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
-  use_flipper!
-  post_install do |installer|
-    flipper_post_install(installer)
-  end
+  # use_flipper!
+  # post_install do |installer|
+  #   flipper_post_install(installer)
+  # end
 end
 
 target 'SeaOfFish-tvOS' do
