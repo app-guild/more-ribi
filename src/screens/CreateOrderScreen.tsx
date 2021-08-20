@@ -229,8 +229,8 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
     }
 
     private async chargeWithTinkoff() {
-        const PaymentId = "800000011113";
-        const RebillId = "1624480565729";
+        const PaymentId = "645361082";
+        const RebillId = "1625405101165";
         return RNTinkoffAsdk.Charge({PaymentId, RebillId});
     }
 
@@ -240,6 +240,10 @@ class CreateOrderScreen extends Component<Readonly<any>, Readonly<ICreateOrderSc
 
     private async payWithTinkoff() {
         const payment = this.getPaymentObject();
+        // payment.CustomerKey = "TEST";
+        // payment.ExtraData = {
+        //     Email: "smouk.chayz@gmail.com",
+        // };
         return RNTinkoffAsdk.Pay(payment)
             .then((response: any) => {
                 return this.sendOrder();
